@@ -1,0 +1,61 @@
+import helmet from 'helmet';
+
+// Helmet configuration for security headers
+export const helmetConfig = helmet({
+  // Content Security Policy
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'", "https://api.stripe.com", "wss:", "ws:"],
+      frameSrc: ["'self'", "https://js.stripe.com", "https://hooks.stripe.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  
+  // Cross-Origin Embedder Policy
+  crossOriginEmbedderPolicy: false,
+  
+  // Cross-Origin Opener Policy
+  crossOriginOpenerPolicy: { policy: "same-origin" },
+  
+  // Cross-Origin Resource Policy
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  
+  // DNS Prefetch Control
+  dnsPrefetchControl: { allow: false },
+  
+  // Frameguard
+  frameguard: { action: 'deny' },
+  
+  // Hide X-Powered-By
+  hidePoweredBy: true,
+  
+  // HSTS
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+  
+  // IE No Open
+  ieNoOpen: true,
+  
+  // No Sniff
+  noSniff: true,
+  
+  // Origin Agent Cluster
+  originAgentCluster: true,
+  
+  // Referrer Policy
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  
+  // XSS Filter
+  xssFilter: true,
+});
+
+export default helmetConfig;
