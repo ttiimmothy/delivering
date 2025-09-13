@@ -1,4 +1,4 @@
-# 🍔 Delivering - Food Delivery Platform
+# Delivering - Food Delivery Platform
 
 A full-stack food delivery platform (UberEats-lite) built with Next.js, Express, TypeScript, PostgreSQL, and Stripe. Features real-time order tracking, courier location updates, and comprehensive dashboards for customers, merchants, and couriers.
 
