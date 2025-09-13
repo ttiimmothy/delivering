@@ -4,7 +4,7 @@ A full-stack food delivery platform (UberEats-lite) built with Next.js, Express,
 
 ## ✨ Features
 
-- 🍔 **Browse Restaurants**: Discover menus & add to cart
+- ✨ **Browse Restaurants**: Discover menus & add to cart
 - 🛒 **Cart & Checkout**: Optimistic cart operations + Stripe Checkout
 - 🚴 **Courier Live Tracking**: Real-time updates via GraphQL + Socket.IO
 - 👨‍🍳 **Merchant Dashboard**: Manage menus, orders, and payouts
