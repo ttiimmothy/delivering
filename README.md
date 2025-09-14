@@ -12,7 +12,7 @@ A full-stack food delivery platform (UberEats-lite) built with Next.js, Express,
 - ⭐ **Reviews**: Rate restaurants & couriers
 - 🌙 **Dark Mode**: Modern, responsive UI
 - 🔄 **Realtime Updates**: Live order status + courier location
-- 🔐 **Authentication**: JWT + Google OAuth
+- 🔐 **Authentication**: JWT + Google OAuth + Facebook OAuth
 - 📱 **Responsive Design**: Works on all devices
 
 ## 🛠 Tech Stack
@@ -103,21 +103,76 @@ delivering/
 ├── client/                 # Next.js frontend
 │   ├── src/
 │   │   ├── app/           # App Router pages
+│   │   │   ├── contact/   # Contact page
+│   │   │   ├── courier/   # Courier dashboard
+│   │   │   ├── help/      # Help center
+│   │   │   ├── login/     # Login page
+│   │   │   ├── merchant/  # Merchant dashboard
+│   │   │   ├── orders/    # Order management
+│   │   │   ├── privacy/   # Privacy policy
+│   │   │   ├── register/  # Registration page
+│   │   │   ├── restaurants/ # Restaurant listings
+│   │   │   ├── terms/     # Terms of service
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── providers.tsx
 │   │   ├── components/    # React components
+│   │   │   ├── ui/        # Reusable UI components
+│   │   │   ├── footer.tsx
+│   │   │   ├── header.tsx
+│   │   │   ├── hero.tsx
+│   │   │   ├── restaurant-grid.tsx
+│   │   │   ├── theme-provider.tsx
+│   │   │   ├── theme-toggle.tsx
+│   │   │   └── user-menu.tsx
+│   │   ├── hooks/         # Custom hooks
+│   │   │   └── use-toast.ts
 │   │   ├── lib/          # Utilities & configs
-│   │   ├── hooks/        # Custom hooks
-│   │   ├── store/        # Zustand stores
-│   │   └── types/        # TypeScript types
-│   └── package.json
+│   │   │   ├── apollo.ts
+│   │   │   └── utils.ts
+│   │   ├── store/        # Zustand stores (empty)
+│   │   ├── types/        # TypeScript types (empty)
+│   │   └── utils/        # Utility functions (empty)
+│   ├── Dockerfile
+│   ├── next.config.js
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── tailwind.config.js
+│   └── tsconfig.json
 ├── server/                # Express backend
 │   ├── src/
 │   │   ├── schema/       # GraphQL schema modules
+│   │   │   ├── index.ts
+│   │   │   ├── restaurant.ts
+│   │   │   └── user.ts
 │   │   ├── controllers/  # Business logic
+│   │   │   └── auth.ts
 │   │   ├── db/          # Database schema & client
+│   │   │   ├── client.ts
+│   │   │   ├── schema.ts
+│   │   │   └── seed.ts
 │   │   ├── security/    # CORS, rate limiting, etc.
-│   │   └── utils/       # Utilities & helpers
-│   └── package.json
-├── docker-compose.yml     # Development services
+│   │   │   ├── cors.ts
+│   │   │   ├── helmet.ts
+│   │   │   └── rateLimit.ts
+│   │   ├── tests/       # Test files (empty)
+│   │   ├── types/       # TypeScript type definitions
+│   │   │   └── express.d.ts
+│   │   ├── utils/       # Utilities & helpers
+│   │   │   └── auth.ts
+│   │   ├── context.ts
+│   │   ├── http.ts
+│   │   └── index.ts
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── drizzle.config.ts
+│   ├── package.json
+│   └── tsconfig.json
+├── .github/              # GitHub Actions workflows
+│   └── workflows/
+│       └── ci.yml
+├── LICENSE
 └── README.md
 ```
 
