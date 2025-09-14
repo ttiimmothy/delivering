@@ -120,3 +120,4 @@ server/logs/
 client/.next/
 client/out/
 spec.txt
+client/Dockerfile
