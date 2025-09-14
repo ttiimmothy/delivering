@@ -12,7 +12,7 @@ export function Header() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="font-bold text-xl">🍔 Delivering</span>
+            <span className="font-bold text-xl">Delivering</span>
           </Link>
         </div>
         
