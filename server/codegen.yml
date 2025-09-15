@@ -1,0 +1,26 @@
+overwrite: true
+schema: "src/lib/graphql/schema.graphql"
+generates:
+  src/lib/graphql/generated/:
+    preset: "@eddeee888/gcg-typescript-resolver-files"
+    presetConfig:
+      resolverGeneration: "minimal"
+      typesPluginsConfig:
+        contextType: "../context#GraphQLContext"
+        mappers:
+          User: "../db/schema#User"
+          Restaurant: "../db/schema#Restaurant"
+          MenuItem: "../db/schema#MenuItem"
+          Order: "../db/schema#Order"
+          OrderItem: "../db/schema#OrderItem"
+          Cart: "../db/schema#Cart"
+          CartItem: "../db/schema#CartItem"
+          Address: "../db/schema#Address"
+          CourierProfile: "../db/schema#CourierProfile"
+          Review: "../db/schema#Review"
+          Payout: "../db/schema#Payout"
+          Delivery: "../db/schema#Delivery"
+      scalarsOverrides:
+        DateTime: "Date"
+        JSON: "Record<string, any>"
+        Upload: "File"

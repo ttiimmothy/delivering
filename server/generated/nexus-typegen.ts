@@ -14,6 +14,12 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  AddToCartInput: { // input type
+    menuItemId: string; // String!
+    quantity: number; // Int!
+    selectedOptions?: string | null; // String
+    specialInstructions?: string | null; // String
+  }
   AddressInput: { // input type
     city: string; // String!
     country: string | null; // String
@@ -25,25 +31,88 @@ export interface NexusGenInputs {
     street: string; // String!
     zipCode: string; // String!
   }
+  AssignCourierInput: { // input type
+    courierId: string; // String!
+    orderId: string; // String!
+  }
   CourierProfileInput: { // input type
     currentLocation?: NexusGenInputs['LocationInput'] | null; // LocationInput
     isAvailable: boolean | null; // Boolean
     licensePlate?: string | null; // String
     vehicleType: string; // String!
   }
+  CreateBillingPortalSessionInput: { // input type
+    customerId: string; // String!
+    returnUrl: string; // String!
+  }
+  CreateCheckoutSessionInput: { // input type
+    cancelUrl: string; // String!
+    customerEmail?: string | null; // String
+    orderId: string; // String!
+    successUrl: string; // String!
+  }
+  CreateCourierProfileInput: { // input type
+    currentLocation?: NexusGenInputs['LocationInput'] | null; // LocationInput
+    isAvailable?: boolean | null; // Boolean
+    licensePlate?: string | null; // String
+    vehicleType: NexusGenEnums['VehicleType']; // VehicleType!
+  }
+  CreateInvoiceInput: { // input type
+    courierAmount: string; // String!
+    courierId?: string | null; // String
+    orderId: string; // String!
+    platformFee: string; // String!
+    restaurantAmount: string; // String!
+    restaurantId: string; // String!
+  }
   CreateMenuCategoryInput: { // input type
     description?: string | null; // String
     name: string; // String!
+    restaurantId: string; // String!
     sortOrder?: number | null; // Int
   }
   CreateMenuItemInput: { // input type
+    categoryId: string; // String!
     description?: string | null; // String
     image?: string | null; // String
-    isAvailable: boolean | null; // Boolean
+    isAvailable?: boolean | null; // Boolean
     isPopular?: boolean | null; // Boolean
     name: string; // String!
     price: string; // String!
+    restaurantId: string; // String!
     sortOrder?: number | null; // Int
+  }
+  CreateMenuItemOptionInput: { // input type
+    isRequired?: boolean | null; // Boolean
+    menuItemId: string; // String!
+    name: string; // String!
+    sortOrder?: number | null; // Int
+    type: NexusGenEnums['MenuItemOptionType']; // MenuItemOptionType!
+  }
+  CreateMenuItemOptionValueInput: { // input type
+    isDefault?: boolean | null; // Boolean
+    name: string; // String!
+    optionId: string; // String!
+    price?: string | null; // String
+    sortOrder?: number | null; // Int
+  }
+  CreateOrderInput: { // input type
+    deliveryAddress: string; // String!
+    restaurantId: string; // String!
+    specialInstructions?: string | null; // String
+    stripePaymentIntentId?: string | null; // String
+    tip?: string | null; // String
+  }
+  CreatePaymentIntentInput: { // input type
+    amount: number; // Float!
+    currency?: string | null; // String
+    description?: string | null; // String
+    metadata?: string | null; // String
+  }
+  CreateRefundInput: { // input type
+    amount?: number | null; // Float
+    paymentIntentId: string; // String!
+    reason?: string | null; // String
   }
   CreateRestaurantInput: { // input type
     address: NexusGenInputs['RestaurantAddressInput']; // RestaurantAddressInput!
@@ -56,6 +125,12 @@ export interface NexusGenInputs {
     name: string; // String!
     phone?: string | null; // String
   }
+  CreateReviewInput: { // input type
+    comment?: string | null; // String
+    orderId: string; // String!
+    rating: number; // Int!
+    type: NexusGenEnums['ReviewType']; // ReviewType!
+  }
   LocationInput: { // input type
     latitude: number; // Float!
     longitude: number; // Float!
@@ -63,6 +138,13 @@ export interface NexusGenInputs {
   LoginInput: { // input type
     email: string; // String!
     password: string; // String!
+  }
+  ProcessPayoutInput: { // input type
+    invoiceId: string; // String!
+    stripeTransferId: string; // String!
+  }
+  RemoveFromCartInput: { // input type
+    cartItemId: string; // String!
   }
   RestaurantAddressInput: { // input type
     city: string; // String!
@@ -79,20 +161,56 @@ export interface NexusGenInputs {
     phone?: string | null; // String
     role: NexusGenEnums['UserRole'] | null; // UserRole
   }
+  UpdateCartItemInput: { // input type
+    cartItemId: string; // String!
+    quantity?: number | null; // Int
+    selectedOptions?: string | null; // String
+    specialInstructions?: string | null; // String
+  }
+  UpdateCourierLocationInput: { // input type
+    latitude: string; // String!
+    longitude: string; // String!
+  }
+  UpdateCourierProfileInput: { // input type
+    currentLocation?: NexusGenInputs['LocationInput'] | null; // LocationInput
+    id: string; // String!
+    isAvailable?: boolean | null; // Boolean
+    licensePlate?: string | null; // String
+    vehicleType?: NexusGenEnums['VehicleType'] | null; // VehicleType
+  }
+  UpdateDeliveryStatusInput: { // input type
+    currentLocation?: NexusGenInputs['LocationInput'] | null; // LocationInput
+    deliveryId: string; // String!
+    estimatedArrival?: string | null; // String
+    status: NexusGenEnums['DeliveryStatus']; // DeliveryStatus!
+  }
+  UpdateInvoiceStatusInput: { // input type
+    id: string; // String!
+    status: NexusGenEnums['InvoiceStatus']; // InvoiceStatus!
+    stripeTransferId?: string | null; // String
+  }
   UpdateMenuCategoryInput: { // input type
     description?: string | null; // String
+    id: string; // String!
     isActive?: boolean | null; // Boolean
     name?: string | null; // String
     sortOrder?: number | null; // Int
   }
   UpdateMenuItemInput: { // input type
     description?: string | null; // String
+    id: string; // String!
     image?: string | null; // String
     isAvailable?: boolean | null; // Boolean
     isPopular?: boolean | null; // Boolean
     name?: string | null; // String
     price?: string | null; // String
     sortOrder?: number | null; // Int
+  }
+  UpdateOrderStatusInput: { // input type
+    message?: string | null; // String
+    metadata?: string | null; // String
+    orderId: string; // String!
+    status: NexusGenEnums['OrderStatus']; // OrderStatus!
   }
   UpdateProfileInput: { // input type
     avatar?: string | null; // String
@@ -113,10 +231,22 @@ export interface NexusGenInputs {
     name?: string | null; // String
     phone?: string | null; // String
   }
+  UpdateReviewInput: { // input type
+    comment?: string | null; // String
+    id: string; // String!
+    rating?: number | null; // Int
+  }
 }
 
 export interface NexusGenEnums {
+  DeliveryStatus: "accepted" | "assigned" | "delivered" | "picked_up"
+  InvoiceStatus: "failed" | "paid" | "pending"
+  MenuItemOptionType: "multiple" | "single"
+  OrderStatus: "cancelled" | "confirmed" | "delivered" | "pending" | "picked_up" | "preparing" | "ready"
+  PaymentStatus: "failed" | "paid" | "pending" | "refunded"
+  ReviewType: "courier" | "restaurant"
   UserRole: "admin" | "courier" | "customer" | "merchant"
+  VehicleType: "bike" | "car" | "motorcycle"
 }
 
 export interface NexusGenScalars {
@@ -147,64 +277,236 @@ export interface NexusGenObjects {
     refreshToken: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
+  BillingPortalSession: { // root type
+    createdAt: string; // String!
+    id: string; // String!
+    returnUrl: string; // String!
+    url: string; // String!
+  }
+  Cart: { // root type
+    createdAt: string; // String!
+    id: string; // String!
+    restaurantId: string; // String!
+    updatedAt: string; // String!
+    userId: string; // String!
+  }
+  CartItem: { // root type
+    cartId: string; // String!
+    createdAt: string; // String!
+    id: string; // String!
+    menuItemId: string; // String!
+    quantity: number; // Int!
+    selectedOptions: string; // String!
+    specialInstructions?: string | null; // String
+    updatedAt: string; // String!
+  }
+  CheckoutSession: { // root type
+    createdAt: string; // String!
+    customerEmail?: string | null; // String
+    customerId?: string | null; // String
+    expiresAt: string; // String!
+    id: string; // String!
+    paymentIntentId?: string | null; // String
+    status: string; // String!
+    url: string; // String!
+  }
+  CourierLocationUpdate: { // root type
+    courierId: string; // String!
+    deliveryId: string; // String!
+    estimatedArrival?: string | null; // String
+    timestamp: string; // String!
+  }
   CourierProfile: { // root type
     createdAt: string; // String!
-    currentLocation?: NexusGenRootTypes['Location'] | null; // Location
-    id: string; // ID!
+    id: string; // String!
     isAvailable: boolean; // Boolean!
     licensePlate?: string | null; // String
-    rating?: string | null; // String
+    rating: string; // String!
     reviewCount: number; // Int!
     totalDeliveries: number; // Int!
     updatedAt: string; // String!
-    vehicleType: string; // String!
+    userId: string; // String!
+    vehicleType: NexusGenEnums['VehicleType']; // VehicleType!
+  }
+  CourierStatusUpdate: { // root type
+    courierId: string; // String!
+    isAvailable: boolean; // Boolean!
+    timestamp: string; // String!
+  }
+  CourierTrackingUpdate: { // root type
+    courierId: string; // String!
+    estimatedArrival?: string | null; // String
+    timestamp: string; // String!
+  }
+  Delivery: { // root type
+    acceptedAt?: string | null; // String
+    assignedAt: string; // String!
+    courierId: string; // String!
+    createdAt: string; // String!
+    deliveredAt?: string | null; // String
+    estimatedArrival?: string | null; // String
+    id: string; // String!
+    orderId: string; // String!
+    pickedUpAt?: string | null; // String
+    status: NexusGenEnums['DeliveryStatus']; // DeliveryStatus!
+    updatedAt: string; // String!
+  }
+  DeliveryAssignment: { // root type
+    assignedBy: string; // String!
+    courierId: string; // String!
+    deliveryId: string; // String!
+    timestamp: string; // String!
+  }
+  DeliveryStatusUpdate: { // root type
+    deliveryId: string; // String!
+    message?: string | null; // String
+    status: string; // String!
+    timestamp: string; // String!
+  }
+  Invoice: { // root type
+    courierAmount: string; // String!
+    courierId?: string | null; // String
+    createdAt: string; // String!
+    id: string; // String!
+    orderId: string; // String!
+    platformFee: string; // String!
+    restaurantAmount: string; // String!
+    restaurantId: string; // String!
+    status: NexusGenEnums['InvoiceStatus']; // InvoiceStatus!
+    stripeTransferId?: string | null; // String
+    updatedAt: string; // String!
   }
   Location: { // root type
+    address?: string | null; // String
     latitude: number; // Float!
     longitude: number; // Float!
+    timestamp: string; // String!
   }
   MenuCategory: { // root type
     createdAt: string; // String!
     description?: string | null; // String
-    id: string; // ID!
+    id: string; // String!
     isActive: boolean; // Boolean!
     name: string; // String!
+    restaurantId: string; // String!
     sortOrder: number; // Int!
     updatedAt: string; // String!
   }
   MenuItem: { // root type
+    categoryId: string; // String!
     createdAt: string; // String!
     description?: string | null; // String
-    id: string; // ID!
+    id: string; // String!
     image?: string | null; // String
     isAvailable: boolean; // Boolean!
     isPopular: boolean; // Boolean!
     name: string; // String!
     price: string; // String!
+    restaurantId: string; // String!
     sortOrder: number; // Int!
     updatedAt: string; // String!
   }
   MenuItemOption: { // root type
     createdAt: string; // String!
-    id: string; // ID!
+    id: string; // String!
     isRequired: boolean; // Boolean!
+    menuItemId: string; // String!
     name: string; // String!
     sortOrder: number; // Int!
-    type: string; // String!
+    type: NexusGenEnums['MenuItemOptionType']; // MenuItemOptionType!
   }
   MenuItemOptionValue: { // root type
     createdAt: string; // String!
-    id: string; // ID!
+    id: string; // String!
     isDefault: boolean; // Boolean!
     name: string; // String!
+    optionId: string; // String!
     price: string; // String!
     sortOrder: number; // Int!
   }
   Mutation: {};
+  Order: { // root type
+    courierId?: string | null; // String
+    createdAt: string; // String!
+    customerId: string; // String!
+    deliveryAddress: string; // String!
+    deliveryFee: string; // String!
+    estimatedDeliveryTime?: string | null; // String
+    id: string; // String!
+    orderNumber: string; // String!
+    paymentStatus: NexusGenEnums['PaymentStatus']; // PaymentStatus!
+    restaurantId: string; // String!
+    specialInstructions?: string | null; // String
+    status: NexusGenEnums['OrderStatus']; // OrderStatus!
+    stripePaymentIntentId?: string | null; // String
+    stripeSessionId?: string | null; // String
+    subtotal: string; // String!
+    tax: string; // String!
+    tip: string; // String!
+    total: string; // String!
+    updatedAt: string; // String!
+  }
+  OrderEvent: { // root type
+    createdAt: string; // String!
+    id: string; // String!
+    message?: string | null; // String
+    metadata?: string | null; // String
+    orderId: string; // String!
+    status: NexusGenEnums['OrderStatus']; // OrderStatus!
+  }
+  OrderItem: { // root type
+    createdAt: string; // String!
+    id: string; // String!
+    menuItemId: string; // String!
+    orderId: string; // String!
+    quantity: number; // Int!
+    selectedOptions: string; // String!
+    specialInstructions?: string | null; // String
+    totalPrice: string; // String!
+    unitPrice: string; // String!
+  }
+  OrderQueueUpdate: { // root type
+    pendingOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
+    preparingOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
+    readyOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
+    restaurantId: string; // String!
+    timestamp: string; // String!
+  }
+  OrderTrackingUpdate: { // root type
+    estimatedDelivery?: string | null; // String
+    orderId: string; // String!
+    status: string; // String!
+    timestamp: string; // String!
+  }
+  OrderUpdate: { // root type
+    message?: string | null; // String
+    metadata?: string | null; // String
+    orderId: string; // String!
+    status: string; // String!
+    timestamp: string; // String!
+  }
+  PaymentIntent: { // root type
+    amount: string; // String!
+    clientSecret?: string | null; // String
+    createdAt: string; // String!
+    currency: string; // String!
+    description?: string | null; // String
+    id: string; // String!
+    metadata?: string | null; // String
+    status: string; // String!
+  }
   Query: {};
   RefreshTokenResponse: { // root type
     accessToken: string; // String!
     refreshToken: string; // String!
+  }
+  Refund: { // root type
+    amount: string; // String!
+    createdAt: string; // String!
+    currency: string; // String!
+    id: string; // String!
+    reason?: string | null; // String
+    status: string; // String!
   }
   Restaurant: { // root type
     address: NexusGenRootTypes['RestaurantAddress']; // RestaurantAddress!
@@ -232,6 +534,19 @@ export interface NexusGenObjects {
     street: string; // String!
     zipCode: string; // String!
   }
+  Review: { // root type
+    comment?: string | null; // String
+    courierId?: string | null; // String
+    createdAt: string; // String!
+    customerId: string; // String!
+    id: string; // String!
+    orderId: string; // String!
+    rating: number; // Int!
+    restaurantId?: string | null; // String
+    type: NexusGenEnums['ReviewType']; // ReviewType!
+    updatedAt: string; // String!
+  }
+  Subscription: {};
   User: { // root type
     avatar?: string | null; // String
     createdAt: string; // String!
@@ -278,91 +593,299 @@ export interface NexusGenFieldTypes {
     refreshToken: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
+  BillingPortalSession: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    returnUrl: string; // String!
+    url: string; // String!
+  }
+  Cart: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    items: Array<NexusGenRootTypes['CartItem'] | null> | null; // [CartItem]
+    restaurantId: string; // String!
+    updatedAt: string; // String!
+    userId: string; // String!
+  }
+  CartItem: { // field return type
+    cartId: string; // String!
+    createdAt: string; // String!
+    id: string; // String!
+    menuItem: NexusGenRootTypes['MenuItem'] | null; // MenuItem
+    menuItemId: string; // String!
+    quantity: number; // Int!
+    selectedOptions: string; // String!
+    specialInstructions: string | null; // String
+    updatedAt: string; // String!
+  }
+  CheckoutSession: { // field return type
+    createdAt: string; // String!
+    customerEmail: string | null; // String
+    customerId: string | null; // String
+    expiresAt: string; // String!
+    id: string; // String!
+    paymentIntentId: string | null; // String
+    status: string; // String!
+    url: string; // String!
+  }
+  CourierLocationUpdate: { // field return type
+    courierId: string; // String!
+    deliveryId: string; // String!
+    estimatedArrival: string | null; // String
+    location: NexusGenRootTypes['Location'] | null; // Location
+    timestamp: string; // String!
+  }
   CourierProfile: { // field return type
     createdAt: string; // String!
     currentLocation: NexusGenRootTypes['Location'] | null; // Location
-    id: string; // ID!
+    id: string; // String!
     isAvailable: boolean; // Boolean!
     licensePlate: string | null; // String
-    rating: string | null; // String
+    rating: string; // String!
     reviewCount: number; // Int!
     totalDeliveries: number; // Int!
     updatedAt: string; // String!
-    vehicleType: string; // String!
+    user: NexusGenRootTypes['User'] | null; // User
+    userId: string; // String!
+    vehicleType: NexusGenEnums['VehicleType']; // VehicleType!
+  }
+  CourierStatusUpdate: { // field return type
+    courierId: string; // String!
+    isAvailable: boolean; // Boolean!
+    timestamp: string; // String!
+  }
+  CourierTrackingUpdate: { // field return type
+    courierId: string; // String!
+    currentLocation: NexusGenRootTypes['Location'] | null; // Location
+    estimatedArrival: string | null; // String
+    timestamp: string; // String!
+  }
+  Delivery: { // field return type
+    acceptedAt: string | null; // String
+    assignedAt: string; // String!
+    courier: NexusGenRootTypes['User'] | null; // User
+    courierId: string; // String!
+    createdAt: string; // String!
+    currentLocation: NexusGenRootTypes['Location'] | null; // Location
+    deliveredAt: string | null; // String
+    estimatedArrival: string | null; // String
+    id: string; // String!
+    order: NexusGenRootTypes['Order'] | null; // Order
+    orderId: string; // String!
+    pickedUpAt: string | null; // String
+    status: NexusGenEnums['DeliveryStatus']; // DeliveryStatus!
+    updatedAt: string; // String!
+  }
+  DeliveryAssignment: { // field return type
+    assignedBy: string; // String!
+    courierId: string; // String!
+    deliveryId: string; // String!
+    timestamp: string; // String!
+  }
+  DeliveryStatusUpdate: { // field return type
+    deliveryId: string; // String!
+    message: string | null; // String
+    status: string; // String!
+    timestamp: string; // String!
+  }
+  Invoice: { // field return type
+    courier: NexusGenRootTypes['User'] | null; // User
+    courierAmount: string; // String!
+    courierId: string | null; // String
+    createdAt: string; // String!
+    id: string; // String!
+    order: NexusGenRootTypes['Order'] | null; // Order
+    orderId: string; // String!
+    platformFee: string; // String!
+    restaurant: NexusGenRootTypes['Restaurant'] | null; // Restaurant
+    restaurantAmount: string; // String!
+    restaurantId: string; // String!
+    status: NexusGenEnums['InvoiceStatus']; // InvoiceStatus!
+    stripeTransferId: string | null; // String
+    updatedAt: string; // String!
   }
   Location: { // field return type
+    address: string | null; // String
     latitude: number; // Float!
     longitude: number; // Float!
+    timestamp: string; // String!
   }
   MenuCategory: { // field return type
     createdAt: string; // String!
     description: string | null; // String
-    id: string; // ID!
+    id: string; // String!
     isActive: boolean; // Boolean!
     menuItems: Array<NexusGenRootTypes['MenuItem'] | null> | null; // [MenuItem]
     name: string; // String!
+    restaurantId: string; // String!
     sortOrder: number; // Int!
     updatedAt: string; // String!
   }
   MenuItem: { // field return type
-    category: NexusGenRootTypes['MenuCategory'] | null; // MenuCategory
+    categoryId: string; // String!
     createdAt: string; // String!
     description: string | null; // String
-    id: string; // ID!
+    id: string; // String!
     image: string | null; // String
     isAvailable: boolean; // Boolean!
     isPopular: boolean; // Boolean!
     name: string; // String!
     options: Array<NexusGenRootTypes['MenuItemOption'] | null> | null; // [MenuItemOption]
     price: string; // String!
+    restaurantId: string; // String!
     sortOrder: number; // Int!
     updatedAt: string; // String!
   }
   MenuItemOption: { // field return type
     createdAt: string; // String!
-    id: string; // ID!
+    id: string; // String!
     isRequired: boolean; // Boolean!
+    menuItemId: string; // String!
     name: string; // String!
     sortOrder: number; // Int!
-    type: string; // String!
+    type: NexusGenEnums['MenuItemOptionType']; // MenuItemOptionType!
     values: Array<NexusGenRootTypes['MenuItemOptionValue'] | null> | null; // [MenuItemOptionValue]
   }
   MenuItemOptionValue: { // field return type
     createdAt: string; // String!
-    id: string; // ID!
+    id: string; // String!
     isDefault: boolean; // Boolean!
     name: string; // String!
+    optionId: string; // String!
     price: string; // String!
     sortOrder: number; // Int!
   }
   Mutation: { // field return type
     addAddress: NexusGenRootTypes['Address'] | null; // Address
+    addToCart: NexusGenRootTypes['CartItem'] | null; // CartItem
+    clearCart: boolean | null; // Boolean
     createRestaurant: NexusGenRootTypes['Restaurant'] | null; // Restaurant
     deleteAddress: boolean | null; // Boolean
+    delivery: NexusGenRootTypes['Mutation'] | null; // Mutation
     login: NexusGenRootTypes['AuthResponse'] | null; // AuthResponse
     loginWithGoogle: NexusGenRootTypes['AuthResponse'] | null; // AuthResponse
     logout: boolean | null; // Boolean
+    menu: NexusGenRootTypes['Mutation'] | null; // Mutation
+    order: NexusGenRootTypes['Mutation'] | null; // Mutation
+    paymentMutations: NexusGenRootTypes['Mutation'] | null; // Mutation
+    payout: NexusGenRootTypes['Mutation'] | null; // Mutation
     refreshToken: NexusGenRootTypes['RefreshTokenResponse'] | null; // RefreshTokenResponse
+    removeFromCart: boolean | null; // Boolean
+    review: NexusGenRootTypes['Mutation'] | null; // Mutation
     setRestaurantOpen: NexusGenRootTypes['Restaurant'] | null; // Restaurant
     signup: NexusGenRootTypes['AuthResponse'] | null; // AuthResponse
     toggleFavorite: boolean | null; // Boolean
     updateAddress: NexusGenRootTypes['Address'] | null; // Address
+    updateCartItem: NexusGenRootTypes['CartItem'] | null; // CartItem
     updateCourierProfile: NexusGenRootTypes['CourierProfile'] | null; // CourierProfile
     updateProfile: NexusGenRootTypes['User'] | null; // User
     updateRestaurant: NexusGenRootTypes['Restaurant'] | null; // Restaurant
   }
+  Order: { // field return type
+    courier: NexusGenRootTypes['User'] | null; // User
+    courierId: string | null; // String
+    createdAt: string; // String!
+    customer: NexusGenRootTypes['User'] | null; // User
+    customerId: string; // String!
+    deliveryAddress: string; // String!
+    deliveryFee: string; // String!
+    estimatedDeliveryTime: string | null; // String
+    events: Array<NexusGenRootTypes['OrderEvent'] | null> | null; // [OrderEvent]
+    id: string; // String!
+    items: Array<NexusGenRootTypes['OrderItem'] | null> | null; // [OrderItem]
+    orderNumber: string; // String!
+    paymentStatus: NexusGenEnums['PaymentStatus']; // PaymentStatus!
+    restaurant: NexusGenRootTypes['Restaurant'] | null; // Restaurant
+    restaurantId: string; // String!
+    specialInstructions: string | null; // String
+    status: NexusGenEnums['OrderStatus']; // OrderStatus!
+    stripePaymentIntentId: string | null; // String
+    stripeSessionId: string | null; // String
+    subtotal: string; // String!
+    tax: string; // String!
+    tip: string; // String!
+    total: string; // String!
+    updatedAt: string; // String!
+  }
+  OrderEvent: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    message: string | null; // String
+    metadata: string | null; // String
+    orderId: string; // String!
+    status: NexusGenEnums['OrderStatus']; // OrderStatus!
+  }
+  OrderItem: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    menuItem: NexusGenRootTypes['MenuItem'] | null; // MenuItem
+    menuItemId: string; // String!
+    orderId: string; // String!
+    quantity: number; // Int!
+    selectedOptions: string; // String!
+    specialInstructions: string | null; // String
+    totalPrice: string; // String!
+    unitPrice: string; // String!
+  }
+  OrderQueueUpdate: { // field return type
+    pendingOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
+    preparingOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
+    readyOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
+    restaurantId: string; // String!
+    timestamp: string; // String!
+  }
+  OrderTrackingUpdate: { // field return type
+    courier: NexusGenRootTypes['User'] | null; // User
+    currentLocation: NexusGenRootTypes['Location'] | null; // Location
+    estimatedDelivery: string | null; // String
+    orderId: string; // String!
+    status: string; // String!
+    timestamp: string; // String!
+  }
+  OrderUpdate: { // field return type
+    message: string | null; // String
+    metadata: string | null; // String
+    orderId: string; // String!
+    status: string; // String!
+    timestamp: string; // String!
+  }
+  PaymentIntent: { // field return type
+    amount: string; // String!
+    clientSecret: string | null; // String
+    createdAt: string; // String!
+    currency: string; // String!
+    description: string | null; // String
+    id: string; // String!
+    metadata: string | null; // String
+    status: string; // String!
+  }
   Query: { // field return type
+    cart: NexusGenRootTypes['Cart'] | null; // Cart
+    delivery: NexusGenRootTypes['Query'] | null; // Query
     favoriteRestaurants: Array<NexusGenRootTypes['Restaurant'] | null> | null; // [Restaurant]
     me: NexusGenRootTypes['User'] | null; // User
+    menu: NexusGenRootTypes['Query'] | null; // Query
     myRestaurants: Array<NexusGenRootTypes['Restaurant'] | null> | null; // [Restaurant]
+    order: NexusGenRootTypes['Query'] | null; // Query
+    paymentQueries: NexusGenRootTypes['Query'] | null; // Query
+    payout: NexusGenRootTypes['Query'] | null; // Query
     restaurant: NexusGenRootTypes['Restaurant'] | null; // Restaurant
     restaurants: Array<NexusGenRootTypes['Restaurant'] | null> | null; // [Restaurant]
+    review: NexusGenRootTypes['Query'] | null; // Query
     user: NexusGenRootTypes['User'] | null; // User
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   RefreshTokenResponse: { // field return type
     accessToken: string; // String!
     refreshToken: string; // String!
+  }
+  Refund: { // field return type
+    amount: string; // String!
+    createdAt: string; // String!
+    currency: string; // String!
+    id: string; // String!
+    reason: string | null; // String
+    status: string; // String!
   }
   Restaurant: { // field return type
     address: NexusGenRootTypes['RestaurantAddress']; // RestaurantAddress!
@@ -393,6 +916,34 @@ export interface NexusGenFieldTypes {
     state: string; // String!
     street: string; // String!
     zipCode: string; // String!
+  }
+  Review: { // field return type
+    comment: string | null; // String
+    courier: NexusGenRootTypes['User'] | null; // User
+    courierId: string | null; // String
+    createdAt: string; // String!
+    customer: NexusGenRootTypes['User'] | null; // User
+    customerId: string; // String!
+    id: string; // String!
+    order: NexusGenRootTypes['Order'] | null; // Order
+    orderId: string; // String!
+    rating: number; // Int!
+    restaurant: NexusGenRootTypes['Restaurant'] | null; // Restaurant
+    restaurantId: string | null; // String
+    type: NexusGenEnums['ReviewType']; // ReviewType!
+    updatedAt: string; // String!
+  }
+  Subscription: { // field return type
+    courierLocation: NexusGenRootTypes['CourierLocationUpdate'] | null; // CourierLocationUpdate
+    courierStatusChanged: NexusGenRootTypes['CourierStatusUpdate'] | null; // CourierStatusUpdate
+    customerOrderTracking: NexusGenRootTypes['OrderTrackingUpdate'] | null; // OrderTrackingUpdate
+    deliveryAssigned: NexusGenRootTypes['DeliveryAssignment'] | null; // DeliveryAssignment
+    deliveryStatusChanged: NexusGenRootTypes['DeliveryStatusUpdate'] | null; // DeliveryStatusUpdate
+    liveCourierTracking: NexusGenRootTypes['CourierTrackingUpdate'] | null; // CourierTrackingUpdate
+    merchantIncomingOrders: NexusGenRootTypes['Order'] | null; // Order
+    orderStatusChanged: NexusGenRootTypes['OrderEvent'] | null; // OrderEvent
+    realTimeOrderUpdates: NexusGenRootTypes['OrderUpdate'] | null; // OrderUpdate
+    restaurantOrderQueue: NexusGenRootTypes['OrderQueueUpdate'] | null; // OrderQueueUpdate
   }
   User: { // field return type
     addresses: Array<NexusGenRootTypes['Address'] | null> | null; // [Address]
@@ -432,91 +983,299 @@ export interface NexusGenFieldTypeNames {
     refreshToken: 'String'
     user: 'User'
   }
+  BillingPortalSession: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    returnUrl: 'String'
+    url: 'String'
+  }
+  Cart: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    items: 'CartItem'
+    restaurantId: 'String'
+    updatedAt: 'String'
+    userId: 'String'
+  }
+  CartItem: { // field return type name
+    cartId: 'String'
+    createdAt: 'String'
+    id: 'String'
+    menuItem: 'MenuItem'
+    menuItemId: 'String'
+    quantity: 'Int'
+    selectedOptions: 'String'
+    specialInstructions: 'String'
+    updatedAt: 'String'
+  }
+  CheckoutSession: { // field return type name
+    createdAt: 'String'
+    customerEmail: 'String'
+    customerId: 'String'
+    expiresAt: 'String'
+    id: 'String'
+    paymentIntentId: 'String'
+    status: 'String'
+    url: 'String'
+  }
+  CourierLocationUpdate: { // field return type name
+    courierId: 'String'
+    deliveryId: 'String'
+    estimatedArrival: 'String'
+    location: 'Location'
+    timestamp: 'String'
+  }
   CourierProfile: { // field return type name
     createdAt: 'String'
     currentLocation: 'Location'
-    id: 'ID'
+    id: 'String'
     isAvailable: 'Boolean'
     licensePlate: 'String'
     rating: 'String'
     reviewCount: 'Int'
     totalDeliveries: 'Int'
     updatedAt: 'String'
-    vehicleType: 'String'
+    user: 'User'
+    userId: 'String'
+    vehicleType: 'VehicleType'
+  }
+  CourierStatusUpdate: { // field return type name
+    courierId: 'String'
+    isAvailable: 'Boolean'
+    timestamp: 'String'
+  }
+  CourierTrackingUpdate: { // field return type name
+    courierId: 'String'
+    currentLocation: 'Location'
+    estimatedArrival: 'String'
+    timestamp: 'String'
+  }
+  Delivery: { // field return type name
+    acceptedAt: 'String'
+    assignedAt: 'String'
+    courier: 'User'
+    courierId: 'String'
+    createdAt: 'String'
+    currentLocation: 'Location'
+    deliveredAt: 'String'
+    estimatedArrival: 'String'
+    id: 'String'
+    order: 'Order'
+    orderId: 'String'
+    pickedUpAt: 'String'
+    status: 'DeliveryStatus'
+    updatedAt: 'String'
+  }
+  DeliveryAssignment: { // field return type name
+    assignedBy: 'String'
+    courierId: 'String'
+    deliveryId: 'String'
+    timestamp: 'String'
+  }
+  DeliveryStatusUpdate: { // field return type name
+    deliveryId: 'String'
+    message: 'String'
+    status: 'String'
+    timestamp: 'String'
+  }
+  Invoice: { // field return type name
+    courier: 'User'
+    courierAmount: 'String'
+    courierId: 'String'
+    createdAt: 'String'
+    id: 'String'
+    order: 'Order'
+    orderId: 'String'
+    platformFee: 'String'
+    restaurant: 'Restaurant'
+    restaurantAmount: 'String'
+    restaurantId: 'String'
+    status: 'InvoiceStatus'
+    stripeTransferId: 'String'
+    updatedAt: 'String'
   }
   Location: { // field return type name
+    address: 'String'
     latitude: 'Float'
     longitude: 'Float'
+    timestamp: 'String'
   }
   MenuCategory: { // field return type name
     createdAt: 'String'
     description: 'String'
-    id: 'ID'
+    id: 'String'
     isActive: 'Boolean'
     menuItems: 'MenuItem'
     name: 'String'
+    restaurantId: 'String'
     sortOrder: 'Int'
     updatedAt: 'String'
   }
   MenuItem: { // field return type name
-    category: 'MenuCategory'
+    categoryId: 'String'
     createdAt: 'String'
     description: 'String'
-    id: 'ID'
+    id: 'String'
     image: 'String'
     isAvailable: 'Boolean'
     isPopular: 'Boolean'
     name: 'String'
     options: 'MenuItemOption'
     price: 'String'
+    restaurantId: 'String'
     sortOrder: 'Int'
     updatedAt: 'String'
   }
   MenuItemOption: { // field return type name
     createdAt: 'String'
-    id: 'ID'
+    id: 'String'
     isRequired: 'Boolean'
+    menuItemId: 'String'
     name: 'String'
     sortOrder: 'Int'
-    type: 'String'
+    type: 'MenuItemOptionType'
     values: 'MenuItemOptionValue'
   }
   MenuItemOptionValue: { // field return type name
     createdAt: 'String'
-    id: 'ID'
+    id: 'String'
     isDefault: 'Boolean'
     name: 'String'
+    optionId: 'String'
     price: 'String'
     sortOrder: 'Int'
   }
   Mutation: { // field return type name
     addAddress: 'Address'
+    addToCart: 'CartItem'
+    clearCart: 'Boolean'
     createRestaurant: 'Restaurant'
     deleteAddress: 'Boolean'
+    delivery: 'Mutation'
     login: 'AuthResponse'
     loginWithGoogle: 'AuthResponse'
     logout: 'Boolean'
+    menu: 'Mutation'
+    order: 'Mutation'
+    paymentMutations: 'Mutation'
+    payout: 'Mutation'
     refreshToken: 'RefreshTokenResponse'
+    removeFromCart: 'Boolean'
+    review: 'Mutation'
     setRestaurantOpen: 'Restaurant'
     signup: 'AuthResponse'
     toggleFavorite: 'Boolean'
     updateAddress: 'Address'
+    updateCartItem: 'CartItem'
     updateCourierProfile: 'CourierProfile'
     updateProfile: 'User'
     updateRestaurant: 'Restaurant'
   }
+  Order: { // field return type name
+    courier: 'User'
+    courierId: 'String'
+    createdAt: 'String'
+    customer: 'User'
+    customerId: 'String'
+    deliveryAddress: 'String'
+    deliveryFee: 'String'
+    estimatedDeliveryTime: 'String'
+    events: 'OrderEvent'
+    id: 'String'
+    items: 'OrderItem'
+    orderNumber: 'String'
+    paymentStatus: 'PaymentStatus'
+    restaurant: 'Restaurant'
+    restaurantId: 'String'
+    specialInstructions: 'String'
+    status: 'OrderStatus'
+    stripePaymentIntentId: 'String'
+    stripeSessionId: 'String'
+    subtotal: 'String'
+    tax: 'String'
+    tip: 'String'
+    total: 'String'
+    updatedAt: 'String'
+  }
+  OrderEvent: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    message: 'String'
+    metadata: 'String'
+    orderId: 'String'
+    status: 'OrderStatus'
+  }
+  OrderItem: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    menuItem: 'MenuItem'
+    menuItemId: 'String'
+    orderId: 'String'
+    quantity: 'Int'
+    selectedOptions: 'String'
+    specialInstructions: 'String'
+    totalPrice: 'String'
+    unitPrice: 'String'
+  }
+  OrderQueueUpdate: { // field return type name
+    pendingOrders: 'Order'
+    preparingOrders: 'Order'
+    readyOrders: 'Order'
+    restaurantId: 'String'
+    timestamp: 'String'
+  }
+  OrderTrackingUpdate: { // field return type name
+    courier: 'User'
+    currentLocation: 'Location'
+    estimatedDelivery: 'String'
+    orderId: 'String'
+    status: 'String'
+    timestamp: 'String'
+  }
+  OrderUpdate: { // field return type name
+    message: 'String'
+    metadata: 'String'
+    orderId: 'String'
+    status: 'String'
+    timestamp: 'String'
+  }
+  PaymentIntent: { // field return type name
+    amount: 'String'
+    clientSecret: 'String'
+    createdAt: 'String'
+    currency: 'String'
+    description: 'String'
+    id: 'String'
+    metadata: 'String'
+    status: 'String'
+  }
   Query: { // field return type name
+    cart: 'Cart'
+    delivery: 'Query'
     favoriteRestaurants: 'Restaurant'
     me: 'User'
+    menu: 'Query'
     myRestaurants: 'Restaurant'
+    order: 'Query'
+    paymentQueries: 'Query'
+    payout: 'Query'
     restaurant: 'Restaurant'
     restaurants: 'Restaurant'
+    review: 'Query'
     user: 'User'
     users: 'User'
   }
   RefreshTokenResponse: { // field return type name
     accessToken: 'String'
     refreshToken: 'String'
+  }
+  Refund: { // field return type name
+    amount: 'String'
+    createdAt: 'String'
+    currency: 'String'
+    id: 'String'
+    reason: 'String'
+    status: 'String'
   }
   Restaurant: { // field return type name
     address: 'RestaurantAddress'
@@ -548,6 +1307,34 @@ export interface NexusGenFieldTypeNames {
     street: 'String'
     zipCode: 'String'
   }
+  Review: { // field return type name
+    comment: 'String'
+    courier: 'User'
+    courierId: 'String'
+    createdAt: 'String'
+    customer: 'User'
+    customerId: 'String'
+    id: 'String'
+    order: 'Order'
+    orderId: 'String'
+    rating: 'Int'
+    restaurant: 'Restaurant'
+    restaurantId: 'String'
+    type: 'ReviewType'
+    updatedAt: 'String'
+  }
+  Subscription: { // field return type name
+    courierLocation: 'CourierLocationUpdate'
+    courierStatusChanged: 'CourierStatusUpdate'
+    customerOrderTracking: 'OrderTrackingUpdate'
+    deliveryAssigned: 'DeliveryAssignment'
+    deliveryStatusChanged: 'DeliveryStatusUpdate'
+    liveCourierTracking: 'CourierTrackingUpdate'
+    merchantIncomingOrders: 'Order'
+    orderStatusChanged: 'OrderEvent'
+    realTimeOrderUpdates: 'OrderUpdate'
+    restaurantOrderQueue: 'OrderQueueUpdate'
+  }
   User: { // field return type name
     addresses: 'Address'
     avatar: 'String'
@@ -571,6 +1358,9 @@ export interface NexusGenArgTypes {
     addAddress: { // args
       input: NexusGenInputs['AddressInput']; // AddressInput!
     }
+    addToCart: { // args
+      input: NexusGenInputs['AddToCartInput']; // AddToCartInput!
+    }
     createRestaurant: { // args
       input: NexusGenInputs['CreateRestaurantInput']; // CreateRestaurantInput!
     }
@@ -586,6 +1376,9 @@ export interface NexusGenArgTypes {
     refreshToken: { // args
       refreshToken: string; // String!
     }
+    removeFromCart: { // args
+      input: NexusGenInputs['RemoveFromCartInput']; // RemoveFromCartInput!
+    }
     setRestaurantOpen: { // args
       id: string; // String!
       isOpen: boolean; // Boolean!
@@ -599,6 +1392,9 @@ export interface NexusGenArgTypes {
     updateAddress: { // args
       id: string; // String!
       input: NexusGenInputs['AddressInput']; // AddressInput!
+    }
+    updateCartItem: { // args
+      input: NexusGenInputs['UpdateCartItemInput']; // UpdateCartItemInput!
     }
     updateCourierProfile: { // args
       input: NexusGenInputs['CourierProfileInput']; // CourierProfileInput!
@@ -637,6 +1433,35 @@ export interface NexusGenArgTypes {
     menuItems: { // args
       categoryId?: string | null; // String
       limit: number | null; // Int
+    }
+  }
+  Subscription: {
+    courierLocation: { // args
+      deliveryId: string; // String!
+    }
+    customerOrderTracking: { // args
+      orderId: string; // String!
+    }
+    deliveryAssigned: { // args
+      courierId: string; // String!
+    }
+    deliveryStatusChanged: { // args
+      deliveryId: string; // String!
+    }
+    liveCourierTracking: { // args
+      courierId: string; // String!
+    }
+    merchantIncomingOrders: { // args
+      restaurantId: string; // String!
+    }
+    orderStatusChanged: { // args
+      orderId: string; // String!
+    }
+    realTimeOrderUpdates: { // args
+      orderId: string; // String!
+    }
+    restaurantOrderQueue: { // args
+      restaurantId: string; // String!
     }
   }
 }

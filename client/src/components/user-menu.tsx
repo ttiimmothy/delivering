@@ -1,35 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { User, LogIn, UserPlus, LogOut, Settings, Package, Heart } from 'lucide-react'
 import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
 
 export function UserMenu() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<{name: string, email: string} | null>(null)
+  const { user, isAuthenticated, logout } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
 
-  // Check authentication state on component mount
-  useEffect(() => {
-    // In a real app, this would check localStorage, cookies, or make an API call
-    const authState = localStorage.getItem('isAuthenticated')
-    const userData = localStorage.getItem('user')
-    
-    if (authState === 'true' && userData) {
-      setIsAuthenticated(true)
-      setUser(JSON.parse(userData))
-    }
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated')
-    localStorage.removeItem('user')
-    setIsAuthenticated(false)
-    setUser(null)
+  const handleLogout = async () => {
+    await logout()
     setShowDropdown(false)
-    // Redirect to home page
-    window.location.href = '/'
   }
 
   if (isAuthenticated) {
@@ -42,14 +25,14 @@ export function UserMenu() {
           className="flex items-center space-x-2"
         >
           <User className="h-4 w-4" />
-          <span className="hidden sm:inline">{user?.name || 'User'}</span>
+          <span className="hidden sm:inline">{user?.firstName || 'User'}</span>
         </Button>
         
         {showDropdown && (
           <div className="absolute right-0 mt-2 w-48 bg-background border border-gray-200 rounded-md shadow-lg z-50">
             <div className="py-1">
               <div className="px-4 py-2 border-b border-gray-100">
-                <p className="text-sm font-medium">{user?.name}</p>
+                <p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p>
                 <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
               

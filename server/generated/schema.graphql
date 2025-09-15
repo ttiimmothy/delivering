@@ -2,6 +2,13 @@
 ### Do not make changes to this file directly
 
 
+input AddToCartInput {
+  menuItemId: String!
+  quantity: Int!
+  selectedOptions: String
+  specialInstructions: String
+}
+
 type Address {
   city: String!
   country: String!
@@ -29,23 +36,77 @@ input AddressInput {
   zipCode: String!
 }
 
+input AssignCourierInput {
+  courierId: String!
+  orderId: String!
+}
+
 type AuthResponse {
   accessToken: String!
   refreshToken: String!
   user: User!
 }
 
+type BillingPortalSession {
+  createdAt: String!
+  id: String!
+  returnUrl: String!
+  url: String!
+}
+
+type Cart {
+  createdAt: String!
+  id: String!
+  items: [CartItem]
+  restaurantId: String!
+  updatedAt: String!
+  userId: String!
+}
+
+type CartItem {
+  cartId: String!
+  createdAt: String!
+  id: String!
+  menuItem: MenuItem
+  menuItemId: String!
+  quantity: Int!
+  selectedOptions: String!
+  specialInstructions: String
+  updatedAt: String!
+}
+
+type CheckoutSession {
+  createdAt: String!
+  customerEmail: String
+  customerId: String
+  expiresAt: String!
+  id: String!
+  paymentIntentId: String
+  status: String!
+  url: String!
+}
+
+type CourierLocationUpdate {
+  courierId: String!
+  deliveryId: String!
+  estimatedArrival: String
+  location: Location
+  timestamp: String!
+}
+
 type CourierProfile {
   createdAt: String!
   currentLocation: Location
-  id: ID!
+  id: String!
   isAvailable: Boolean!
   licensePlate: String
-  rating: String
+  rating: String!
   reviewCount: Int!
   totalDeliveries: Int!
   updatedAt: String!
-  vehicleType: String!
+  user: User
+  userId: String!
+  vehicleType: VehicleType!
 }
 
 input CourierProfileInput {
@@ -55,20 +116,101 @@ input CourierProfileInput {
   vehicleType: String!
 }
 
+type CourierStatusUpdate {
+  courierId: String!
+  isAvailable: Boolean!
+  timestamp: String!
+}
+
+type CourierTrackingUpdate {
+  courierId: String!
+  currentLocation: Location
+  estimatedArrival: String
+  timestamp: String!
+}
+
+input CreateBillingPortalSessionInput {
+  customerId: String!
+  returnUrl: String!
+}
+
+input CreateCheckoutSessionInput {
+  cancelUrl: String!
+  customerEmail: String
+  orderId: String!
+  successUrl: String!
+}
+
+input CreateCourierProfileInput {
+  currentLocation: LocationInput
+  isAvailable: Boolean
+  licensePlate: String
+  vehicleType: VehicleType!
+}
+
+input CreateInvoiceInput {
+  courierAmount: String!
+  courierId: String
+  orderId: String!
+  platformFee: String!
+  restaurantAmount: String!
+  restaurantId: String!
+}
+
 input CreateMenuCategoryInput {
   description: String
   name: String!
-  sortOrder: Int = 0
+  restaurantId: String!
+  sortOrder: Int
 }
 
 input CreateMenuItemInput {
+  categoryId: String!
   description: String
   image: String
-  isAvailable: Boolean = true
-  isPopular: Boolean = false
+  isAvailable: Boolean
+  isPopular: Boolean
   name: String!
   price: String!
-  sortOrder: Int = 0
+  restaurantId: String!
+  sortOrder: Int
+}
+
+input CreateMenuItemOptionInput {
+  isRequired: Boolean
+  menuItemId: String!
+  name: String!
+  sortOrder: Int
+  type: MenuItemOptionType!
+}
+
+input CreateMenuItemOptionValueInput {
+  isDefault: Boolean
+  name: String!
+  optionId: String!
+  price: String
+  sortOrder: Int
+}
+
+input CreateOrderInput {
+  deliveryAddress: String!
+  restaurantId: String!
+  specialInstructions: String
+  stripePaymentIntentId: String
+  tip: String
+}
+
+input CreatePaymentIntentInput {
+  amount: Float!
+  currency: String
+  description: String
+  metadata: String
+}
+
+input CreateRefundInput {
+  amount: Float
+  paymentIntentId: String!
+  reason: String
 }
 
 input CreateRestaurantInput {
@@ -83,9 +225,79 @@ input CreateRestaurantInput {
   phone: String
 }
 
+input CreateReviewInput {
+  comment: String
+  orderId: String!
+  rating: Int!
+  type: ReviewType!
+}
+
+type Delivery {
+  acceptedAt: String
+  assignedAt: String!
+  courier: User
+  courierId: String!
+  createdAt: String!
+  currentLocation: Location
+  deliveredAt: String
+  estimatedArrival: String
+  id: String!
+  order: Order
+  orderId: String!
+  pickedUpAt: String
+  status: DeliveryStatus!
+  updatedAt: String!
+}
+
+type DeliveryAssignment {
+  assignedBy: String!
+  courierId: String!
+  deliveryId: String!
+  timestamp: String!
+}
+
+enum DeliveryStatus {
+  accepted
+  assigned
+  delivered
+  picked_up
+}
+
+type DeliveryStatusUpdate {
+  deliveryId: String!
+  message: String
+  status: String!
+  timestamp: String!
+}
+
+type Invoice {
+  courier: User
+  courierAmount: String!
+  courierId: String
+  createdAt: String!
+  id: String!
+  order: Order
+  orderId: String!
+  platformFee: String!
+  restaurant: Restaurant
+  restaurantAmount: String!
+  restaurantId: String!
+  status: InvoiceStatus!
+  stripeTransferId: String
+  updatedAt: String!
+}
+
+enum InvoiceStatus {
+  failed
+  paid
+  pending
+}
+
 type Location {
+  address: String
   latitude: Float!
   longitude: Float!
+  timestamp: String!
 }
 
 input LocationInput {
@@ -101,71 +313,204 @@ input LoginInput {
 type MenuCategory {
   createdAt: String!
   description: String
-  id: ID!
+  id: String!
   isActive: Boolean!
   menuItems: [MenuItem]
   name: String!
+  restaurantId: String!
   sortOrder: Int!
   updatedAt: String!
 }
 
 type MenuItem {
-  category: MenuCategory
+  categoryId: String!
   createdAt: String!
   description: String
-  id: ID!
+  id: String!
   image: String
   isAvailable: Boolean!
   isPopular: Boolean!
   name: String!
   options: [MenuItemOption]
   price: String!
+  restaurantId: String!
   sortOrder: Int!
   updatedAt: String!
 }
 
 type MenuItemOption {
   createdAt: String!
-  id: ID!
+  id: String!
   isRequired: Boolean!
+  menuItemId: String!
   name: String!
   sortOrder: Int!
-  type: String!
+  type: MenuItemOptionType!
   values: [MenuItemOptionValue]
+}
+
+enum MenuItemOptionType {
+  multiple
+  single
 }
 
 type MenuItemOptionValue {
   createdAt: String!
-  id: ID!
+  id: String!
   isDefault: Boolean!
   name: String!
+  optionId: String!
   price: String!
   sortOrder: Int!
 }
 
 type Mutation {
   addAddress(input: AddressInput!): Address
+  addToCart(input: AddToCartInput!): CartItem
+  clearCart: Boolean
   createRestaurant(input: CreateRestaurantInput!): Restaurant
   deleteAddress(id: String!): Boolean
+  delivery: Mutation
   login(input: LoginInput!): AuthResponse
   loginWithGoogle(idToken: String!): AuthResponse
   logout: Boolean
+  menu: Mutation
+  order: Mutation
+  paymentMutations: Mutation
+  payout: Mutation
   refreshToken(refreshToken: String!): RefreshTokenResponse
+  removeFromCart(input: RemoveFromCartInput!): Boolean
+  review: Mutation
   setRestaurantOpen(id: String!, isOpen: Boolean!): Restaurant
   signup(input: SignupInput!): AuthResponse
   toggleFavorite(restaurantId: String!): Boolean
   updateAddress(id: String!, input: AddressInput!): Address
+  updateCartItem(input: UpdateCartItemInput!): CartItem
   updateCourierProfile(input: CourierProfileInput!): CourierProfile
   updateProfile(input: UpdateProfileInput!): User
   updateRestaurant(id: String!, input: UpdateRestaurantInput!): Restaurant
 }
 
+type Order {
+  courier: User
+  courierId: String
+  createdAt: String!
+  customer: User
+  customerId: String!
+  deliveryAddress: String!
+  deliveryFee: String!
+  estimatedDeliveryTime: String
+  events: [OrderEvent]
+  id: String!
+  items: [OrderItem]
+  orderNumber: String!
+  paymentStatus: PaymentStatus!
+  restaurant: Restaurant
+  restaurantId: String!
+  specialInstructions: String
+  status: OrderStatus!
+  stripePaymentIntentId: String
+  stripeSessionId: String
+  subtotal: String!
+  tax: String!
+  tip: String!
+  total: String!
+  updatedAt: String!
+}
+
+type OrderEvent {
+  createdAt: String!
+  id: String!
+  message: String
+  metadata: String
+  orderId: String!
+  status: OrderStatus!
+}
+
+type OrderItem {
+  createdAt: String!
+  id: String!
+  menuItem: MenuItem
+  menuItemId: String!
+  orderId: String!
+  quantity: Int!
+  selectedOptions: String!
+  specialInstructions: String
+  totalPrice: String!
+  unitPrice: String!
+}
+
+type OrderQueueUpdate {
+  pendingOrders: [Order]!
+  preparingOrders: [Order]!
+  readyOrders: [Order]!
+  restaurantId: String!
+  timestamp: String!
+}
+
+enum OrderStatus {
+  cancelled
+  confirmed
+  delivered
+  pending
+  picked_up
+  preparing
+  ready
+}
+
+type OrderTrackingUpdate {
+  courier: User
+  currentLocation: Location
+  estimatedDelivery: String
+  orderId: String!
+  status: String!
+  timestamp: String!
+}
+
+type OrderUpdate {
+  message: String
+  metadata: String
+  orderId: String!
+  status: String!
+  timestamp: String!
+}
+
+type PaymentIntent {
+  amount: String!
+  clientSecret: String
+  createdAt: String!
+  currency: String!
+  description: String
+  id: String!
+  metadata: String
+  status: String!
+}
+
+enum PaymentStatus {
+  failed
+  paid
+  pending
+  refunded
+}
+
+input ProcessPayoutInput {
+  invoiceId: String!
+  stripeTransferId: String!
+}
+
 type Query {
+  cart: Cart
+  delivery: Query
   favoriteRestaurants: [Restaurant]
   me: User
+  menu: Query
   myRestaurants: [Restaurant]
+  order: Query
+  paymentQueries: Query
+  payout: Query
   restaurant(slug: String!): Restaurant
   restaurants(cuisine: String, isOpen: Boolean, limit: Int = 20, offset: Int = 0, search: String, sortBy: String = "rating", sortOrder: String = "desc"): [Restaurant]
+  review: Query
   user(id: String!): User
   users(limit: Int = 50, offset: Int = 0, role: String): [User]
 }
@@ -173,6 +518,19 @@ type Query {
 type RefreshTokenResponse {
   accessToken: String!
   refreshToken: String!
+}
+
+type Refund {
+  amount: String!
+  createdAt: String!
+  currency: String!
+  id: String!
+  reason: String
+  status: String!
+}
+
+input RemoveFromCartInput {
+  cartItemId: String!
 }
 
 type Restaurant {
@@ -215,6 +573,28 @@ input RestaurantAddressInput {
   zipCode: String!
 }
 
+type Review {
+  comment: String
+  courier: User
+  courierId: String
+  createdAt: String!
+  customer: User
+  customerId: String!
+  id: String!
+  order: Order
+  orderId: String!
+  rating: Int!
+  restaurant: Restaurant
+  restaurantId: String
+  type: ReviewType!
+  updatedAt: String!
+}
+
+enum ReviewType {
+  courier
+  restaurant
+}
+
 input SignupInput {
   email: String!
   firstName: String!
@@ -224,8 +604,55 @@ input SignupInput {
   role: UserRole = customer
 }
 
+type Subscription {
+  courierLocation(deliveryId: String!): CourierLocationUpdate
+  courierStatusChanged: CourierStatusUpdate
+  customerOrderTracking(orderId: String!): OrderTrackingUpdate
+  deliveryAssigned(courierId: String!): DeliveryAssignment
+  deliveryStatusChanged(deliveryId: String!): DeliveryStatusUpdate
+  liveCourierTracking(courierId: String!): CourierTrackingUpdate
+  merchantIncomingOrders(restaurantId: String!): Order
+  orderStatusChanged(orderId: String!): OrderEvent
+  realTimeOrderUpdates(orderId: String!): OrderUpdate
+  restaurantOrderQueue(restaurantId: String!): OrderQueueUpdate
+}
+
+input UpdateCartItemInput {
+  cartItemId: String!
+  quantity: Int
+  selectedOptions: String
+  specialInstructions: String
+}
+
+input UpdateCourierLocationInput {
+  latitude: String!
+  longitude: String!
+}
+
+input UpdateCourierProfileInput {
+  currentLocation: LocationInput
+  id: String!
+  isAvailable: Boolean
+  licensePlate: String
+  vehicleType: VehicleType
+}
+
+input UpdateDeliveryStatusInput {
+  currentLocation: LocationInput
+  deliveryId: String!
+  estimatedArrival: String
+  status: DeliveryStatus!
+}
+
+input UpdateInvoiceStatusInput {
+  id: String!
+  status: InvoiceStatus!
+  stripeTransferId: String
+}
+
 input UpdateMenuCategoryInput {
   description: String
+  id: String!
   isActive: Boolean
   name: String
   sortOrder: Int
@@ -233,12 +660,20 @@ input UpdateMenuCategoryInput {
 
 input UpdateMenuItemInput {
   description: String
+  id: String!
   image: String
   isAvailable: Boolean
   isPopular: Boolean
   name: String
   price: String
   sortOrder: Int
+}
+
+input UpdateOrderStatusInput {
+  message: String
+  metadata: String
+  orderId: String!
+  status: OrderStatus!
 }
 
 input UpdateProfileInput {
@@ -260,6 +695,12 @@ input UpdateRestaurantInput {
   minimumOrder: String
   name: String
   phone: String
+}
+
+input UpdateReviewInput {
+  comment: String
+  id: String!
+  rating: Int
 }
 
 type User {
@@ -284,4 +725,10 @@ enum UserRole {
   courier
   customer
   merchant
+}
+
+enum VehicleType {
+  bike
+  car
+  motorcycle
 }

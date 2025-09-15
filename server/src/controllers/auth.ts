@@ -9,7 +9,7 @@ import {
   signupSchema,
   loginSchema,
   JWTPayload
-} from '../utils/auth';
+} from '../lib/auth';
 // Removed custom error imports - using standard Error instead
 import { OAuth2Client } from 'google-auth-library';
 

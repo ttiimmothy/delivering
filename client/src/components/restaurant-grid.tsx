@@ -3,53 +3,17 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Star, Clock, DollarSign, Heart } from 'lucide-react'
+import { Star, Clock, DollarSign, Heart, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { Restaurant } from '@/types/graphql'
 
-// Mock data - in real app this would come from GraphQL
-const mockRestaurants = [
-  {
-    id: '1',
-    name: 'Pizza Palace',
-    slug: 'pizza-palace',
-    cuisine: 'Italian',
-    rating: 4.5,
-    reviewCount: 120,
-    deliveryTime: 25,
-    deliveryFee: 2.99,
-    minimumOrder: 15.00,
-    isOpen: true,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
-  },
-  {
-    id: '2',
-    name: 'Burger Joint',
-    slug: 'burger-joint',
-    cuisine: 'American',
-    rating: 4.3,
-    reviewCount: 85,
-    deliveryTime: 20,
-    deliveryFee: 1.99,
-    minimumOrder: 12.00,
-    isOpen: true,
-    image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop',
-  },
-  {
-    id: '3',
-    name: 'Sushi Spot',
-    slug: 'sushi-spot',
-    cuisine: 'Japanese',
-    rating: 4.7,
-    reviewCount: 200,
-    deliveryTime: 30,
-    deliveryFee: 3.99,
-    minimumOrder: 20.00,
-    isOpen: true,
-    image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop',
-  },
-]
+interface RestaurantGridProps {
+  restaurants: Restaurant[]
+  loading?: boolean
+  error?: any
+}
 
-export function RestaurantGrid() {
+export function RestaurantGrid({ restaurants, loading, error }: RestaurantGridProps) {
   return (
     <section className="py-16 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
@@ -62,12 +26,27 @@ export function RestaurantGrid() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockRestaurants.map((restaurant) => (
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="ml-2">Loading restaurants...</span>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500 mb-4">Failed to load restaurants</p>
+            <p className="text-gray-600 dark:text-gray-400">{error.message}</p>
+          </div>
+        ) : restaurants.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-400">No restaurants found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {restaurants.map((restaurant) => (
             <Card key={restaurant.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="relative">
                 <img
-                  src={restaurant.image}
+                  src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop'}
                   alt={restaurant.name}
                   className="w-full h-48 object-cover"
                 />
@@ -96,8 +75,8 @@ export function RestaurantGrid() {
                   <span>•</span>
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span>{restaurant.rating}</span>
-                    <span>({restaurant.reviewCount})</span>
+                    <span>{restaurant.rating || 'N/A'}</span>
+                    <span>({restaurant.reviewCount || 0})</span>
                   </div>
                 </div>
               </CardHeader>
@@ -127,7 +106,8 @@ export function RestaurantGrid() {
               </CardFooter>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
         
         <div className="text-center mt-12">
           <Button variant="outline" size="lg" asChild>

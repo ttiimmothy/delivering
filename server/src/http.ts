@@ -13,6 +13,8 @@ import { corsMiddleware } from './security/cors';
 import { helmetConfig } from './security/helmet';
 import { generalLimiter, apiLimiter, graphqlLimiter } from './security/rateLimit';
 import {db} from "./db/client";
+import stripeRoutes from './routes/stripe';
+import { initializeSocketService } from './services/socket';
 
 // Create Express app
 export const app = express();
@@ -27,11 +29,11 @@ const wsServer = new WebSocketServer({
 // Create PubSub for subscriptions
 export const pubsub = new PubSub();
 
-// Create executable schema
-const executableSchema = makeExecutableSchema({
-  typeDefs: schema,
-  resolvers: {}, // Resolvers are defined in the schema modules
-});
+// Initialize Socket.IO service
+const socketService = initializeSocketService(httpServer);
+
+// Use the Nexus schema directly (it already includes resolvers)
+const executableSchema = schema;
 
 // Create GraphQL server
 export const server = new ApolloServer({
@@ -66,7 +68,7 @@ const serverCleanup = useServer(
       const token = (ctx.connectionParams?.authorization as string)?.replace('Bearer ', '');
       if (token) {
         try {
-          const { verifyAccessToken } = await import('./utils/auth');
+          const { verifyAccessToken } = await import('./lib/auth');
           const user = verifyAccessToken(token);
           return { user, db };
         } catch (error) {
@@ -118,13 +120,11 @@ export function setupMiddleware() {
     });
   });
   
-  // GraphQL endpoint will be added after server starts
+  // Webhook endpoints
+  app.use('/webhooks/stripe', stripeRoutes);
   
-  // Webhook endpoints (will be added later)
-  app.use('/webhooks', (req, res, next) => {
-    // Webhook routes will be added here
-    next();
-  });
+  // GraphQL endpoint (will be set up after server starts)
+  // This is a placeholder that will be replaced by setupGraphQLEndpoint()
   
   // Error handling - using standard Express error handling
   app.use((error: Error, req: any, res: any, next: any) => {
@@ -217,22 +217,31 @@ export function setupMiddleware() {
     });
   });
   
-  // 404 handler
-  app.use('*', (req, res) => {
-    res.status(404).json({
-      error: {
-        message: 'Route not found',
-        code: 'NOT_FOUND',
-      },
-    });
-  });
+  // GraphQL endpoint placeholder (will be replaced by setupGraphQLEndpoint)
+  // This ensures it's added before the 404 handler
+  
+  // 404 handler - temporarily disabled for testing
+  // app.use('*', (req, res) => {
+  //   res.status(404).json({
+  //     error: {
+  //       message: 'Route not found',
+  //       code: 'NOT_FOUND',
+  //     },
+  //   });
+  // });
 }
 
-// Setup GraphQL endpoint after server starts
+// Setup GraphQL endpoint
 export function setupGraphQLEndpoint() {
-  app.use('/graphql', expressMiddleware(server, {
+  // Insert the GraphQL middleware before the 404 handler
+  // We need to find the 404 handler and insert before it
+  const middlewareStack = app._router.stack;
+  const graphqlMiddleware = expressMiddleware(server, {
     context: createContext,
-  }));
+  });
+  
+  // Add the GraphQL middleware
+  app.use('/graphql', graphqlMiddleware);
 }
 
 export default app;

@@ -3,7 +3,7 @@ import { db } from '../db/client';
 import { users, addresses, courierProfiles } from '../db/schema';
 import { eq, and } from 'drizzle-orm';
 // import { AuthenticationError, AuthorizationError, NotFoundError } from '../utils/errors';
-import { JWTPayload } from '../utils/auth';
+import { JWTPayload } from '../lib/auth';
 import { AuthController } from '../controllers/auth';
 
 // Enums
@@ -66,29 +66,7 @@ export const Address = objectType({
   },
 });
 
-export const CourierProfile = objectType({
-  name: 'CourierProfile',
-  definition(t) {
-    t.nonNull.id('id');
-    t.nonNull.string('vehicleType');
-    t.string('licensePlate');
-    t.nonNull.boolean('isAvailable');
-    t.field('currentLocation', { type: 'Location' });
-    t.string('rating');
-    t.nonNull.int('reviewCount');
-    t.nonNull.int('totalDeliveries');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
-  },
-});
 
-export const Location = objectType({
-  name: 'Location',
-  definition(t) {
-    t.nonNull.float('latitude');
-    t.nonNull.float('longitude');
-  },
-});
 
 // Input Types
 export const SignupInput = inputObjectType({
