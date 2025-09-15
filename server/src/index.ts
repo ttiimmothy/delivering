@@ -12,7 +12,7 @@ async function startServer() {
     // Setup middleware
     setupMiddleware();
     
-    // Start the server
+    // Start the Apollo server
     await server.start();
     
     // Setup GraphQL endpoint after server starts

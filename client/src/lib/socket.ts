@@ -78,6 +78,14 @@ class SocketService {
     this.socket?.off('delivery:accepted', callback);
   }
 
+  onDeliveryStatusChanged(callback: (data: any) => void) {
+    this.socket?.on('delivery:status:changed', callback);
+  }
+
+  offDeliveryStatusChanged(callback: (data: any) => void) {
+    this.socket?.off('delivery:status:changed', callback);
+  }
+
   onDeliveryPickedUp(callback: (data: any) => void) {
     this.socket?.on('delivery:picked_up', callback);
   }

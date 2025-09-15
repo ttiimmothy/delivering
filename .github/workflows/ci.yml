@@ -4,8 +4,13 @@ on:
   pull_request:
     branches: [ main, production ]
 
-env:
-  NODE_VERSION: '22'
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+# env:
+#   NODE_VERSION: '22'
 
 jobs:
   # Client Tests
