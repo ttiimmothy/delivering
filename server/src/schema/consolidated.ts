@@ -72,7 +72,7 @@ export const CourierProfile = objectType({
     t.nonNull.boolean('isAvailable');
     t.field('currentLocation', { 
       type: 'Location',
-      resolve: (parent) => {
+      resolve: (parent: any) => {
         if (!parent.currentLocation) return null;
         try {
           return typeof parent.currentLocation === 'string' 
@@ -412,7 +412,7 @@ export const Delivery = objectType({
     t.string('deliveredAt');
     t.field('currentLocation', { 
       type: 'Location',
-      resolve: (parent) => {
+      resolve: (parent: any) => {
         if (!parent.currentLocation) return null;
         try {
           return typeof parent.currentLocation === 'string' 
