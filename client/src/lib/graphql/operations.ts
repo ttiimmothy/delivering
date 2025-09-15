@@ -713,7 +713,7 @@ export const createReviewMutation = gql`
 // Note: Subscriptions are not currently implemented in the server
 // These are placeholder operations for future real-time features
 
-/*
+
 export const orderStatusChangedSubscription = gql`
   subscription OrderStatusChanged($orderId: String!) {
     orderStatusChanged(orderId: $orderId) {
@@ -998,4 +998,3 @@ export const customerOrderTrackingSubscription = gql`
     }
   }
 `;
-*/
