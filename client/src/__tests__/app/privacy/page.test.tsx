@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import PrivacyPage from '@/app/privacy/page';
 
 describe('Privacy Page', () => {
@@ -12,6 +12,6 @@ describe('Privacy Page', () => {
   it('shows last updated date', () => {
     const { getByText } = renderWithProviders(<PrivacyPage />);
     
-    expect(getByText('Last updated:')).toBeInTheDocument();
+    expect(getByText('Last updated: January 16, 2024')).toBeInTheDocument();
   });
 });

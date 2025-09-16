@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 describe('Card Components', () => {
@@ -28,14 +28,14 @@ describe('Card Components', () => {
   });
 
   it('applies correct classes to card', () => {
-    const { getByRole } = renderWithProviders(
+    const { container } = renderWithProviders(
       <Card>
         <CardContent>Content</CardContent>
       </Card>
     );
     
-    const card = getByRole('generic');
-    expect(card).toHaveClass('rounded-lg', 'border', 'bg-card');
+    const card = container.querySelector('.rounded-lg.border.bg-card');
+    expect(card).toBeInTheDocument();
   });
 
   it('applies correct classes to card content', () => {

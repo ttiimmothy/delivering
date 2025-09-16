@@ -1,20 +1,23 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { SocketProvider } from '@/components/socket-provider';
 
 // Mock Socket.IO
-const mockSocket = {
-  on: vi.fn(),
-  off: vi.fn(),
-  emit: vi.fn(),
-  connect: vi.fn(),
-  disconnect: vi.fn(),
-  connected: true,
-  id: 'test-socket-id'
-};
-
 vi.mock('@/lib/socket', () => ({
-  socket: mockSocket
+  default: {
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: vi.fn(),
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    connected: true,
+    id: 'test-socket-id',
+    isConnected: vi.fn(() => true),
+    onOrderStatusChanged: vi.fn(),
+    onCourierLocationChanged: vi.fn(),
+    onDeliveryUpdate: vi.fn(),
+    onNewDelivery: vi.fn()
+  }
 }));
 
 describe('SocketProvider', () => {

@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 // Mock Apollo Client
 const mockMutate = vi.fn();
+const mockRefetch = vi.fn();
 const mockClient = {
   mutate: mockMutate,
   query: vi.fn(),
@@ -11,8 +12,14 @@ const mockClient = {
 };
 
 vi.mock('@apollo/client', () => ({
+  gql: vi.fn((strings, ...values) => strings.join('')),
   useMutation: () => [mockMutate, { loading: false, error: null }],
-  useQuery: () => ({ data: null, loading: false, error: null }),
+  useQuery: () => ({ 
+    data: null, 
+    loading: false, 
+    error: null, 
+    refetch: mockRefetch 
+  }),
   useApolloClient: () => mockClient,
 }));
 
@@ -22,7 +29,7 @@ describe('useAuth', () => {
     
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();
-    expect(result.current.loading).toBe(false);
+    expect(result.current.isLoading).toBe(false);
   });
 
   it('should handle login', async () => {
@@ -55,9 +62,11 @@ describe('useAuth', () => {
   it('should handle signup', async () => {
     mockMutate.mockResolvedValue({
       data: {
-        register: {
+        signup: {
           success: true,
           message: 'User registered successfully',
+          accessToken: 'mock-access-token',
+          refreshToken: 'mock-refresh-token',
           user: { 
             id: '2', 
             email: 'newuser@example.com',
@@ -79,8 +88,9 @@ describe('useAuth', () => {
         phone: '+1234567890'
       });
       
-      expect(response.success).toBe(true);
-      expect(response.user.email).toBe('newuser@example.com');
+      expect(response).toBeTruthy();
+      expect(response?.success).toBe(true);
+      expect(response?.user?.email).toBe('newuser@example.com');
     });
   });
 
@@ -96,6 +106,9 @@ describe('useAuth', () => {
   });
 
   it('should handle refresh token', async () => {
+    // Set up localStorage with refresh token
+    localStorage.setItem('refreshToken', 'mock-refresh-token');
+    
     mockMutate.mockResolvedValue({
       data: {
         refreshToken: {
@@ -114,10 +127,13 @@ describe('useAuth', () => {
     const { result } = renderHook(() => useAuth());
     
     await act(async () => {
-      const response = await result.current.refreshAccessToken();
+      const response = await result.current.refreshToken();
       
       expect(response.success).toBe(true);
       expect(response.token).toBe('new-mock-jwt-token');
     });
+    
+    // Clean up
+    localStorage.removeItem('refreshToken');
   });
 });

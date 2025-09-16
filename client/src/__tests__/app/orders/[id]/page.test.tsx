@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import OrderTrackingPage from '@/app/orders/[id]/page';
 
 // Mock the useOrder hook

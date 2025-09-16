@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 describe('Alert Component', () => {

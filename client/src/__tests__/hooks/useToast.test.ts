@@ -1,14 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useToast } from '@/hooks/use-toast';
-
-// Mock the toast function
-const mockToast = vi.fn();
-vi.mock('@/hooks/use-toast', () => ({
-  useToast: () => ({
-    toast: mockToast
-  })
-}));
+import { useToast } from '@/hooks/useToast';
 
 describe('useToast Hook', () => {
   it('should provide toast function', () => {
@@ -28,9 +20,9 @@ describe('useToast Hook', () => {
       });
     });
     
-    expect(mockToast).toHaveBeenCalledWith({
-      title: 'Test Toast',
-      description: 'This is a test toast'
-    });
+    // Check that the toast was added to the state
+    expect(result.current.toasts).toHaveLength(1);
+    expect(result.current.toasts[0].title).toBe('Test Toast');
+    expect(result.current.toasts[0].description).toBe('This is a test toast');
   });
 });

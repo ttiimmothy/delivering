@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import HelpPage from '@/app/help/page';
 
 describe('Help Page', () => {
   it('renders help page', () => {
     const { getByText } = renderWithProviders(<HelpPage />);
     
-    expect(getByText('Help & Support')).toBeInTheDocument();
+    expect(getByText('Help Center')).toBeInTheDocument();
   });
 
   it('shows FAQ section', () => {

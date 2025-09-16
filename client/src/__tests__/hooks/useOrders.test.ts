@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useOrders, useOrder } from '@/hooks/useOrders';
+import { 
+  useOrders, 
+  useOrder, 
+  usePlaceOrder 
+} from '@/hooks/useOrders';
 
 // Mock Apollo Client
 const mockMutate = vi.fn();
@@ -11,6 +15,7 @@ const mockClient = {
 };
 
 vi.mock('@apollo/client', () => ({
+  gql: vi.fn((strings, ...values) => strings.join('')),
   useMutation: () => [mockMutate, { loading: false, error: null }],
   useQuery: () => ({ 
     data: { 
@@ -26,70 +31,77 @@ vi.mock('@apollo/client', () => ({
   useApolloClient: () => mockClient,
 }));
 
-describe('useOrders', () => {
-  it('should initialize with orders data', () => {
-    const { result } = renderHook(() => useOrders());
-    
-    expect(result.current.orders).toHaveLength(2);
-    expect(result.current.orders[0].status).toBe('pending');
-    expect(result.current.orders[1].status).toBe('delivered');
-  });
-
-  it('should create order', async () => {
-    mockMutate.mockResolvedValue({
-      data: {
-        createOrder: {
-          success: true,
-          order: { id: '3', status: 'pending', totalAmount: 30.99 }
-        }
-      }
+describe('Orders Hooks', () => {
+  describe('useOrders', () => {
+    it('should return orders data', () => {
+      const { result } = renderHook(() => useOrders());
+      
+      expect(result.current.orders).toBeDefined();
+      expect(result.current.orders).toHaveLength(2);
+      expect(result.current.orders[0].id).toBe('1');
+      expect(result.current.orders[0].status).toBe('pending');
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
     });
 
-    const { result } = renderHook(() => useOrders());
-    
-    await act(async () => {
-      const response = await result.current.createOrder({
-        restaurantId: 'test-restaurant-id',
-        items: [{ menuItemId: 'test-item-id', quantity: 2 }],
-        deliveryAddress: '123 Test St',
-        deliveryCity: 'Test City',
-        deliveryState: 'TS',
-        deliveryZipCode: '12345',
-        deliveryPhone: '+1234567890'
+    it('should accept query variables', () => {
+      const { result } = renderHook(() => useOrders({ status: 'pending' }));
+      
+      expect(result.current.orders).toBeDefined();
+      expect(result.current.orders).toHaveLength(2); // Mock returns all orders, filtering happens at query level
+      expect(result.current.loading).toBe(false);
+    });
+  });
+
+  describe('useOrder', () => {
+    it('should return single order data', () => {
+      const { result } = renderHook(() => useOrder('1'));
+      
+      expect(result.current.order).toBeDefined();
+      expect(result.current.order?.id).toBe('1');
+      expect(result.current.order?.status).toBe('pending');
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+  });
+
+  describe('usePlaceOrder', () => {
+    it('should initialize with default state', () => {
+      const { result } = renderHook(() => usePlaceOrder());
+      
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should handle place order', async () => {
+      mockMutate.mockResolvedValue({
+        data: {
+          placeOrder: {
+            id: 'order-123',
+            status: 'pending',
+            totalAmount: 25.99
+          }
+        }
       });
+
+      const { result } = renderHook(() => usePlaceOrder());
       
-      expect(response.success).toBe(true);
-      expect(response.order.id).toBe('3');
+      await act(async () => {
+        const response = await result.current.placeOrder({
+          restaurantId: 'restaurant-1',
+          deliveryAddress: {
+            street: '123 Main St',
+            city: 'Test City',
+            state: 'TS',
+            zipCode: '12345'
+          },
+          paymentMethodId: 'pm_test_123'
+        });
+        
+        expect(response).toBeDefined();
+        expect(response?.id).toBe('order-123');
+        expect(response?.status).toBe('pending');
+      });
     });
-  });
-
-  it('should update order status', async () => {
-    mockMutate.mockResolvedValue({
-      data: {
-        updateOrderStatus: {
-          success: true,
-          order: { id: '1', status: 'preparing' }
-        }
-      }
-    });
-
-    const { result } = renderHook(() => useOrders());
-    
-    await act(async () => {
-      const response = await result.current.updateOrderStatus('1', 'preparing');
-      
-      expect(response.success).toBe(true);
-      expect(response.order.status).toBe('preparing');
-    });
-  });
-});
-
-describe('useOrder', () => {
-  it('should fetch single order', () => {
-    const { result } = renderHook(() => useOrder('1'));
-    
-    expect(result.current.order).toBeDefined();
-    expect(result.current.order?.id).toBe('1');
-    expect(result.current.order?.status).toBe('pending');
   });
 });

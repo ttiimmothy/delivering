@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { describe, it, expect, vi } from 'vitest';
+import { renderWithProviders } from '@/__tests__/setup';
 import { Switch } from '@/components/ui/switch';
+import { fireEvent } from '@testing-library/react';
 
 describe('Switch Component', () => {
   it('renders switch', () => {
@@ -42,11 +43,11 @@ describe('Switch Component', () => {
   it('handles onChange event', () => {
     const handleChange = vi.fn();
     const { getByRole } = renderWithProviders(
-      <Switch onChange={handleChange} />
+      <Switch onCheckedChange={handleChange} />
     );
     
     const switchElement = getByRole('switch');
-    switchElement.click();
+    fireEvent.click(switchElement);
     
     expect(handleChange).toHaveBeenCalled();
   });

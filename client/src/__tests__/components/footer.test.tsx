@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { Footer } from '@/components/footer';
 
 describe('Footer Component', () => {
@@ -13,6 +13,6 @@ describe('Footer Component', () => {
   it('shows company name', () => {
     const { getByText } = renderWithProviders(<Footer />);
     
-    expect(getByText('Delivering')).toBeInTheDocument();
+    expect(getByText('🍔 Delivering')).toBeInTheDocument();
   });
 });

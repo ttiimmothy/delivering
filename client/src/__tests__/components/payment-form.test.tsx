@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { PaymentForm } from '@/components/payment-form';
 
 // Mock Stripe Elements
@@ -21,15 +21,31 @@ vi.mock('@stripe/react-stripe-js', () => ({
 
 describe('PaymentForm Component', () => {
   it('renders payment form', () => {
-    const { getByText, getByTestId } = renderWithProviders(<PaymentForm />);
+    const { getByText, getByTestId } = renderWithProviders(
+      <PaymentForm 
+        amount={25.99}
+        description="Test payment"
+        metadata={{}}
+        onSuccess={vi.fn()}
+        onError={vi.fn()}
+      />
+    );
     
     expect(getByText('Payment Details')).toBeInTheDocument();
     expect(getByTestId('card-element')).toBeInTheDocument();
   });
 
   it('shows submit button', () => {
-    const { getByText } = renderWithProviders(<PaymentForm />);
+    const { getByText } = renderWithProviders(
+      <PaymentForm 
+        amount={25.99}
+        description="Test payment"
+        metadata={{}}
+        onSuccess={vi.fn()}
+        onError={vi.fn()}
+      />
+    );
     
-    expect(getByText('Pay Now')).toBeInTheDocument();
+    expect(getByText('Pay $25.99')).toBeInTheDocument();
   });
 });

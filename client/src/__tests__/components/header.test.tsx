@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { Header } from '@/components/header';
 
 // Mock the useAuth hook
@@ -27,13 +27,13 @@ describe('Header Component', () => {
   it('shows user menu when authenticated', () => {
     const { getByText } = renderWithProviders(<Header />);
     
-    expect(getByText('Test User')).toBeInTheDocument();
+    expect(getByText('Test')).toBeInTheDocument();
   });
 
   it('shows theme toggle', () => {
     const { getByRole } = renderWithProviders(<Header />);
     
-    const themeButton = getByRole('button');
+    const themeButton = getByRole('button', { name: /toggle theme/i });
     expect(themeButton).toBeInTheDocument();
   });
 });

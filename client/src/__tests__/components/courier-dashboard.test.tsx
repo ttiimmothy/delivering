@@ -1,35 +1,53 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { CourierDashboard } from '@/components/courier-dashboard';
+import { SocketProvider } from '@/components/socket-provider';
 
 // Mock Socket.IO
-const mockSocket = {
-  on: vi.fn(),
-  off: vi.fn(),
-  emit: vi.fn(),
-  connected: true
-};
-
 vi.mock('@/lib/socket', () => ({
-  socket: mockSocket
+  default: {
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: vi.fn(),
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    connected: true,
+    isConnected: vi.fn(() => true),
+    onOrderStatusChanged: vi.fn(),
+    onCourierLocationChanged: vi.fn(),
+    onDeliveryUpdate: vi.fn(),
+    onNewDelivery: vi.fn()
+  }
 }));
 
 describe('CourierDashboard Component', () => {
   it('renders courier dashboard', () => {
-    const { getByText } = renderWithProviders(<CourierDashboard />);
+    const { getByText } = renderWithProviders(
+      <SocketProvider>
+        <CourierDashboard />
+      </SocketProvider>
+    );
     
-    expect(getByText('Courier Dashboard')).toBeInTheDocument();
+    expect(getByText('Courier Status')).toBeInTheDocument();
   });
 
   it('shows courier status', () => {
-    const { getByText } = renderWithProviders(<CourierDashboard />);
+    const { getByText } = renderWithProviders(
+      <SocketProvider>
+        <CourierDashboard />
+      </SocketProvider>
+    );
     
-    expect(getByText('Status:')).toBeInTheDocument();
+    expect(getByText('Availability Status')).toBeInTheDocument();
   });
 
   it('displays available deliveries', () => {
-    const { getByText } = renderWithProviders(<CourierDashboard />);
+    const { getByText } = renderWithProviders(
+      <SocketProvider>
+        <CourierDashboard />
+      </SocketProvider>
+    );
     
-    expect(getByText('Available Deliveries')).toBeInTheDocument();
+    expect(getByText("Today's Stats")).toBeInTheDocument();
   });
 });

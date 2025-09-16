@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '../setup';
+import { renderWithProviders } from '@/__tests__/setup';
 import { UserMenu } from '@/components/user-menu';
+import { fireEvent } from '@testing-library/react';
 
 // Mock the useAuth hook
 vi.mock('@/hooks/useAuth', () => ({
@@ -25,7 +26,11 @@ describe('UserMenu Component', () => {
   });
 
   it('shows logout option', () => {
-    const { getByText } = renderWithProviders(<UserMenu />);
+    const { getByText, getByRole } = renderWithProviders(<UserMenu />);
+    
+    // Click the user menu button to open dropdown
+    const userButton = getByRole('button');
+    fireEvent.click(userButton);
     
     expect(getByText('Sign Out')).toBeInTheDocument();
   });
