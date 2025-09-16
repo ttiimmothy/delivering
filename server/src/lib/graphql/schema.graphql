@@ -143,6 +143,15 @@ input CreateCourierProfileInput {
   vehicleType: VehicleType!
 }
 
+input CreateInvoiceInput {
+  courierAmount: String!
+  courierId: String
+  orderId: String!
+  platformFee: String!
+  restaurantAmount: String!
+  restaurantId: String!
+}
+
 input CreateMenuCategoryInput {
   description: String
   isActive: Boolean
@@ -255,6 +264,29 @@ type DeliveryStatusUpdate {
   updatedAt: String!
 }
 
+type Invoice {
+  courier: User
+  courierAmount: String!
+  courierId: String
+  createdAt: String!
+  id: String!
+  order: Order
+  orderId: String!
+  platformFee: String!
+  restaurant: Restaurant
+  restaurantAmount: String!
+  restaurantId: String!
+  status: InvoiceStatus!
+  stripeTransferId: String
+  updatedAt: String!
+}
+
+enum InvoiceStatus {
+  failed
+  paid
+  pending
+}
+
 """A location object with latitude and longitude"""
 scalar Location
 
@@ -329,6 +361,7 @@ type Mutation {
   confirmPaymentIntent(paymentIntentId: String!): PaymentIntent
   createBillingPortalSession(input: CreateBillingPortalSessionInput!): BillingPortalSession
   createCheckoutSession(input: CreateCheckoutSessionInput!): CheckoutSession
+  createInvoice(input: CreateInvoiceInput!): Invoice
   createPaymentIntent(input: CreatePaymentIntentInput!): PaymentIntent
   createRefund(input: CreateRefundInput!): Refund
   createReview(input: CreateReviewInput!): Review
@@ -336,8 +369,10 @@ type Mutation {
   login(input: LoginInput!): AuthResponse
   loginWithGoogle(idToken: String!): AuthResponse
   logout: Boolean
+  markPayoutFailed(invoiceId: String!): Invoice
   pickupOrder(deliveryId: String!): Delivery
   placeOrder(input: CreateOrderInput!): Order
+  processPayout(input: ProcessPayoutInput!): Invoice
   refreshToken(refreshToken: String!): RefreshTokenResponse
   removeFromCart(input: RemoveFromCartInput!): Boolean
   setRestaurantOpen(id: String!, isOpen: Boolean!): Restaurant
@@ -345,6 +380,7 @@ type Mutation {
   toggleFavorite(restaurantId: String!): Boolean
   updateCartItem(input: UpdateCartItemInput!): CartItem
   updateCourierLocation(input: UpdateCourierLocationInput!): CourierProfile
+  updateInvoiceStatus(input: UpdateInvoiceStatusInput!): Invoice
 }
 
 type Order {
@@ -443,15 +479,47 @@ enum PaymentStatus {
   refunded
 }
 
+type Payout {
+  amount: String!
+  createdAt: String!
+  failureReason: String
+  id: String!
+  processedAt: String
+  recipient: User
+  recipientId: String!
+  recipientType: String!
+  restaurant: Restaurant
+  status: PayoutStatus!
+  stripePayoutId: String
+  stripeTransferId: String
+  updatedAt: String!
+}
+
+enum PayoutStatus {
+  cancelled
+  completed
+  failed
+  pending
+  processing
+}
+
+input ProcessPayoutInput {
+  invoiceId: String!
+  stripeTransferId: String!
+}
+
 type Query {
   cart: Cart
   courierAssignments: [Delivery]!
   favoriteRestaurants: [Restaurant]!
+  invoice(id: String!): Invoice
+  invoices(courierId: String, limit: Int, offset: Int, restaurantId: String, status: InvoiceStatus): [Invoice]
   me: User
   merchantOrders(limit: Int, offset: Int, status: OrderStatus): [Order]!
   order(id: String!): Order
   orders(limit: Int, offset: Int, status: OrderStatus): [Order]!
   paymentIntent(paymentIntentId: String!): PaymentIntent
+  payoutSummary(role: String!, userId: String!): String
   restaurant(slug: String!): Restaurant
   restaurants(cuisine: String, isOpen: Boolean, limit: Int, offset: Int, search: String, sortBy: String, sortOrder: String): [Restaurant]!
   reviews(courierId: String, limit: Int, offset: Int, restaurantId: String): [Review]!
@@ -528,6 +596,19 @@ input SignupInput {
   role: UserRole!
 }
 
+type Subscription {
+  courierLocation(deliveryId: String!): CourierLocationUpdate
+  courierStatusChanged: CourierStatusUpdate
+  customerOrderTracking(orderId: String!): OrderTrackingUpdate
+  deliveryAssigned(courierId: String!): DeliveryAssignment
+  deliveryStatusChanged(deliveryId: String!): DeliveryStatusUpdate
+  liveCourierTracking(courierId: String!): CourierTrackingUpdate
+  merchantIncomingOrders(restaurantId: String!): Order
+  orderStatusChanged(orderId: String!): OrderEvent
+  realTimeOrderUpdates(orderId: String!): OrderUpdate
+  restaurantOrderQueue(restaurantId: String!): OrderQueueUpdate
+}
+
 input UpdateCartItemInput {
   cartItemId: String!
   quantity: Int
@@ -545,6 +626,12 @@ input UpdateCourierProfileInput {
   isAvailable: Boolean
   licensePlate: String
   vehicleType: VehicleType
+}
+
+input UpdateInvoiceStatusInput {
+  id: String!
+  status: InvoiceStatus!
+  stripeTransferId: String
 }
 
 input UpdateMenuCategoryInput {

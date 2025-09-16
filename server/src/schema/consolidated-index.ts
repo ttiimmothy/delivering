@@ -68,6 +68,12 @@ export const schema = makeSchema({
     PaymentTypes.PaymentIntent,
     PaymentTypes.Refund,
     
+    // Payout Types
+    PayoutTypes.InvoiceStatus,
+    PayoutTypes.PayoutStatus,
+    PayoutTypes.Invoice,
+    PayoutTypes.Payout,
+    
     // Input Types
     UserTypes.SignupInput,
     UserTypes.LoginInput,
@@ -102,6 +108,11 @@ export const schema = makeSchema({
     PaymentTypes.CreatePaymentIntentInput,
     PaymentTypes.CreateRefundInput,
     
+    // Payout Input Types
+    PayoutTypes.CreateInvoiceInput,
+    PayoutTypes.UpdateInvoiceStatusInput,
+    PayoutTypes.ProcessPayoutInput,
+    
     // Queries
     Queries.me,
     Queries.restaurants,
@@ -114,6 +125,11 @@ export const schema = makeSchema({
     Queries.courierAssignments,
     Queries.reviews,
     Queries.paymentIntent,
+    
+    // Payout Queries
+    PayoutTypes.invoicesQuery,
+    PayoutTypes.invoice,
+    PayoutTypes.payoutSummary,
     
     // Mutations
     Mutations.signup,
@@ -143,15 +159,23 @@ export const schema = makeSchema({
     Mutations.cancelPaymentIntent,
     Mutations.createRefund,
     
+    // Payout Mutations
+    PayoutTypes.createInvoice,
+    PayoutTypes.updateInvoiceStatus,
+    PayoutTypes.processPayout,
+    PayoutTypes.markPayoutFailed,
+    
     // Subscriptions
-    Subscriptions.courierLocationUpdate,
-    Subscriptions.deliveryAssignment,
-    Subscriptions.deliveryStatusUpdate,
-    Subscriptions.courierStatusUpdate,
-    Subscriptions.orderUpdate,
-    Subscriptions.courierTrackingUpdate,
-    Subscriptions.orderQueueUpdate,
-    Subscriptions.orderTrackingUpdate,
+    Subscriptions.orderStatusChanged,
+    Subscriptions.courierLocation,
+    Subscriptions.merchantIncomingOrders,
+    Subscriptions.deliveryAssigned,
+    Subscriptions.deliveryStatusChanged,
+    Subscriptions.courierStatusChanged,
+    Subscriptions.realTimeOrderUpdates,
+    Subscriptions.liveCourierTracking,
+    Subscriptions.restaurantOrderQueue,
+    Subscriptions.customerOrderTracking,
     
     // Subscription Types
     Subscriptions.CourierLocationUpdate,

@@ -34,7 +34,24 @@ export const Restaurant = objectType({
           .from(addresses)
           .where(eq(addresses.id, parent.addressId))
           .limit(1);
-        return result[0] ? convertDateFields(result[0], ['createdAt', 'updatedAt']) : null;
+        if (!result[0]) return null;
+        
+        const address = result[0];
+        return {
+          id: address.id,
+          userId: address.userId,
+          label: address.label,
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          zipCode: address.zipCode,
+          country: address.country,
+          latitude: address.latitude,
+          longitude: address.longitude,
+          isDefault: address.isDefault,
+          createdAt: address.createdAt instanceof Date ? address.createdAt.toISOString() : String(address.createdAt),
+          updatedAt: address.updatedAt instanceof Date ? address.updatedAt.toISOString() : String(address.updatedAt),
+        };
       },
     });
     
@@ -42,8 +59,21 @@ export const Restaurant = objectType({
     t.field('owner', {
       type: 'User',
       resolve: async (parent) => {
-        const owner = await db.select().from(users).where(eq(users.id, parent.ownerId)).limit(1);
-        return owner[0] ? convertDateFields(owner[0], ['createdAt', 'updatedAt']) : null;
+        const result = await db.select().from(users).where(eq(users.id, parent.ownerId)).limit(1);
+        if (!result[0]) return null;
+        
+        const user = result[0];
+        return {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone || undefined,
+          role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
+          isActive: user.isActive,
+          createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+          updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+        } as any; // Added 'as any' to bypass strict type checking for phone field
       },
     });
     
@@ -58,9 +88,16 @@ export const Restaurant = objectType({
           ))
           .orderBy(asc(menuCategories.sortOrder));
         
-        return categories.map(category => 
-          convertDateFields(category, ['createdAt', 'updatedAt'])
-        );
+        return categories.map(category => ({
+          id: category.id,
+          restaurantId: category.restaurantId,
+          name: category.name,
+          description: category.description || null,
+          sortOrder: category.sortOrder,
+          isActive: category.isActive,
+          createdAt: category.createdAt instanceof Date ? category.createdAt.toISOString() : String(category.createdAt),
+          updatedAt: category.updatedAt instanceof Date ? category.updatedAt.toISOString() : String(category.updatedAt),
+        }));
       },
     });
     
@@ -86,9 +123,19 @@ export const Restaurant = objectType({
           .orderBy(asc(menuItems.sortOrder))
           .limit(args.limit || 50);
         
-        return items.map(item => 
-          convertDateFields(item, ['createdAt', 'updatedAt'])
-        );
+        return items.map(item => ({
+          id: item.id,
+          restaurantId: item.restaurantId,
+          categoryId: item.categoryId,
+          name: item.name,
+          description: item.description || null,
+          image: item.image || null,
+          price: String(item.price),
+          isAvailable: item.isAvailable,
+          sortOrder: item.sortOrder,
+          createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
+          updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt),
+        }));
       },
     });
   },

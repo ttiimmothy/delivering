@@ -12,13 +12,13 @@ export type EnumResolverSignature<T, AllowedValues = any> = { [key in keyof T]?:
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
+  ID: { input: string; output: string | number; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: { input: any; output: any; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: { input: Date | string; output: Date | string; }
   /** A location object with latitude and longitude */
   Location: { input: any; output: any; }
   /** A location input object with latitude and longitude */
@@ -39,12 +39,10 @@ export type Address = {
   createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isDefault: Scalars['Boolean']['output'];
-  label: Scalars['String']['output'];
-  latitude: Scalars['Float']['output'];
-  longitude: Scalars['Float']['output'];
   state: Scalars['String']['output'];
   street: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
+  user?: Maybe<User>;
   userId: Scalars['String']['output'];
   zipCode: Scalars['String']['output'];
 };
@@ -53,12 +51,14 @@ export type AddressInput = {
   city: Scalars['String']['input'];
   country: Scalars['String']['input'];
   isDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  label: Scalars['String']['input'];
-  latitude: Scalars['Float']['input'];
-  longitude: Scalars['Float']['input'];
   state: Scalars['String']['input'];
   street: Scalars['String']['input'];
   zipCode: Scalars['String']['input'];
+};
+
+export type AssignCourierInput = {
+  courierId: Scalars['String']['input'];
+  orderId: Scalars['String']['input'];
 };
 
 export type AuthResponse = {
@@ -81,7 +81,6 @@ export type Cart = {
   createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
   items?: Maybe<Array<Maybe<CartItem>>>;
-  restaurant?: Maybe<Restaurant>;
   restaurantId: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
   userId: Scalars['String']['output'];
@@ -103,21 +102,19 @@ export type CartItem = {
 export type CheckoutSession = {
   __typename?: 'CheckoutSession';
   createdAt: Scalars['String']['output'];
-  customerEmail?: Maybe<Scalars['String']['output']>;
-  customerId?: Maybe<Scalars['String']['output']>;
+  customerEmail: Scalars['String']['output'];
+  customerId: Scalars['String']['output'];
   expiresAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  paymentIntentId?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   url: Scalars['String']['output'];
 };
 
 export type CourierLocationUpdate = {
   __typename?: 'CourierLocationUpdate';
-  courierId: Scalars['String']['output'];
   deliveryId: Scalars['String']['output'];
-  estimatedArrival?: Maybe<Scalars['String']['output']>;
-  location?: Maybe<Scalars['Location']['output']>;
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
   timestamp: Scalars['String']['output'];
 };
 
@@ -148,14 +145,16 @@ export type CourierStatusUpdate = {
   __typename?: 'CourierStatusUpdate';
   courierId: Scalars['String']['output'];
   isAvailable: Scalars['Boolean']['output'];
-  timestamp: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type CourierTrackingUpdate = {
   __typename?: 'CourierTrackingUpdate';
   courierId: Scalars['String']['output'];
-  currentLocation?: Maybe<Scalars['Location']['output']>;
-  estimatedArrival?: Maybe<Scalars['String']['output']>;
+  deliveryId: Scalars['String']['output'];
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
+  status: Scalars['String']['output'];
   timestamp: Scalars['String']['output'];
 };
 
@@ -166,8 +165,7 @@ export type CreateBillingPortalSessionInput = {
 
 export type CreateCheckoutSessionInput = {
   cancelUrl: Scalars['String']['input'];
-  customerEmail?: InputMaybe<Scalars['String']['input']>;
-  orderId: Scalars['String']['input'];
+  priceId: Scalars['String']['input'];
   successUrl: Scalars['String']['input'];
 };
 
@@ -178,70 +176,108 @@ export type CreateCourierProfileInput = {
   vehicleType: VehicleType;
 };
 
+export type CreateInvoiceInput = {
+  courierAmount: Scalars['String']['input'];
+  courierId?: InputMaybe<Scalars['String']['input']>;
+  orderId: Scalars['String']['input'];
+  platformFee: Scalars['String']['input'];
+  restaurantAmount: Scalars['String']['input'];
+  restaurantId: Scalars['String']['input'];
+};
+
+export type CreateMenuCategoryInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  restaurantId: Scalars['String']['input'];
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateMenuItemInput = {
+  categoryId: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  isAvailable?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  price: Scalars['String']['input'];
+  restaurantId: Scalars['String']['input'];
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateMenuItemOptionInput = {
+  isRequired?: InputMaybe<Scalars['Boolean']['input']>;
+  menuItemId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+  type: MenuItemOptionType;
+};
+
+export type CreateMenuItemOptionValueInput = {
+  name: Scalars['String']['input'];
+  optionId: Scalars['String']['input'];
+  price: Scalars['String']['input'];
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type CreateOrderInput = {
   deliveryAddress: Scalars['String']['input'];
+  restaurantId: Scalars['String']['input'];
   specialInstructions?: InputMaybe<Scalars['String']['input']>;
-  tip?: InputMaybe<Scalars['Float']['input']>;
+  stripePaymentIntentId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreatePaymentIntentInput = {
-  amount: Scalars['Float']['input'];
-  currency?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  metadata?: InputMaybe<Scalars['String']['input']>;
+  amount: Scalars['String']['input'];
+  currency: Scalars['String']['input'];
 };
 
 export type CreateRefundInput = {
-  amount?: InputMaybe<Scalars['Float']['input']>;
+  amount?: InputMaybe<Scalars['String']['input']>;
   paymentIntentId: Scalars['String']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateRestaurantInput = {
-  address: RestaurantAddressInput;
+  address: AddressInput;
   cuisine: Scalars['String']['input'];
-  deliveryFee?: InputMaybe<Scalars['Float']['input']>;
-  deliveryTime?: InputMaybe<Scalars['Int']['input']>;
+  deliveryFee: Scalars['String']['input'];
+  deliveryTime: Scalars['Int']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  minimumOrder?: InputMaybe<Scalars['Float']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  minimumOrder: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  phone: Scalars['String']['input'];
+  phone?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
 };
 
 export type CreateReviewInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
-  courierId?: InputMaybe<Scalars['String']['input']>;
-  orderId?: InputMaybe<Scalars['String']['input']>;
+  orderId: Scalars['String']['input'];
   rating: Scalars['Int']['input'];
-  restaurantId?: InputMaybe<Scalars['String']['input']>;
   type: ReviewType;
 };
 
 export type Delivery = {
   __typename?: 'Delivery';
-  acceptedAt?: Maybe<Scalars['String']['output']>;
-  assignedAt: Scalars['String']['output'];
+  assignedAt: Scalars['DateTime']['output'];
   courier?: Maybe<User>;
   courierId: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   currentLocation?: Maybe<Scalars['Location']['output']>;
-  deliveredAt?: Maybe<Scalars['String']['output']>;
   estimatedArrival?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   order?: Maybe<Order>;
   orderId: Scalars['String']['output'];
-  pickedUpAt?: Maybe<Scalars['String']['output']>;
   status: DeliveryStatus;
   updatedAt: Scalars['String']['output'];
 };
 
 export type DeliveryAssignment = {
   __typename?: 'DeliveryAssignment';
-  assignedBy: Scalars['String']['output'];
+  assignedAt: Scalars['String']['output'];
   courierId: Scalars['String']['output'];
   deliveryId: Scalars['String']['output'];
-  timestamp: Scalars['String']['output'];
+  orderId: Scalars['String']['output'];
 };
 
 export type DeliveryStatus =
@@ -255,8 +291,31 @@ export type DeliveryStatusUpdate = {
   deliveryId: Scalars['String']['output'];
   message?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
-  timestamp: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
+
+export type Invoice = {
+  __typename?: 'Invoice';
+  courier?: Maybe<User>;
+  courierAmount: Scalars['String']['output'];
+  courierId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  order?: Maybe<Order>;
+  orderId: Scalars['String']['output'];
+  platformFee: Scalars['String']['output'];
+  restaurant?: Maybe<Restaurant>;
+  restaurantAmount: Scalars['String']['output'];
+  restaurantId: Scalars['String']['output'];
+  status: InvoiceStatus;
+  stripeTransferId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type InvoiceStatus =
+  | 'failed'
+  | 'paid'
+  | 'pending';
 
 export type LoginInput = {
   email: Scalars['String']['input'];
@@ -284,10 +343,9 @@ export type MenuItem = {
   id: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
   isAvailable: Scalars['Boolean']['output'];
-  isPopular: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   options?: Maybe<Array<Maybe<MenuItemOption>>>;
-  price: Scalars['Float']['output'];
+  price: Scalars['String']['output'];
   restaurantId: Scalars['String']['output'];
   sortOrder: Scalars['Int']['output'];
   updatedAt: Scalars['String']['output'];
@@ -301,8 +359,24 @@ export type MenuItemOption = {
   menuItemId: Scalars['String']['output'];
   name: Scalars['String']['output'];
   sortOrder: Scalars['Int']['output'];
-  type: OptionType;
-  values?: Maybe<Array<Maybe<OptionValue>>>;
+  type: MenuItemOptionType;
+  updatedAt: Scalars['String']['output'];
+  values?: Maybe<Array<Maybe<MenuItemOptionValue>>>;
+};
+
+export type MenuItemOptionType =
+  | 'multiple'
+  | 'single';
+
+export type MenuItemOptionValue = {
+  __typename?: 'MenuItemOptionValue';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  optionId: Scalars['String']['output'];
+  price: Scalars['String']['output'];
+  sortOrder: Scalars['Int']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type Mutation = {
@@ -315,6 +389,7 @@ export type Mutation = {
   confirmPaymentIntent?: Maybe<PaymentIntent>;
   createBillingPortalSession?: Maybe<BillingPortalSession>;
   createCheckoutSession?: Maybe<CheckoutSession>;
+  createInvoice?: Maybe<Invoice>;
   createPaymentIntent?: Maybe<PaymentIntent>;
   createRefund?: Maybe<Refund>;
   createReview?: Maybe<Review>;
@@ -322,8 +397,10 @@ export type Mutation = {
   login?: Maybe<AuthResponse>;
   loginWithGoogle?: Maybe<AuthResponse>;
   logout?: Maybe<Scalars['Boolean']['output']>;
+  markPayoutFailed?: Maybe<Invoice>;
   pickupOrder?: Maybe<Delivery>;
   placeOrder?: Maybe<Order>;
+  processPayout?: Maybe<Invoice>;
   refreshToken?: Maybe<RefreshTokenResponse>;
   removeFromCart?: Maybe<Scalars['Boolean']['output']>;
   setRestaurantOpen?: Maybe<Restaurant>;
@@ -331,6 +408,7 @@ export type Mutation = {
   toggleFavorite?: Maybe<Scalars['Boolean']['output']>;
   updateCartItem?: Maybe<CartItem>;
   updateCourierLocation?: Maybe<CourierProfile>;
+  updateInvoiceStatus?: Maybe<Invoice>;
 };
 
 
@@ -369,6 +447,11 @@ export type MutationcreateCheckoutSessionArgs = {
 };
 
 
+export type MutationcreateInvoiceArgs = {
+  input: CreateInvoiceInput;
+};
+
+
 export type MutationcreatePaymentIntentArgs = {
   input: CreatePaymentIntentInput;
 };
@@ -399,6 +482,11 @@ export type MutationloginWithGoogleArgs = {
 };
 
 
+export type MutationmarkPayoutFailedArgs = {
+  invoiceId: Scalars['String']['input'];
+};
+
+
 export type MutationpickupOrderArgs = {
   deliveryId: Scalars['String']['input'];
 };
@@ -406,6 +494,11 @@ export type MutationpickupOrderArgs = {
 
 export type MutationplaceOrderArgs = {
   input: CreateOrderInput;
+};
+
+
+export type MutationprocessPayoutArgs = {
+  input: ProcessPayoutInput;
 };
 
 
@@ -444,19 +537,9 @@ export type MutationupdateCourierLocationArgs = {
   input: UpdateCourierLocationInput;
 };
 
-export type OptionType =
-  | 'multiple'
-  | 'single';
 
-export type OptionValue = {
-  __typename?: 'OptionValue';
-  createdAt: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  isDefault: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  optionId: Scalars['String']['output'];
-  price: Scalars['Float']['output'];
-  sortOrder: Scalars['Int']['output'];
+export type MutationupdateInvoiceStatusArgs = {
+  input: UpdateInvoiceStatusInput;
 };
 
 export type Order = {
@@ -467,7 +550,7 @@ export type Order = {
   customer?: Maybe<User>;
   customerId: Scalars['String']['output'];
   deliveryAddress: Scalars['String']['output'];
-  deliveryFee: Scalars['Float']['output'];
+  deliveryFee: Scalars['String']['output'];
   estimatedDeliveryTime?: Maybe<Scalars['String']['output']>;
   events?: Maybe<Array<Maybe<OrderEvent>>>;
   id: Scalars['String']['output'];
@@ -478,21 +561,23 @@ export type Order = {
   restaurantId: Scalars['String']['output'];
   specialInstructions?: Maybe<Scalars['String']['output']>;
   status: OrderStatus;
-  subtotal: Scalars['Float']['output'];
-  tax: Scalars['Float']['output'];
-  tip: Scalars['Float']['output'];
-  total: Scalars['Float']['output'];
+  stripePaymentIntentId?: Maybe<Scalars['String']['output']>;
+  stripeSessionId?: Maybe<Scalars['String']['output']>;
+  subtotal: Scalars['String']['output'];
+  tax: Scalars['String']['output'];
+  tip: Scalars['String']['output'];
+  total: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
 
 export type OrderEvent = {
   __typename?: 'OrderEvent';
   createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  eventType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  message?: Maybe<Scalars['String']['output']>;
-  metadata?: Maybe<Scalars['String']['output']>;
+  order?: Maybe<Order>;
   orderId: Scalars['String']['output'];
-  status: OrderStatus;
 };
 
 export type OrderItem = {
@@ -502,20 +587,18 @@ export type OrderItem = {
   menuItem?: Maybe<MenuItem>;
   menuItemId: Scalars['String']['output'];
   orderId: Scalars['String']['output'];
+  price: Scalars['String']['output'];
   quantity: Scalars['Int']['output'];
   selectedOptions: Scalars['String']['output'];
   specialInstructions?: Maybe<Scalars['String']['output']>;
-  totalPrice: Scalars['Float']['output'];
-  unitPrice: Scalars['Float']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type OrderQueueUpdate = {
   __typename?: 'OrderQueueUpdate';
-  pendingOrders: Array<Maybe<Order>>;
-  preparingOrders: Array<Maybe<Order>>;
-  readyOrders: Array<Maybe<Order>>;
+  queueLength: Scalars['Int']['output'];
   restaurantId: Scalars['String']['output'];
-  timestamp: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type OrderStatus =
@@ -529,32 +612,28 @@ export type OrderStatus =
 
 export type OrderTrackingUpdate = {
   __typename?: 'OrderTrackingUpdate';
-  courier?: Maybe<User>;
-  currentLocation?: Maybe<Scalars['Location']['output']>;
-  estimatedDelivery?: Maybe<Scalars['String']['output']>;
+  courierId?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
   orderId: Scalars['String']['output'];
   status: Scalars['String']['output'];
-  timestamp: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type OrderUpdate = {
   __typename?: 'OrderUpdate';
   message?: Maybe<Scalars['String']['output']>;
-  metadata?: Maybe<Scalars['String']['output']>;
   orderId: Scalars['String']['output'];
   status: Scalars['String']['output'];
-  timestamp: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type PaymentIntent = {
   __typename?: 'PaymentIntent';
-  amount: Scalars['Int']['output'];
+  amount: Scalars['String']['output'];
   clientSecret: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   currency: Scalars['String']['output'];
-  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  metadata?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
 };
 
@@ -564,19 +643,65 @@ export type PaymentStatus =
   | 'pending'
   | 'refunded';
 
+export type Payout = {
+  __typename?: 'Payout';
+  amount: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  failureReason?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  processedAt?: Maybe<Scalars['String']['output']>;
+  recipient?: Maybe<User>;
+  recipientId: Scalars['String']['output'];
+  recipientType: Scalars['String']['output'];
+  restaurant?: Maybe<Restaurant>;
+  status: PayoutStatus;
+  stripePayoutId?: Maybe<Scalars['String']['output']>;
+  stripeTransferId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type PayoutStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
+  | 'pending'
+  | 'processing';
+
+export type ProcessPayoutInput = {
+  invoiceId: Scalars['String']['input'];
+  stripeTransferId: Scalars['String']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
   cart?: Maybe<Cart>;
   courierAssignments: Array<Maybe<Delivery>>;
   favoriteRestaurants: Array<Maybe<Restaurant>>;
+  invoice?: Maybe<Invoice>;
+  invoices?: Maybe<Array<Maybe<Invoice>>>;
   me?: Maybe<User>;
   merchantOrders: Array<Maybe<Order>>;
   order?: Maybe<Order>;
   orders: Array<Maybe<Order>>;
   paymentIntent?: Maybe<PaymentIntent>;
+  payoutSummary?: Maybe<Scalars['String']['output']>;
   restaurant?: Maybe<Restaurant>;
   restaurants: Array<Maybe<Restaurant>>;
   reviews: Array<Maybe<Review>>;
+};
+
+
+export type QueryinvoiceArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryinvoicesArgs = {
+  courierId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  restaurantId?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<InvoiceStatus>;
 };
 
 
@@ -601,6 +726,12 @@ export type QueryordersArgs = {
 
 export type QuerypaymentIntentArgs = {
   paymentIntentId: Scalars['String']['input'];
+};
+
+
+export type QuerypayoutSummaryArgs = {
+  role: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -635,11 +766,11 @@ export type RefreshTokenResponse = {
 
 export type Refund = {
   __typename?: 'Refund';
-  amount: Scalars['Int']['output'];
+  amount: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   currency: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  reason?: Maybe<Scalars['String']['output']>;
+  reason: Scalars['String']['output'];
   status: Scalars['String']['output'];
 };
 
@@ -650,48 +781,46 @@ export type RemoveFromCartInput = {
 export type Restaurant = {
   __typename?: 'Restaurant';
   address?: Maybe<Address>;
+  addressId: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   cuisine: Scalars['String']['output'];
-  deliveryFee: Scalars['Float']['output'];
+  deliveryFee: Scalars['String']['output'];
   deliveryTime: Scalars['Int']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   isActive: Scalars['Boolean']['output'];
-  isFavorite?: Maybe<Scalars['Boolean']['output']>;
   isOpen: Scalars['Boolean']['output'];
   menuCategories?: Maybe<Array<Maybe<MenuCategory>>>;
-  minimumOrder: Scalars['Float']['output'];
+  menuItems?: Maybe<Array<Maybe<MenuItem>>>;
+  minimumOrder: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  owner?: Maybe<User>;
+  ownerId: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
-  rating?: Maybe<Scalars['Float']['output']>;
+  rating?: Maybe<Scalars['String']['output']>;
   reviewCount: Scalars['Int']['output'];
   slug: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
 
-export type RestaurantAddressInput = {
-  city: Scalars['String']['input'];
-  country?: InputMaybe<Scalars['String']['input']>;
-  state: Scalars['String']['input'];
-  street: Scalars['String']['input'];
-  zipCode: Scalars['String']['input'];
+
+export type RestaurantmenuItemsArgs = {
+  categoryId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Review = {
   __typename?: 'Review';
   comment?: Maybe<Scalars['String']['output']>;
   courier?: Maybe<User>;
-  courierId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['String']['output'];
   customer?: Maybe<User>;
   customerId: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  order?: Maybe<Order>;
   orderId: Scalars['String']['output'];
   rating: Scalars['Int']['output'];
   restaurant?: Maybe<Restaurant>;
-  restaurantId?: Maybe<Scalars['String']['output']>;
   type: ReviewType;
   updatedAt: Scalars['String']['output'];
 };
@@ -706,6 +835,7 @@ export type SignupInput = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   phone?: InputMaybe<Scalars['String']['input']>;
+  role: UserRole;
 };
 
 export type Subscription = {
@@ -786,33 +916,68 @@ export type UpdateCourierProfileInput = {
   vehicleType?: InputMaybe<VehicleType>;
 };
 
+export type UpdateInvoiceStatusInput = {
+  id: Scalars['String']['input'];
+  status: InvoiceStatus;
+  stripeTransferId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMenuCategoryInput = {
+  categoryId: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateMenuItemInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  isAvailable?: InputMaybe<Scalars['Boolean']['input']>;
+  menuItemId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateOrderStatusInput = {
+  orderId: Scalars['String']['input'];
+  status: OrderStatus;
+};
+
 export type UpdateProfileInput = {
-  avatar?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateRestaurantInput = {
-  address?: InputMaybe<RestaurantAddressInput>;
+  address?: InputMaybe<AddressInput>;
   cuisine?: InputMaybe<Scalars['String']['input']>;
-  deliveryFee?: InputMaybe<Scalars['Float']['input']>;
+  deliveryFee?: InputMaybe<Scalars['String']['input']>;
   deliveryTime?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  minimumOrder?: InputMaybe<Scalars['Float']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isOpen?: InputMaybe<Scalars['Boolean']['input']>;
+  minimumOrder?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
+  restaurantId: Scalars['String']['input'];
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateReviewInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  rating?: InputMaybe<Scalars['Int']['input']>;
+  reviewId: Scalars['String']['input'];
 };
 
 export type User = {
   __typename?: 'User';
-  addresses?: Maybe<Array<Maybe<Address>>>;
-  avatar?: Maybe<Scalars['String']['output']>;
   courierProfile?: Maybe<CourierProfile>;
   createdAt: Scalars['String']['output'];
   email: Scalars['String']['output'];
-  emailVerified: Scalars['Boolean']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
@@ -826,7 +991,7 @@ export type UserRole =
   | 'admin'
   | 'courier'
   | 'customer'
-  | 'merchant';
+  | 'restaurant';
 
 export type VehicleType =
   | 'bike'
@@ -907,16 +1072,17 @@ export type ResolversTypes = {
   AddToCartInput: AddToCartInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
-  Address: ResolverTypeWrapper<Address>;
+  Address: ResolverTypeWrapper<Omit<Address, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   AddressInput: AddressInput;
+  AssignCourierInput: AssignCourierInput;
   AuthResponse: ResolverTypeWrapper<Omit<AuthResponse, 'user'> & { user: ResolversTypes['User'] }>;
   BillingPortalSession: ResolverTypeWrapper<BillingPortalSession>;
-  Cart: ResolverTypeWrapper<Omit<Cart, 'items' | 'restaurant'> & { items?: Maybe<Array<Maybe<ResolversTypes['CartItem']>>>, restaurant?: Maybe<ResolversTypes['Restaurant']> }>;
+  Cart: ResolverTypeWrapper<Omit<Cart, 'items'> & { items?: Maybe<Array<Maybe<ResolversTypes['CartItem']>>> }>;
   CartItem: ResolverTypeWrapper<Omit<CartItem, 'menuItem'> & { menuItem?: Maybe<ResolversTypes['MenuItem']> }>;
   CheckoutSession: ResolverTypeWrapper<CheckoutSession>;
   CourierLocationUpdate: ResolverTypeWrapper<CourierLocationUpdate>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   CourierProfile: ResolverTypeWrapper<Omit<CourierProfile, 'user' | 'vehicleType'> & { user?: Maybe<ResolversTypes['User']>, vehicleType: ResolversTypes['VehicleType'] }>;
   CourierProfileInput: CourierProfileInput;
   CourierStatusUpdate: ResolverTypeWrapper<CourierStatusUpdate>;
@@ -924,6 +1090,11 @@ export type ResolversTypes = {
   CreateBillingPortalSessionInput: CreateBillingPortalSessionInput;
   CreateCheckoutSessionInput: CreateCheckoutSessionInput;
   CreateCourierProfileInput: CreateCourierProfileInput;
+  CreateInvoiceInput: CreateInvoiceInput;
+  CreateMenuCategoryInput: CreateMenuCategoryInput;
+  CreateMenuItemInput: CreateMenuItemInput;
+  CreateMenuItemOptionInput: CreateMenuItemOptionInput;
+  CreateMenuItemOptionValueInput: CreateMenuItemOptionValueInput;
   CreateOrderInput: CreateOrderInput;
   CreatePaymentIntentInput: CreatePaymentIntentInput;
   CreateRefundInput: CreateRefundInput;
@@ -934,41 +1105,51 @@ export type ResolversTypes = {
   DeliveryAssignment: ResolverTypeWrapper<DeliveryAssignment>;
   DeliveryStatus: ResolverTypeWrapper<'accepted' | 'assigned' | 'delivered' | 'picked_up'>;
   DeliveryStatusUpdate: ResolverTypeWrapper<DeliveryStatusUpdate>;
+  Invoice: ResolverTypeWrapper<Omit<Invoice, 'courier' | 'order' | 'restaurant' | 'status'> & { courier?: Maybe<ResolversTypes['User']>, order?: Maybe<ResolversTypes['Order']>, restaurant?: Maybe<ResolversTypes['Restaurant']>, status: ResolversTypes['InvoiceStatus'] }>;
+  InvoiceStatus: ResolverTypeWrapper<'failed' | 'paid' | 'pending'>;
   Location: ResolverTypeWrapper<Scalars['Location']['output']>;
   LocationInput: ResolverTypeWrapper<Scalars['LocationInput']['output']>;
   LoginInput: LoginInput;
   MenuCategory: ResolverTypeWrapper<Omit<MenuCategory, 'menuItems'> & { menuItems?: Maybe<Array<Maybe<ResolversTypes['MenuItem']>>> }>;
   MenuItem: ResolverTypeWrapper<Omit<MenuItem, 'options'> & { options?: Maybe<Array<Maybe<ResolversTypes['MenuItemOption']>>> }>;
-  MenuItemOption: ResolverTypeWrapper<Omit<MenuItemOption, 'type'> & { type: ResolversTypes['OptionType'] }>;
+  MenuItemOption: ResolverTypeWrapper<Omit<MenuItemOption, 'type'> & { type: ResolversTypes['MenuItemOptionType'] }>;
+  MenuItemOptionType: ResolverTypeWrapper<'multiple' | 'single'>;
+  MenuItemOptionValue: ResolverTypeWrapper<MenuItemOptionValue>;
   Mutation: ResolverTypeWrapper<{}>;
-  OptionType: ResolverTypeWrapper<'multiple' | 'single'>;
-  OptionValue: ResolverTypeWrapper<OptionValue>;
   Order: ResolverTypeWrapper<Omit<Order, 'courier' | 'customer' | 'events' | 'items' | 'paymentStatus' | 'restaurant' | 'status'> & { courier?: Maybe<ResolversTypes['User']>, customer?: Maybe<ResolversTypes['User']>, events?: Maybe<Array<Maybe<ResolversTypes['OrderEvent']>>>, items?: Maybe<Array<Maybe<ResolversTypes['OrderItem']>>>, paymentStatus: ResolversTypes['PaymentStatus'], restaurant?: Maybe<ResolversTypes['Restaurant']>, status: ResolversTypes['OrderStatus'] }>;
-  OrderEvent: ResolverTypeWrapper<Omit<OrderEvent, 'status'> & { status: ResolversTypes['OrderStatus'] }>;
+  OrderEvent: ResolverTypeWrapper<Omit<OrderEvent, 'order'> & { order?: Maybe<ResolversTypes['Order']> }>;
   OrderItem: ResolverTypeWrapper<Omit<OrderItem, 'menuItem'> & { menuItem?: Maybe<ResolversTypes['MenuItem']> }>;
-  OrderQueueUpdate: ResolverTypeWrapper<Omit<OrderQueueUpdate, 'pendingOrders' | 'preparingOrders' | 'readyOrders'> & { pendingOrders: Array<Maybe<ResolversTypes['Order']>>, preparingOrders: Array<Maybe<ResolversTypes['Order']>>, readyOrders: Array<Maybe<ResolversTypes['Order']>> }>;
+  OrderQueueUpdate: ResolverTypeWrapper<OrderQueueUpdate>;
   OrderStatus: ResolverTypeWrapper<'cancelled' | 'confirmed' | 'delivered' | 'pending' | 'picked_up' | 'preparing' | 'ready'>;
-  OrderTrackingUpdate: ResolverTypeWrapper<Omit<OrderTrackingUpdate, 'courier'> & { courier?: Maybe<ResolversTypes['User']> }>;
+  OrderTrackingUpdate: ResolverTypeWrapper<OrderTrackingUpdate>;
   OrderUpdate: ResolverTypeWrapper<OrderUpdate>;
   PaymentIntent: ResolverTypeWrapper<PaymentIntent>;
   PaymentStatus: ResolverTypeWrapper<'failed' | 'paid' | 'pending' | 'refunded'>;
+  Payout: ResolverTypeWrapper<Omit<Payout, 'recipient' | 'restaurant' | 'status'> & { recipient?: Maybe<ResolversTypes['User']>, restaurant?: Maybe<ResolversTypes['Restaurant']>, status: ResolversTypes['PayoutStatus'] }>;
+  PayoutStatus: ResolverTypeWrapper<'cancelled' | 'completed' | 'failed' | 'pending' | 'processing'>;
+  ProcessPayoutInput: ProcessPayoutInput;
   Query: ResolverTypeWrapper<{}>;
   RefreshTokenResponse: ResolverTypeWrapper<RefreshTokenResponse>;
   Refund: ResolverTypeWrapper<Refund>;
   RemoveFromCartInput: RemoveFromCartInput;
-  Restaurant: ResolverTypeWrapper<Omit<Restaurant, 'menuCategories'> & { menuCategories?: Maybe<Array<Maybe<ResolversTypes['MenuCategory']>>> }>;
-  RestaurantAddressInput: RestaurantAddressInput;
-  Review: ResolverTypeWrapper<Omit<Review, 'courier' | 'customer' | 'order' | 'restaurant' | 'type'> & { courier?: Maybe<ResolversTypes['User']>, customer?: Maybe<ResolversTypes['User']>, order?: Maybe<ResolversTypes['Order']>, restaurant?: Maybe<ResolversTypes['Restaurant']>, type: ResolversTypes['ReviewType'] }>;
+  Restaurant: ResolverTypeWrapper<Omit<Restaurant, 'address' | 'menuCategories' | 'menuItems' | 'owner'> & { address?: Maybe<ResolversTypes['Address']>, menuCategories?: Maybe<Array<Maybe<ResolversTypes['MenuCategory']>>>, menuItems?: Maybe<Array<Maybe<ResolversTypes['MenuItem']>>>, owner?: Maybe<ResolversTypes['User']> }>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Review: ResolverTypeWrapper<Omit<Review, 'courier' | 'customer' | 'restaurant' | 'type'> & { courier?: Maybe<ResolversTypes['User']>, customer?: Maybe<ResolversTypes['User']>, restaurant?: Maybe<ResolversTypes['Restaurant']>, type: ResolversTypes['ReviewType'] }>;
   ReviewType: ResolverTypeWrapper<'courier' | 'restaurant'>;
   SignupInput: SignupInput;
   Subscription: ResolverTypeWrapper<{}>;
   UpdateCartItemInput: UpdateCartItemInput;
   UpdateCourierLocationInput: UpdateCourierLocationInput;
   UpdateCourierProfileInput: UpdateCourierProfileInput;
+  UpdateInvoiceStatusInput: UpdateInvoiceStatusInput;
+  UpdateMenuCategoryInput: UpdateMenuCategoryInput;
+  UpdateMenuItemInput: UpdateMenuItemInput;
+  UpdateOrderStatusInput: UpdateOrderStatusInput;
   UpdateProfileInput: UpdateProfileInput;
   UpdateRestaurantInput: UpdateRestaurantInput;
+  UpdateReviewInput: UpdateReviewInput;
   User: ResolverTypeWrapper<Omit<User, 'courierProfile' | 'role'> & { courierProfile?: Maybe<ResolversTypes['CourierProfile']>, role: ResolversTypes['UserRole'] }>;
-  UserRole: ResolverTypeWrapper<'admin' | 'courier' | 'customer' | 'merchant'>;
+  UserRole: ResolverTypeWrapper<'admin' | 'courier' | 'customer' | 'restaurant'>;
   VehicleType: ResolverTypeWrapper<'bike' | 'car' | 'motorcycle'>;
 };
 
@@ -977,16 +1158,17 @@ export type ResolversParentTypes = {
   AddToCartInput: AddToCartInput;
   String: Scalars['String']['output'];
   Int: Scalars['Int']['output'];
-  Address: Address;
+  Address: Omit<Address, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   Boolean: Scalars['Boolean']['output'];
-  Float: Scalars['Float']['output'];
   AddressInput: AddressInput;
+  AssignCourierInput: AssignCourierInput;
   AuthResponse: Omit<AuthResponse, 'user'> & { user: ResolversParentTypes['User'] };
   BillingPortalSession: BillingPortalSession;
-  Cart: Omit<Cart, 'items' | 'restaurant'> & { items?: Maybe<Array<Maybe<ResolversParentTypes['CartItem']>>>, restaurant?: Maybe<ResolversParentTypes['Restaurant']> };
+  Cart: Omit<Cart, 'items'> & { items?: Maybe<Array<Maybe<ResolversParentTypes['CartItem']>>> };
   CartItem: Omit<CartItem, 'menuItem'> & { menuItem?: Maybe<ResolversParentTypes['MenuItem']> };
   CheckoutSession: CheckoutSession;
   CourierLocationUpdate: CourierLocationUpdate;
+  Float: Scalars['Float']['output'];
   CourierProfile: Omit<CourierProfile, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   CourierProfileInput: CourierProfileInput;
   CourierStatusUpdate: CourierStatusUpdate;
@@ -994,6 +1176,11 @@ export type ResolversParentTypes = {
   CreateBillingPortalSessionInput: CreateBillingPortalSessionInput;
   CreateCheckoutSessionInput: CreateCheckoutSessionInput;
   CreateCourierProfileInput: CreateCourierProfileInput;
+  CreateInvoiceInput: CreateInvoiceInput;
+  CreateMenuCategoryInput: CreateMenuCategoryInput;
+  CreateMenuItemInput: CreateMenuItemInput;
+  CreateMenuItemOptionInput: CreateMenuItemOptionInput;
+  CreateMenuItemOptionValueInput: CreateMenuItemOptionValueInput;
   CreateOrderInput: CreateOrderInput;
   CreatePaymentIntentInput: CreatePaymentIntentInput;
   CreateRefundInput: CreateRefundInput;
@@ -1003,35 +1190,43 @@ export type ResolversParentTypes = {
   Delivery: Omit<Delivery, 'courier' | 'order'> & { courier?: Maybe<ResolversParentTypes['User']>, order?: Maybe<ResolversParentTypes['Order']> };
   DeliveryAssignment: DeliveryAssignment;
   DeliveryStatusUpdate: DeliveryStatusUpdate;
+  Invoice: Omit<Invoice, 'courier' | 'order' | 'restaurant'> & { courier?: Maybe<ResolversParentTypes['User']>, order?: Maybe<ResolversParentTypes['Order']>, restaurant?: Maybe<ResolversParentTypes['Restaurant']> };
   Location: Scalars['Location']['output'];
   LocationInput: Scalars['LocationInput']['output'];
   LoginInput: LoginInput;
   MenuCategory: Omit<MenuCategory, 'menuItems'> & { menuItems?: Maybe<Array<Maybe<ResolversParentTypes['MenuItem']>>> };
   MenuItem: Omit<MenuItem, 'options'> & { options?: Maybe<Array<Maybe<ResolversParentTypes['MenuItemOption']>>> };
   MenuItemOption: MenuItemOption;
+  MenuItemOptionValue: MenuItemOptionValue;
   Mutation: {};
-  OptionValue: OptionValue;
   Order: Omit<Order, 'courier' | 'customer' | 'events' | 'items' | 'restaurant'> & { courier?: Maybe<ResolversParentTypes['User']>, customer?: Maybe<ResolversParentTypes['User']>, events?: Maybe<Array<Maybe<ResolversParentTypes['OrderEvent']>>>, items?: Maybe<Array<Maybe<ResolversParentTypes['OrderItem']>>>, restaurant?: Maybe<ResolversParentTypes['Restaurant']> };
-  OrderEvent: OrderEvent;
+  OrderEvent: Omit<OrderEvent, 'order'> & { order?: Maybe<ResolversParentTypes['Order']> };
   OrderItem: Omit<OrderItem, 'menuItem'> & { menuItem?: Maybe<ResolversParentTypes['MenuItem']> };
-  OrderQueueUpdate: Omit<OrderQueueUpdate, 'pendingOrders' | 'preparingOrders' | 'readyOrders'> & { pendingOrders: Array<Maybe<ResolversParentTypes['Order']>>, preparingOrders: Array<Maybe<ResolversParentTypes['Order']>>, readyOrders: Array<Maybe<ResolversParentTypes['Order']>> };
-  OrderTrackingUpdate: Omit<OrderTrackingUpdate, 'courier'> & { courier?: Maybe<ResolversParentTypes['User']> };
+  OrderQueueUpdate: OrderQueueUpdate;
+  OrderTrackingUpdate: OrderTrackingUpdate;
   OrderUpdate: OrderUpdate;
   PaymentIntent: PaymentIntent;
+  Payout: Omit<Payout, 'recipient' | 'restaurant'> & { recipient?: Maybe<ResolversParentTypes['User']>, restaurant?: Maybe<ResolversParentTypes['Restaurant']> };
+  ProcessPayoutInput: ProcessPayoutInput;
   Query: {};
   RefreshTokenResponse: RefreshTokenResponse;
   Refund: Refund;
   RemoveFromCartInput: RemoveFromCartInput;
-  Restaurant: Omit<Restaurant, 'menuCategories'> & { menuCategories?: Maybe<Array<Maybe<ResolversParentTypes['MenuCategory']>>> };
-  RestaurantAddressInput: RestaurantAddressInput;
-  Review: Omit<Review, 'courier' | 'customer' | 'order' | 'restaurant'> & { courier?: Maybe<ResolversParentTypes['User']>, customer?: Maybe<ResolversParentTypes['User']>, order?: Maybe<ResolversParentTypes['Order']>, restaurant?: Maybe<ResolversParentTypes['Restaurant']> };
+  Restaurant: Omit<Restaurant, 'address' | 'menuCategories' | 'menuItems' | 'owner'> & { address?: Maybe<ResolversParentTypes['Address']>, menuCategories?: Maybe<Array<Maybe<ResolversParentTypes['MenuCategory']>>>, menuItems?: Maybe<Array<Maybe<ResolversParentTypes['MenuItem']>>>, owner?: Maybe<ResolversParentTypes['User']> };
+  ID: Scalars['ID']['output'];
+  Review: Omit<Review, 'courier' | 'customer' | 'restaurant'> & { courier?: Maybe<ResolversParentTypes['User']>, customer?: Maybe<ResolversParentTypes['User']>, restaurant?: Maybe<ResolversParentTypes['Restaurant']> };
   SignupInput: SignupInput;
   Subscription: {};
   UpdateCartItemInput: UpdateCartItemInput;
   UpdateCourierLocationInput: UpdateCourierLocationInput;
   UpdateCourierProfileInput: UpdateCourierProfileInput;
+  UpdateInvoiceStatusInput: UpdateInvoiceStatusInput;
+  UpdateMenuCategoryInput: UpdateMenuCategoryInput;
+  UpdateMenuItemInput: UpdateMenuItemInput;
+  UpdateOrderStatusInput: UpdateOrderStatusInput;
   UpdateProfileInput: UpdateProfileInput;
   UpdateRestaurantInput: UpdateRestaurantInput;
+  UpdateReviewInput: UpdateReviewInput;
   User: Omit<User, 'courierProfile'> & { courierProfile?: Maybe<ResolversParentTypes['CourierProfile']> };
 };
 
@@ -1041,12 +1236,10 @@ export type AddressResolvers<ContextType = GraphQLContext, ParentType extends Re
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   zipCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1071,7 +1264,6 @@ export type CartResolvers<ContextType = GraphQLContext, ParentType extends Resol
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   items?: Resolver<Maybe<Array<Maybe<ResolversTypes['CartItem']>>>, ParentType, ContextType>;
-  restaurant?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType>;
   restaurantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1093,21 +1285,19 @@ export type CartItemResolvers<ContextType = GraphQLContext, ParentType extends R
 
 export type CheckoutSessionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CheckoutSession'] = ResolversParentTypes['CheckoutSession']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  customerEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  customerId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  customerEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  customerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   expiresAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  paymentIntentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CourierLocationUpdateResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CourierLocationUpdate'] = ResolversParentTypes['CourierLocationUpdate']> = {
-  courierId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  estimatedArrival?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1131,14 +1321,16 @@ export type CourierProfileResolvers<ContextType = GraphQLContext, ParentType ext
 export type CourierStatusUpdateResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CourierStatusUpdate'] = ResolversParentTypes['CourierStatusUpdate']> = {
   courierId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isAvailable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CourierTrackingUpdateResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CourierTrackingUpdate'] = ResolversParentTypes['CourierTrackingUpdate']> = {
   courierId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  currentLocation?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
-  estimatedArrival?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deliveryId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1148,28 +1340,25 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type DeliveryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Delivery'] = ResolversParentTypes['Delivery']> = {
-  acceptedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  assignedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  assignedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   courier?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   courierId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currentLocation?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
-  deliveredAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   estimatedArrival?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType>;
   orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  pickedUpAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['DeliveryStatus'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DeliveryAssignmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeliveryAssignment'] = ResolversParentTypes['DeliveryAssignment']> = {
-  assignedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  assignedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   courierId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1179,9 +1368,29 @@ export type DeliveryStatusUpdateResolvers<ContextType = GraphQLContext, ParentTy
   deliveryId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export type InvoiceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Invoice'] = ResolversParentTypes['Invoice']> = {
+  courier?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  courierAmount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  courierId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType>;
+  orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  platformFee?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  restaurant?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType>;
+  restaurantAmount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  restaurantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['InvoiceStatus'], ParentType, ContextType>;
+  stripeTransferId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InvoiceStatusResolvers = EnumResolverSignature<{ failed?: any, paid?: any, pending?: any }, ResolversTypes['InvoiceStatus']>;
 
 export interface LocationScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Location'], any> {
   name: 'Location';
@@ -1211,10 +1420,9 @@ export type MenuItemResolvers<ContextType = GraphQLContext, ParentType extends R
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isAvailable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  isPopular?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   options?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuItemOption']>>>, ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   restaurantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1228,8 +1436,22 @@ export type MenuItemOptionResolvers<ContextType = GraphQLContext, ParentType ext
   menuItemId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['OptionType'], ParentType, ContextType>;
-  values?: Resolver<Maybe<Array<Maybe<ResolversTypes['OptionValue']>>>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['MenuItemOptionType'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  values?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuItemOptionValue']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MenuItemOptionTypeResolvers = EnumResolverSignature<{ multiple?: any, single?: any }, ResolversTypes['MenuItemOptionType']>;
+
+export type MenuItemOptionValueResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MenuItemOptionValue'] = ResolversParentTypes['MenuItemOptionValue']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  optionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1242,6 +1464,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   confirmPaymentIntent?: Resolver<Maybe<ResolversTypes['PaymentIntent']>, ParentType, ContextType, RequireFields<MutationconfirmPaymentIntentArgs, 'paymentIntentId'>>;
   createBillingPortalSession?: Resolver<Maybe<ResolversTypes['BillingPortalSession']>, ParentType, ContextType, RequireFields<MutationcreateBillingPortalSessionArgs, 'input'>>;
   createCheckoutSession?: Resolver<Maybe<ResolversTypes['CheckoutSession']>, ParentType, ContextType, RequireFields<MutationcreateCheckoutSessionArgs, 'input'>>;
+  createInvoice?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationcreateInvoiceArgs, 'input'>>;
   createPaymentIntent?: Resolver<Maybe<ResolversTypes['PaymentIntent']>, ParentType, ContextType, RequireFields<MutationcreatePaymentIntentArgs, 'input'>>;
   createRefund?: Resolver<Maybe<ResolversTypes['Refund']>, ParentType, ContextType, RequireFields<MutationcreateRefundArgs, 'input'>>;
   createReview?: Resolver<Maybe<ResolversTypes['Review']>, ParentType, ContextType, RequireFields<MutationcreateReviewArgs, 'input'>>;
@@ -1249,8 +1472,10 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   login?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationloginArgs, 'input'>>;
   loginWithGoogle?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationloginWithGoogleArgs, 'idToken'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  markPayoutFailed?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationmarkPayoutFailedArgs, 'invoiceId'>>;
   pickupOrder?: Resolver<Maybe<ResolversTypes['Delivery']>, ParentType, ContextType, RequireFields<MutationpickupOrderArgs, 'deliveryId'>>;
   placeOrder?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<MutationplaceOrderArgs, 'input'>>;
+  processPayout?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationprocessPayoutArgs, 'input'>>;
   refreshToken?: Resolver<Maybe<ResolversTypes['RefreshTokenResponse']>, ParentType, ContextType, RequireFields<MutationrefreshTokenArgs, 'refreshToken'>>;
   removeFromCart?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationremoveFromCartArgs, 'input'>>;
   setRestaurantOpen?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType, RequireFields<MutationsetRestaurantOpenArgs, 'id' | 'isOpen'>>;
@@ -1258,19 +1483,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   toggleFavorite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationtoggleFavoriteArgs, 'restaurantId'>>;
   updateCartItem?: Resolver<Maybe<ResolversTypes['CartItem']>, ParentType, ContextType, RequireFields<MutationupdateCartItemArgs, 'input'>>;
   updateCourierLocation?: Resolver<Maybe<ResolversTypes['CourierProfile']>, ParentType, ContextType, RequireFields<MutationupdateCourierLocationArgs, 'input'>>;
-};
-
-export type OptionTypeResolvers = EnumResolverSignature<{ multiple?: any, single?: any }, ResolversTypes['OptionType']>;
-
-export type OptionValueResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OptionValue'] = ResolversParentTypes['OptionValue']> = {
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  optionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+  updateInvoiceStatus?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationupdateInvoiceStatusArgs, 'input'>>;
 };
 
 export type OrderResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
@@ -1280,7 +1493,7 @@ export type OrderResolvers<ContextType = GraphQLContext, ParentType extends Reso
   customer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   customerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  deliveryFee?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  deliveryFee?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   estimatedDeliveryTime?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   events?: Resolver<Maybe<Array<Maybe<ResolversTypes['OrderEvent']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1291,21 +1504,23 @@ export type OrderResolvers<ContextType = GraphQLContext, ParentType extends Reso
   restaurantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   specialInstructions?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['OrderStatus'], ParentType, ContextType>;
-  subtotal?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  tax?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  tip?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stripePaymentIntentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  stripeSessionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  subtotal?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tax?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tip?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type OrderEventResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OrderEvent'] = ResolversParentTypes['OrderEvent']> = {
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  eventType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType>;
   orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['OrderStatus'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1315,67 +1530,83 @@ export type OrderItemResolvers<ContextType = GraphQLContext, ParentType extends 
   menuItem?: Resolver<Maybe<ResolversTypes['MenuItem']>, ParentType, ContextType>;
   menuItemId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   selectedOptions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   specialInstructions?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  totalPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type OrderQueueUpdateResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OrderQueueUpdate'] = ResolversParentTypes['OrderQueueUpdate']> = {
-  pendingOrders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType>;
-  preparingOrders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType>;
-  readyOrders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType>;
+  queueLength?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   restaurantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type OrderStatusResolvers = EnumResolverSignature<{ cancelled?: any, confirmed?: any, delivered?: any, pending?: any, picked_up?: any, preparing?: any, ready?: any }, ResolversTypes['OrderStatus']>;
 
 export type OrderTrackingUpdateResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OrderTrackingUpdate'] = ResolversParentTypes['OrderTrackingUpdate']> = {
-  courier?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  currentLocation?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
-  estimatedDelivery?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  courierId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type OrderUpdateResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OrderUpdate'] = ResolversParentTypes['OrderUpdate']> = {
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PaymentIntentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PaymentIntent'] = ResolversParentTypes['PaymentIntent']> = {
-  amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clientSecret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PaymentStatusResolvers = EnumResolverSignature<{ failed?: any, paid?: any, pending?: any, refunded?: any }, ResolversTypes['PaymentStatus']>;
 
+export type PayoutResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Payout'] = ResolversParentTypes['Payout']> = {
+  amount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  failureReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  processedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  recipient?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  recipientId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  recipientType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  restaurant?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PayoutStatus'], ParentType, ContextType>;
+  stripePayoutId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  stripeTransferId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PayoutStatusResolvers = EnumResolverSignature<{ cancelled?: any, completed?: any, failed?: any, pending?: any, processing?: any }, ResolversTypes['PayoutStatus']>;
+
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   cart?: Resolver<Maybe<ResolversTypes['Cart']>, ParentType, ContextType>;
   courierAssignments?: Resolver<Array<Maybe<ResolversTypes['Delivery']>>, ParentType, ContextType>;
   favoriteRestaurants?: Resolver<Array<Maybe<ResolversTypes['Restaurant']>>, ParentType, ContextType>;
+  invoice?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<QueryinvoiceArgs, 'id'>>;
+  invoices?: Resolver<Maybe<Array<Maybe<ResolversTypes['Invoice']>>>, ParentType, ContextType, Partial<QueryinvoicesArgs>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   merchantOrders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType, Partial<QuerymerchantOrdersArgs>>;
   order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<QueryorderArgs, 'id'>>;
   orders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType, Partial<QueryordersArgs>>;
   paymentIntent?: Resolver<Maybe<ResolversTypes['PaymentIntent']>, ParentType, ContextType, RequireFields<QuerypaymentIntentArgs, 'paymentIntentId'>>;
+  payoutSummary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QuerypayoutSummaryArgs, 'role' | 'userId'>>;
   restaurant?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType, RequireFields<QueryrestaurantArgs, 'slug'>>;
   restaurants?: Resolver<Array<Maybe<ResolversTypes['Restaurant']>>, ParentType, ContextType, Partial<QueryrestaurantsArgs>>;
   reviews?: Resolver<Array<Maybe<ResolversTypes['Review']>>, ParentType, ContextType, Partial<QueryreviewsArgs>>;
@@ -1388,32 +1619,35 @@ export type RefreshTokenResponseResolvers<ContextType = GraphQLContext, ParentTy
 };
 
 export type RefundResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Refund'] = ResolversParentTypes['Refund']> = {
-  amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  reason?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type RestaurantResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Restaurant'] = ResolversParentTypes['Restaurant']> = {
   address?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
+  addressId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cuisine?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  deliveryFee?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  deliveryFee?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deliveryTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  isFavorite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isOpen?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   menuCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuCategory']>>>, ParentType, ContextType>;
-  minimumOrder?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  menuItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuItem']>>>, ParentType, ContextType, RequireFields<RestaurantmenuItemsArgs, 'limit'>>;
+  minimumOrder?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  ownerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  rating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  rating?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   reviewCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1423,16 +1657,13 @@ export type RestaurantResolvers<ContextType = GraphQLContext, ParentType extends
 export type ReviewResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   courier?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  courierId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   customer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   customerId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType>;
   orderId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   rating?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   restaurant?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType>;
-  restaurantId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['ReviewType'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1454,12 +1685,9 @@ export type SubscriptionResolvers<ContextType = GraphQLContext, ParentType exten
 };
 
 export type UserResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  addresses?: Resolver<Maybe<Array<Maybe<ResolversTypes['Address']>>>, ParentType, ContextType>;
-  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   courierProfile?: Resolver<Maybe<ResolversTypes['CourierProfile']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  emailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -1470,7 +1698,7 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserRoleResolvers = EnumResolverSignature<{ admin?: any, courier?: any, customer?: any, merchant?: any }, ResolversTypes['UserRole']>;
+export type UserRoleResolvers = EnumResolverSignature<{ admin?: any, courier?: any, customer?: any, restaurant?: any }, ResolversTypes['UserRole']>;
 
 export type VehicleTypeResolvers = EnumResolverSignature<{ bike?: any, car?: any, motorcycle?: any }, ResolversTypes['VehicleType']>;
 
@@ -1490,14 +1718,16 @@ export type Resolvers<ContextType = GraphQLContext> = {
   DeliveryAssignment?: DeliveryAssignmentResolvers<ContextType>;
   DeliveryStatus?: DeliveryStatusResolvers;
   DeliveryStatusUpdate?: DeliveryStatusUpdateResolvers<ContextType>;
+  Invoice?: InvoiceResolvers<ContextType>;
+  InvoiceStatus?: InvoiceStatusResolvers;
   Location?: GraphQLScalarType;
   LocationInput?: GraphQLScalarType;
   MenuCategory?: MenuCategoryResolvers<ContextType>;
   MenuItem?: MenuItemResolvers<ContextType>;
   MenuItemOption?: MenuItemOptionResolvers<ContextType>;
+  MenuItemOptionType?: MenuItemOptionTypeResolvers;
+  MenuItemOptionValue?: MenuItemOptionValueResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  OptionType?: OptionTypeResolvers;
-  OptionValue?: OptionValueResolvers<ContextType>;
   Order?: OrderResolvers<ContextType>;
   OrderEvent?: OrderEventResolvers<ContextType>;
   OrderItem?: OrderItemResolvers<ContextType>;
@@ -1507,6 +1737,8 @@ export type Resolvers<ContextType = GraphQLContext> = {
   OrderUpdate?: OrderUpdateResolvers<ContextType>;
   PaymentIntent?: PaymentIntentResolvers<ContextType>;
   PaymentStatus?: PaymentStatusResolvers;
+  Payout?: PayoutResolvers<ContextType>;
+  PayoutStatus?: PayoutStatusResolvers;
   Query?: QueryResolvers<ContextType>;
   RefreshTokenResponse?: RefreshTokenResponseResolvers<ContextType>;
   Refund?: RefundResolvers<ContextType>;

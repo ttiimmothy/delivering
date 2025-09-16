@@ -45,7 +45,19 @@ export const Order = objectType({
           .from(users)
           .where(eq(users.id, parent.customerId))
           .limit(1);
-        return result[0] ? convertDateFields(result[0], ['createdAt', 'updatedAt']) : null;
+        if (!result[0]) return null;
+        const user = result[0];
+        return {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+          role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
+          isActive: user.isActive,
+          createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+          updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+        };
       },
     });
     t.field('restaurant', {
@@ -55,7 +67,13 @@ export const Order = objectType({
           .from(restaurants)
           .where(eq(restaurants.id, parent.restaurantId))
           .limit(1);
-        return result[0] ? convertDateFields(result[0], ['createdAt', 'updatedAt']) : null;
+        if (!result[0]) return null;
+        const user = result[0];
+        return {
+          ...user,
+          createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+          updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+        };
       },
     });
     t.field('courier', {
@@ -66,7 +84,19 @@ export const Order = objectType({
           .from(users)
           .where(eq(users.id, parent.courierId))
           .limit(1);
-        return result[0] ? convertDateFields(result[0], ['createdAt', 'updatedAt']) : null;
+        if (!result[0]) return null;
+        const user = result[0];
+        return {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+          role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
+          isActive: user.isActive,
+          createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+          updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+        };
       },
     });
     t.list.field('items', {
@@ -76,7 +106,17 @@ export const Order = objectType({
           .from(orderItems)
           .where(eq(orderItems.orderId, parent.id))
           .orderBy(asc(orderItems.createdAt));
-        return items.map(item => convertDateFields(item, ['createdAt', 'updatedAt']));
+        return items.map(item => ({
+          id: item.id,
+          orderId: item.orderId,
+          menuItemId: item.menuItemId,
+          quantity: item.quantity,
+          price: item.unitPrice, // Map unitPrice to price
+          selectedOptions: String(item.selectedOptions || '[]'),
+          specialInstructions: item.specialInstructions || null,
+          createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
+          updatedAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt), // Use createdAt as updatedAt since updatedAt doesn't exist
+        }));
       },
     });
     t.list.field('events', {
@@ -86,7 +126,13 @@ export const Order = objectType({
           .from(orderEvents)
           .where(eq(orderEvents.orderId, parent.id))
           .orderBy(asc(orderEvents.createdAt));
-        return events.map(event => convertDateFields(event, ['createdAt', 'updatedAt']));
+        return events.map(event => ({
+          id: event.id,
+          orderId: event.orderId,
+          eventType: event.status, // Map status to eventType
+          description: event.message || null,
+          createdAt: event.createdAt instanceof Date ? event.createdAt.toISOString() : String(event.createdAt),
+        }));
       },
     });
   },
@@ -111,7 +157,13 @@ export const OrderItem = objectType({
           .from(menuItems)
           .where(eq(menuItems.id, parent.menuItemId))
           .limit(1);
-        return result[0] || null;
+        if (!result[0]) return null;
+        const user = result[0];
+        return {
+          ...user,
+          createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+          updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+        };
       },
     });
   },
@@ -132,7 +184,29 @@ export const OrderEvent = objectType({
           .from(orders)
           .where(eq(orders.id, parent.orderId))
           .limit(1);
-        return result[0] || null;
+        if (!result[0]) return null;
+        const order = result[0];
+        return {
+          id: order.id,
+          orderNumber: order.orderNumber,
+          customerId: order.customerId,
+          restaurantId: order.restaurantId,
+          courierId: order.courierId || null,
+          status: order.status,
+          paymentStatus: order.paymentStatus,
+          subtotal: String(order.subtotal),
+          tax: String(order.tax),
+          deliveryFee: String(order.deliveryFee),
+          tip: String(order.tip),
+          total: String(order.total),
+          deliveryAddress: String(order.deliveryAddress),
+          specialInstructions: order.specialInstructions || null,
+          estimatedDeliveryTime: order.estimatedDeliveryTime ? (order.estimatedDeliveryTime instanceof Date ? order.estimatedDeliveryTime.toISOString() : String(order.estimatedDeliveryTime)) : null,
+          stripePaymentIntentId: order.stripePaymentIntentId || null,
+          stripeSessionId: order.stripeSessionId || null,
+          createdAt: order.createdAt instanceof Date ? order.createdAt.toISOString() : String(order.createdAt),
+          updatedAt: order.updatedAt instanceof Date ? order.updatedAt.toISOString() : String(order.updatedAt),
+        };
       },
     });
   },

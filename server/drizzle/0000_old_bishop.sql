@@ -123,7 +123,8 @@ CREATE TABLE "menu_item_option_values" (
 	"price" numeric(8, 2) DEFAULT '0.00' NOT NULL,
 	"is_default" boolean DEFAULT false NOT NULL,
 	"sort_order" integer DEFAULT 0 NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "menu_item_options" (
@@ -133,7 +134,8 @@ CREATE TABLE "menu_item_options" (
 	"type" text NOT NULL,
 	"is_required" boolean DEFAULT false NOT NULL,
 	"sort_order" integer DEFAULT 0 NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "menu_items" (
@@ -210,7 +212,7 @@ CREATE TABLE "restaurants" (
 	"minimum_order" numeric(8, 2) DEFAULT '10.00' NOT NULL,
 	"is_open" boolean DEFAULT true NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
-	"address" json NOT NULL,
+	"address_id" uuid NOT NULL,
 	"phone" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -275,6 +277,7 @@ ALTER TABLE "orders" ADD CONSTRAINT "orders_customer_id_users_id_fk" FOREIGN KEY
 ALTER TABLE "orders" ADD CONSTRAINT "orders_restaurant_id_restaurants_id_fk" FOREIGN KEY ("restaurant_id") REFERENCES "public"."restaurants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "orders" ADD CONSTRAINT "orders_courier_id_users_id_fk" FOREIGN KEY ("courier_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "restaurants" ADD CONSTRAINT "restaurants_owner_id_users_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "restaurants" ADD CONSTRAINT "restaurants_address_id_addresses_id_fk" FOREIGN KEY ("address_id") REFERENCES "public"."addresses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_order_id_orders_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_customer_id_users_id_fk" FOREIGN KEY ("customer_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_restaurant_id_restaurants_id_fk" FOREIGN KEY ("restaurant_id") REFERENCES "public"."restaurants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -293,6 +296,7 @@ CREATE INDEX "orders_courier_idx" ON "orders" USING btree ("courier_id");--> sta
 CREATE INDEX "orders_status_idx" ON "orders" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "restaurants_slug_idx" ON "restaurants" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "restaurants_owner_idx" ON "restaurants" USING btree ("owner_id");--> statement-breakpoint
+CREATE INDEX "restaurants_address_idx" ON "restaurants" USING btree ("address_id");--> statement-breakpoint
 CREATE INDEX "reviews_order_idx" ON "reviews" USING btree ("order_id");--> statement-breakpoint
 CREATE INDEX "reviews_restaurant_idx" ON "reviews" USING btree ("restaurant_id");--> statement-breakpoint
 CREATE INDEX "reviews_courier_idx" ON "reviews" USING btree ("courier_id");--> statement-breakpoint

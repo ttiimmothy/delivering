@@ -2,6 +2,7 @@ import { objectType, inputObjectType, enumType, nonNull, intArg, stringArg, bool
 import { db } from '../db/client';
 import { deliveries, courierProfiles, users, orders } from '../db/schema';
 import { eq, and, desc, asc } from 'drizzle-orm';
+import { convertDateFields } from '../lib/dateHelpers';
 
 // Enums
 export const DeliveryStatus = enumType({
@@ -20,7 +21,7 @@ export const Delivery = objectType({
     t.nonNull.dateTime('assignedAt');
     t.field('currentLocation', { 
       type: 'Location',
-      resolve: (parent) => {
+      resolve: (parent: any) => {
         if (!parent.currentLocation) return null;
         try {
           return typeof parent.currentLocation === 'string' 
@@ -32,14 +33,10 @@ export const Delivery = objectType({
       }
     });
     t.string('estimatedArrival', {
-      resolve: (parent) => parent.estimatedArrival ? (parent.estimatedArrival instanceof Date ? parent.estimatedArrival.toISOString() : parent.estimatedArrival) : null
+      resolve: (parent: any) => parent.estimatedArrival ? (parent.estimatedArrival instanceof Date ? parent.estimatedArrival.toISOString() : parent.estimatedArrival) : null
     });
-    t.nonNull.string('createdAt', {
-      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
-    });
-    t.nonNull.string('updatedAt', {
-      resolve: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt
-    });
+    t.nonNull.string('createdAt');
+    t.nonNull.string('updatedAt');
     t.field('order', {
       type: 'Order',
       resolve: async (parent) => {
@@ -47,7 +44,30 @@ export const Delivery = objectType({
           .from(orders)
           .where(eq(orders.id, parent.orderId))
           .limit(1);
-        return result[0] || null;
+        if (!result[0]) return null;
+        
+        const order = result[0];
+        return {
+          id: order.id,
+          orderNumber: order.orderNumber,
+          customerId: order.customerId,
+          restaurantId: order.restaurantId,
+          courierId: order.courierId || null,
+          status: order.status,
+          paymentStatus: order.paymentStatus,
+          subtotal: String(order.subtotal),
+          tax: String(order.tax),
+          deliveryFee: String(order.deliveryFee),
+          tip: String(order.tip),
+          total: String(order.total),
+          deliveryAddress: String(order.deliveryAddress),
+          specialInstructions: order.specialInstructions || null,
+          estimatedDeliveryTime: order.estimatedDeliveryTime ? (order.estimatedDeliveryTime instanceof Date ? order.estimatedDeliveryTime.toISOString() : String(order.estimatedDeliveryTime)) : null,
+          stripePaymentIntentId: order.stripePaymentIntentId || null,
+          stripeSessionId: order.stripeSessionId || null,
+          createdAt: order.createdAt instanceof Date ? order.createdAt.toISOString() : String(order.createdAt),
+          updatedAt: order.updatedAt instanceof Date ? order.updatedAt.toISOString() : String(order.updatedAt),
+        };
       },
     });
     t.field('courier', {
@@ -57,7 +77,20 @@ export const Delivery = objectType({
           .from(users)
           .where(eq(users.id, parent.courierId))
           .limit(1);
-        return result[0] || null;
+        if (!result[0]) return null;
+        
+        const user = result[0];
+        return {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone || undefined,
+          role: user.role,
+          isActive: user.isActive,
+          createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+          updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+        } as any;
       },
     });
   },

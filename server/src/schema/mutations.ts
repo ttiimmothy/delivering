@@ -61,7 +61,17 @@ export const signup = mutationField('signup', {
     return {
       accessToken,
       refreshToken,
-      user: convertDateFields(user, ['createdAt', 'updatedAt']),
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
+        isActive: user.isActive,
+        createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+        updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+      },
     };
   },
 });
@@ -110,7 +120,17 @@ export const login = mutationField('login', {
     return {
       accessToken,
       refreshToken,
-      user: convertDateFields(user, ['createdAt', 'updatedAt']),
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
+        isActive: user.isActive,
+        createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
+        updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : String(user.updatedAt),
+      },
     };
   },
 });
@@ -240,7 +260,16 @@ export const addToCart = mutationField('addToCart', {
         })
         .where(eq(cartItems.id, existingItem[0].id))
         .returning();
-      return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+      return {
+        id: result[0].id,
+        cartId: result[0].cartId,
+        menuItemId: result[0].menuItemId,
+        quantity: result[0].quantity,
+        selectedOptions: String(result[0].selectedOptions || '[]'),
+        specialInstructions: result[0].specialInstructions || null,
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
     } else {
       // Add new item
       const result = await db.insert(cartItems).values({
@@ -250,7 +279,16 @@ export const addToCart = mutationField('addToCart', {
         selectedOptions: args.input.selectedOptions || '[]',
         specialInstructions: args.input.specialInstructions || '',
       }).returning();
-      return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+      return {
+        id: result[0].id,
+        cartId: result[0].cartId,
+        menuItemId: result[0].menuItemId,
+        quantity: result[0].quantity,
+        selectedOptions: String(result[0].selectedOptions || '[]'),
+        specialInstructions: result[0].specialInstructions || null,
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
     }
   },
 });
@@ -286,7 +324,16 @@ export const updateCartItem = mutationField('updateCartItem', {
       .where(eq(cartItems.id, args.input.cartItemId))
       .returning();
 
-        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+        return {
+        id: result[0].id,
+        cartId: result[0].cartId,
+        menuItemId: result[0].menuItemId,
+        quantity: result[0].quantity,
+        selectedOptions: String(result[0].selectedOptions || '[]'),
+        specialInstructions: result[0].specialInstructions || null,
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 
@@ -432,7 +479,27 @@ export const placeOrder = mutationField('placeOrder', {
     await db.delete(cartItems).where(eq(cartItems.cartId, cart[0].id));
     await db.delete(carts).where(eq(carts.id, cart[0].id));
 
-    return convertDateFields(order[0]);
+    return {
+      id: order[0].id,
+      orderNumber: order[0].orderNumber,
+      customerId: order[0].customerId,
+      restaurantId: order[0].restaurantId,
+      courierId: order[0].courierId || null,
+      status: order[0].status,
+      paymentStatus: order[0].paymentStatus,
+      subtotal: String(order[0].subtotal),
+      tax: String(order[0].tax),
+      deliveryFee: String(order[0].deliveryFee),
+      tip: String(order[0].tip),
+      total: String(order[0].total),
+      deliveryAddress: String(order[0].deliveryAddress),
+      specialInstructions: order[0].specialInstructions || null,
+      estimatedDeliveryTime: order[0].estimatedDeliveryTime ? (order[0].estimatedDeliveryTime instanceof Date ? order[0].estimatedDeliveryTime.toISOString() : String(order[0].estimatedDeliveryTime)) : null,
+      stripePaymentIntentId: order[0].stripePaymentIntentId || null,
+      stripeSessionId: order[0].stripeSessionId || null,
+      createdAt: order[0].createdAt instanceof Date ? order[0].createdAt.toISOString() : String(order[0].createdAt),
+      updatedAt: order[0].updatedAt instanceof Date ? order[0].updatedAt.toISOString() : String(order[0].updatedAt),
+    };
   },
 });
 
@@ -493,7 +560,27 @@ export const confirmOrder = mutationField('confirmOrder', {
       message: 'Order confirmed by restaurant',
     });
 
-    return convertDateFields(updatedOrder[0]);
+    return {
+      id: updatedOrder[0].id,
+      orderNumber: updatedOrder[0].orderNumber,
+      customerId: updatedOrder[0].customerId,
+      restaurantId: updatedOrder[0].restaurantId,
+      courierId: updatedOrder[0].courierId || null,
+      status: updatedOrder[0].status,
+      paymentStatus: updatedOrder[0].paymentStatus,
+      subtotal: String(updatedOrder[0].subtotal),
+      tax: String(updatedOrder[0].tax),
+      deliveryFee: String(updatedOrder[0].deliveryFee),
+      tip: String(updatedOrder[0].tip),
+      total: String(updatedOrder[0].total),
+      deliveryAddress: String(updatedOrder[0].deliveryAddress),
+      specialInstructions: updatedOrder[0].specialInstructions || null,
+      estimatedDeliveryTime: updatedOrder[0].estimatedDeliveryTime ? (updatedOrder[0].estimatedDeliveryTime instanceof Date ? updatedOrder[0].estimatedDeliveryTime.toISOString() : String(updatedOrder[0].estimatedDeliveryTime)) : null,
+      stripePaymentIntentId: updatedOrder[0].stripePaymentIntentId || null,
+      stripeSessionId: updatedOrder[0].stripeSessionId || null,
+      createdAt: updatedOrder[0].createdAt instanceof Date ? updatedOrder[0].createdAt.toISOString() : String(updatedOrder[0].createdAt),
+      updatedAt: updatedOrder[0].updatedAt instanceof Date ? updatedOrder[0].updatedAt.toISOString() : String(updatedOrder[0].updatedAt),
+    };
   },
 });
 
@@ -556,7 +643,11 @@ export const acceptDelivery = mutationField('acceptDelivery', {
       .where(eq(deliveries.id, args.deliveryId))
       .returning();
 
-        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+        return {
+        ...result[0],
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 
@@ -606,7 +697,11 @@ export const pickupOrder = mutationField('pickupOrder', {
       .where(eq(deliveries.id, args.deliveryId))
       .returning();
 
-        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+        return {
+        ...result[0],
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 
@@ -656,7 +751,11 @@ export const deliverOrder = mutationField('deliverOrder', {
       .where(eq(deliveries.id, args.deliveryId))
       .returning();
 
-        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+        return {
+        ...result[0],
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 
@@ -697,7 +796,18 @@ export const updateCourierLocation = mutationField('updateCourierLocation', {
       throw error;
     }
 
-        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+        return {
+        id: result[0].id,
+        userId: result[0].userId,
+        vehicleType: result[0].vehicleType as "bike" | "car" | "motorcycle",
+        licensePlate: result[0].licensePlate || null,
+        isAvailable: result[0].isAvailable,
+        rating: parseFloat(result[0].rating),
+        reviewCount: result[0].reviewCount,
+        totalDeliveries: result[0].totalDeliveries,
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 
@@ -766,7 +876,11 @@ export const setRestaurantOpen = mutationField('setRestaurantOpen', {
       .where(eq(restaurants.id, args.id))
       .returning();
 
-    return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+    return {
+        ...result[0],
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 
@@ -791,7 +905,16 @@ export const createReview = mutationField('createReview', {
       type: args.input.type,
     }).returning();
 
-    return convertDateFields(result[0], ['createdAt', 'updatedAt']);
+    return {
+        id: result[0].id,
+        orderId: result[0].orderId,
+        customerId: result[0].customerId,
+        rating: result[0].rating,
+        type: result[0].type as "courier" | "restaurant",
+        comment: result[0].comment || null,
+        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+      };
   },
 });
 

@@ -164,7 +164,7 @@ export const deliveryStatusChanged = subscriptionField('deliveryStatusChanged', 
 export const courierStatusChanged = subscriptionField('courierStatusChanged', {
   type: 'CourierStatusUpdate',
   subscribe: () => pubsub.asyncIterator('COURIER_STATUS_CHANGED'),
-  resolve: (payload) => payload.courierStatusUpdate,
+  resolve: (payload: any) => payload.courierStatusChanged,
 });
 
 // Real-time Order Updates Subscription

@@ -109,6 +109,7 @@ export const menuItemOptions = pgTable('menu_item_options', {
   isRequired: boolean('is_required').notNull().default(false),
   sortOrder: integer('sort_order').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 // Menu Item Option Values table
@@ -120,6 +121,7 @@ export const menuItemOptionValues = pgTable('menu_item_option_values', {
   isDefault: boolean('is_default').notNull().default(false),
   sortOrder: integer('sort_order').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 // Cart table

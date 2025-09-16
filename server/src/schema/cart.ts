@@ -2,6 +2,7 @@ import { objectType, inputObjectType, nonNull, stringArg, arg } from 'nexus';
 import { db } from '../db/client';
 import { carts, cartItems, menuItems } from '../db/schema';
 import { eq, and } from 'drizzle-orm';
+import { convertDateFields } from '../lib/dateHelpers';
 
 // Types
 export const Cart = objectType({
@@ -10,18 +11,24 @@ export const Cart = objectType({
     t.nonNull.string('id');
     t.nonNull.string('userId');
     t.nonNull.string('restaurantId');
-    t.nonNull.string('createdAt', {
-      resolve: (parent) => (parent.createdAt as any) instanceof Date ? (parent.createdAt as any as Date).toISOString() : parent.createdAt
-    });
-    t.nonNull.string('updatedAt', {
-      resolve: (parent) => (parent.updatedAt as any) instanceof Date ? (parent.updatedAt as any as Date).toISOString() : parent.updatedAt
-    });
+    t.nonNull.string('createdAt');
+    t.nonNull.string('updatedAt');
     t.list.field('items', {
       type: 'CartItem',
       resolve: async (parent) => {
-        return await db.select()
+        const items = await db.select()
           .from(cartItems)
           .where(eq(cartItems.cartId, parent.id));
+        return items.map(item => ({
+          id: item.id,
+          cartId: item.cartId,
+          menuItemId: item.menuItemId,
+          quantity: item.quantity,
+          selectedOptions: String(item.selectedOptions || '[]'),
+          specialInstructions: item.specialInstructions || null,
+          createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
+          updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt),
+        }));
       },
     });
   },
@@ -36,12 +43,8 @@ export const CartItem = objectType({
     t.nonNull.int('quantity');
     t.nonNull.string('selectedOptions');
     t.string('specialInstructions');
-    t.nonNull.string('createdAt', {
-      resolve: (parent) => (parent.createdAt as any) instanceof Date ? (parent.createdAt as any as Date).toISOString() : parent.createdAt
-    });
-    t.nonNull.string('updatedAt', {
-      resolve: (parent) => (parent.updatedAt as any) instanceof Date ? (parent.updatedAt as any as Date).toISOString() : parent.updatedAt
-    });
+    t.nonNull.string('createdAt');
+    t.nonNull.string('updatedAt');
     t.field('menuItem', {
       type: 'MenuItem',
       resolve: async (parent) => {
@@ -49,7 +52,14 @@ export const CartItem = objectType({
           .from(menuItems)
           .where(eq(menuItems.id, parent.menuItemId))
           .limit(1);
-        return result[0] || null;
+        if (!result[0]) return null;
+        
+        const menuItem = result[0];
+        return {
+          ...menuItem,
+          createdAt: menuItem.createdAt instanceof Date ? menuItem.createdAt.toISOString() : String(menuItem.createdAt),
+          updatedAt: menuItem.updatedAt instanceof Date ? menuItem.updatedAt.toISOString() : String(menuItem.updatedAt),
+        };
       },
     });
   },

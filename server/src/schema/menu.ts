@@ -32,7 +32,11 @@ export const MenuCategory = objectType({
             eq(menuItems.isAvailable, true)
           ))
           .orderBy(asc(menuItems.sortOrder));
-        return items.map(item => convertDateFields(item, ['createdAt', 'updatedAt']));
+        return items.map(item => ({
+          ...item,
+          createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
+          updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt),
+        }));
       },
     });
   },
@@ -59,7 +63,12 @@ export const MenuItem = objectType({
           .from(menuItemOptions)
           .where(eq(menuItemOptions.menuItemId, parent.id))
           .orderBy(asc(menuItemOptions.sortOrder));
-        return options.map(option => convertDateFields(option, ['createdAt', 'updatedAt']));
+        return options.map(option => ({
+          ...option,
+          type: option.type as "single" | "multiple",
+          createdAt: option.createdAt instanceof Date ? option.createdAt.toISOString() : String(option.createdAt),
+          updatedAt: option.updatedAt instanceof Date ? option.updatedAt.toISOString() : String(option.updatedAt),
+        }));
       },
     });
   },
@@ -83,7 +92,11 @@ export const MenuItemOption = objectType({
           .from(menuItemOptionValues)
           .where(eq(menuItemOptionValues.optionId, parent.id))
           .orderBy(asc(menuItemOptionValues.sortOrder));
-        return values.map(value => convertDateFields(value, ['createdAt', 'updatedAt']));
+        return values.map(value => ({
+          ...value,
+          createdAt: value.createdAt instanceof Date ? value.createdAt.toISOString() : String(value.createdAt),
+          updatedAt: value.updatedAt instanceof Date ? value.updatedAt.toISOString() : String(value.updatedAt),
+        }));
       },
     });
   },

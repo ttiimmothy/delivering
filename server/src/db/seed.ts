@@ -18,15 +18,20 @@ async function seed() {
   try {
     // Clear existing data (in reverse order of dependencies)
     console.log('🧹 Clearing existing data...');
-    await db.delete(menuItemOptionValues);
-    await db.delete(menuItemOptions);
-    await db.delete(menuItems);
-    await db.delete(menuCategories);
-    await db.delete(courierProfiles);
-    await db.delete(addresses);
-    await db.delete(restaurants);
-    await db.delete(users);
-    await db.delete(coupons);
+    try {
+      await db.delete(menuItemOptionValues);
+      await db.delete(menuItemOptions);
+      await db.delete(menuItems);
+      await db.delete(menuCategories);
+      await db.delete(courierProfiles);
+      await db.delete(addresses);
+      await db.delete(restaurants);
+      await db.delete(users);
+      await db.delete(coupons);
+    } catch (error) {
+      // Tables might not exist yet, that's okay
+      console.log('ℹ️  Some tables may not exist yet, continuing...');
+    }
 
     // Create demo users
     console.log('👥 Creating demo users...');
@@ -159,6 +164,7 @@ async function seed() {
         name: 'Pizza Palace',
         slug: 'pizza-palace',
         description: 'Authentic Italian pizza made with fresh ingredients',
+        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500',
         cuisine: 'Italian',
         rating: '4.5',
         reviewCount: 120,
@@ -166,6 +172,7 @@ async function seed() {
         deliveryFee: '2.99',
         minimumOrder: '15.00',
         isOpen: true,
+        isActive: true,
         addressId: pizzaAddress.id,
         phone: '+1234567894',
       },
@@ -174,6 +181,7 @@ async function seed() {
         name: 'Burger Joint',
         slug: 'burger-joint',
         description: 'Gourmet burgers with locally sourced beef',
+        image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500',
         cuisine: 'American',
         rating: '4.3',
         reviewCount: 85,
@@ -181,6 +189,7 @@ async function seed() {
         deliveryFee: '1.99',
         minimumOrder: '12.00',
         isOpen: true,
+        isActive: true,
         addressId: burgerAddress.id,
         phone: '+1234567895',
       },
@@ -189,6 +198,7 @@ async function seed() {
         name: 'Sushi Spot',
         slug: 'sushi-spot',
         description: 'Fresh sushi and Japanese cuisine',
+        image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500',
         cuisine: 'Japanese',
         rating: '4.7',
         reviewCount: 200,
@@ -196,6 +206,7 @@ async function seed() {
         deliveryFee: '3.99',
         minimumOrder: '20.00',
         isOpen: true,
+        isActive: true,
         addressId: sushiAddress.id,
         phone: '+1234567896',
       },

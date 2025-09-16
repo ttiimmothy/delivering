@@ -11,12 +11,10 @@ type Address {
   createdAt: String!
   id: String!
   isDefault: Boolean!
-  label: String!
-  latitude: Float!
-  longitude: Float!
   state: String!
   street: String!
   updatedAt: String!
+  user: User
   userId: String!
   zipCode: String!
 }
@@ -25,12 +23,14 @@ input AddressInput {
   city: String!
   country: String!
   isDefault: Boolean
-  label: String!
-  latitude: Float!
-  longitude: Float!
   state: String!
   street: String!
   zipCode: String!
+}
+
+input AssignCourierInput {
+  courierId: String!
+  orderId: String!
 }
 
 type AuthResponse {
@@ -50,7 +50,6 @@ type Cart {
   createdAt: String!
   id: String!
   items: [CartItem]
-  restaurant: Restaurant
   restaurantId: String!
   updatedAt: String!
   userId: String!
@@ -70,20 +69,18 @@ type CartItem {
 
 type CheckoutSession {
   createdAt: String!
-  customerEmail: String
-  customerId: String
+  customerEmail: String!
+  customerId: String!
   expiresAt: String!
   id: String!
-  paymentIntentId: String
   status: String!
   url: String!
 }
 
 type CourierLocationUpdate {
-  courierId: String!
   deliveryId: String!
-  estimatedArrival: String
-  location: Location
+  latitude: Float!
+  longitude: Float!
   timestamp: String!
 }
 
@@ -104,7 +101,7 @@ type CourierProfile {
 
 input CourierProfileInput {
   currentLocation: LocationInput
-  isAvailable: Boolean
+  isAvailable: Boolean = true
   licensePlate: String
   vehicleType: VehicleType!
 }
@@ -112,13 +109,15 @@ input CourierProfileInput {
 type CourierStatusUpdate {
   courierId: String!
   isAvailable: Boolean!
-  timestamp: String!
+  updatedAt: String!
 }
 
 type CourierTrackingUpdate {
   courierId: String!
-  currentLocation: Location
-  estimatedArrival: String
+  deliveryId: String!
+  latitude: Float!
+  longitude: Float!
+  status: String!
   timestamp: String!
 }
 
@@ -129,8 +128,7 @@ input CreateBillingPortalSessionInput {
 
 input CreateCheckoutSessionInput {
   cancelUrl: String!
-  customerEmail: String
-  orderId: String!
+  priceId: String!
   successUrl: String!
 }
 
@@ -141,73 +139,111 @@ input CreateCourierProfileInput {
   vehicleType: VehicleType!
 }
 
+input CreateInvoiceInput {
+  courierAmount: String!
+  courierId: String
+  orderId: String!
+  platformFee: String!
+  restaurantAmount: String!
+  restaurantId: String!
+}
+
+input CreateMenuCategoryInput {
+  description: String
+  isActive: Boolean
+  name: String!
+  restaurantId: String!
+  sortOrder: Int
+}
+
+input CreateMenuItemInput {
+  categoryId: String!
+  description: String
+  image: String
+  isAvailable: Boolean
+  name: String!
+  price: String!
+  restaurantId: String!
+  sortOrder: Int
+}
+
+input CreateMenuItemOptionInput {
+  isRequired: Boolean
+  menuItemId: String!
+  name: String!
+  sortOrder: Int
+  type: MenuItemOptionType!
+}
+
+input CreateMenuItemOptionValueInput {
+  name: String!
+  optionId: String!
+  price: String!
+  sortOrder: Int
+}
+
 input CreateOrderInput {
   deliveryAddress: String!
+  restaurantId: String!
   specialInstructions: String
-  tip: Float
+  stripePaymentIntentId: String
 }
 
 input CreatePaymentIntentInput {
-  amount: Float!
-  currency: String
-  description: String
-  metadata: String
+  amount: String!
+  currency: String!
 }
 
 input CreateRefundInput {
-  amount: Float
+  amount: String
   paymentIntentId: String!
   reason: String
 }
 
 input CreateRestaurantInput {
-  address: RestaurantAddressInput!
+  address: AddressInput!
   cuisine: String!
-  deliveryFee: Float
-  deliveryTime: Int
+  deliveryFee: String!
+  deliveryTime: Int!
   description: String
-  email: String
-  minimumOrder: Float
+  image: String
+  minimumOrder: String!
   name: String!
-  phone: String!
+  phone: String
+  slug: String!
 }
 
 input CreateReviewInput {
   comment: String
-  courierId: String
-  orderId: String
+  orderId: String!
   rating: Int!
-  restaurantId: String
   type: ReviewType!
 }
 
 """
-A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
 
 type Delivery {
-  acceptedAt: String
-  assignedAt: String!
+  assignedAt: DateTime!
   courier: User
   courierId: String!
   createdAt: String!
   currentLocation: Location
-  deliveredAt: String
   estimatedArrival: String
   id: String!
   order: Order
   orderId: String!
-  pickedUpAt: String
   status: DeliveryStatus!
   updatedAt: String!
 }
 
 type DeliveryAssignment {
-  assignedBy: String!
+  assignedAt: String!
   courierId: String!
   deliveryId: String!
-  timestamp: String!
+  orderId: String!
 }
 
 enum DeliveryStatus {
@@ -221,7 +257,30 @@ type DeliveryStatusUpdate {
   deliveryId: String!
   message: String
   status: String!
-  timestamp: String!
+  updatedAt: String!
+}
+
+type Invoice {
+  courier: User
+  courierAmount: String!
+  courierId: String
+  createdAt: String!
+  id: String!
+  order: Order
+  orderId: String!
+  platformFee: String!
+  restaurant: Restaurant
+  restaurantAmount: String!
+  restaurantId: String!
+  status: InvoiceStatus!
+  stripeTransferId: String
+  updatedAt: String!
+}
+
+enum InvoiceStatus {
+  failed
+  paid
+  pending
 }
 
 """A location object with latitude and longitude"""
@@ -254,10 +313,9 @@ type MenuItem {
   id: String!
   image: String
   isAvailable: Boolean!
-  isPopular: Boolean!
   name: String!
   options: [MenuItemOption]
-  price: Float!
+  price: String!
   restaurantId: String!
   sortOrder: Int!
   updatedAt: String!
@@ -270,8 +328,24 @@ type MenuItemOption {
   menuItemId: String!
   name: String!
   sortOrder: Int!
-  type: OptionType!
-  values: [OptionValue]
+  type: MenuItemOptionType!
+  updatedAt: String!
+  values: [MenuItemOptionValue]
+}
+
+enum MenuItemOptionType {
+  multiple
+  single
+}
+
+type MenuItemOptionValue {
+  createdAt: String!
+  id: String!
+  name: String!
+  optionId: String!
+  price: String!
+  sortOrder: Int!
+  updatedAt: String!
 }
 
 type Mutation {
@@ -283,6 +357,7 @@ type Mutation {
   confirmPaymentIntent(paymentIntentId: String!): PaymentIntent
   createBillingPortalSession(input: CreateBillingPortalSessionInput!): BillingPortalSession
   createCheckoutSession(input: CreateCheckoutSessionInput!): CheckoutSession
+  createInvoice(input: CreateInvoiceInput!): Invoice
   createPaymentIntent(input: CreatePaymentIntentInput!): PaymentIntent
   createRefund(input: CreateRefundInput!): Refund
   createReview(input: CreateReviewInput!): Review
@@ -290,8 +365,10 @@ type Mutation {
   login(input: LoginInput!): AuthResponse
   loginWithGoogle(idToken: String!): AuthResponse
   logout: Boolean
+  markPayoutFailed(invoiceId: String!): Invoice
   pickupOrder(deliveryId: String!): Delivery
   placeOrder(input: CreateOrderInput!): Order
+  processPayout(input: ProcessPayoutInput!): Invoice
   refreshToken(refreshToken: String!): RefreshTokenResponse
   removeFromCart(input: RemoveFromCartInput!): Boolean
   setRestaurantOpen(id: String!, isOpen: Boolean!): Restaurant
@@ -299,21 +376,7 @@ type Mutation {
   toggleFavorite(restaurantId: String!): Boolean
   updateCartItem(input: UpdateCartItemInput!): CartItem
   updateCourierLocation(input: UpdateCourierLocationInput!): CourierProfile
-}
-
-enum OptionType {
-  multiple
-  single
-}
-
-type OptionValue {
-  createdAt: String!
-  id: String!
-  isDefault: Boolean!
-  name: String!
-  optionId: String!
-  price: Float!
-  sortOrder: Int!
+  updateInvoiceStatus(input: UpdateInvoiceStatusInput!): Invoice
 }
 
 type Order {
@@ -323,7 +386,7 @@ type Order {
   customer: User
   customerId: String!
   deliveryAddress: String!
-  deliveryFee: Float!
+  deliveryFee: String!
   estimatedDeliveryTime: String
   events: [OrderEvent]
   id: String!
@@ -334,20 +397,22 @@ type Order {
   restaurantId: String!
   specialInstructions: String
   status: OrderStatus!
-  subtotal: Float!
-  tax: Float!
-  tip: Float!
-  total: Float!
+  stripePaymentIntentId: String
+  stripeSessionId: String
+  subtotal: String!
+  tax: String!
+  tip: String!
+  total: String!
   updatedAt: String!
 }
 
 type OrderEvent {
   createdAt: String!
+  description: String
+  eventType: String!
   id: String!
-  message: String
-  metadata: String
+  order: Order
   orderId: String!
-  status: OrderStatus!
 }
 
 type OrderItem {
@@ -356,19 +421,17 @@ type OrderItem {
   menuItem: MenuItem
   menuItemId: String!
   orderId: String!
+  price: String!
   quantity: Int!
   selectedOptions: String!
   specialInstructions: String
-  totalPrice: Float!
-  unitPrice: Float!
+  updatedAt: String!
 }
 
 type OrderQueueUpdate {
-  pendingOrders: [Order]!
-  preparingOrders: [Order]!
-  readyOrders: [Order]!
+  queueLength: Int!
   restaurantId: String!
-  timestamp: String!
+  updatedAt: String!
 }
 
 enum OrderStatus {
@@ -382,30 +445,26 @@ enum OrderStatus {
 }
 
 type OrderTrackingUpdate {
-  courier: User
-  currentLocation: Location
-  estimatedDelivery: String
+  courierId: String
+  message: String
   orderId: String!
   status: String!
-  timestamp: String!
+  updatedAt: String!
 }
 
 type OrderUpdate {
   message: String
-  metadata: String
   orderId: String!
   status: String!
-  timestamp: String!
+  updatedAt: String!
 }
 
 type PaymentIntent {
-  amount: Int!
+  amount: String!
   clientSecret: String!
   createdAt: String!
   currency: String!
-  description: String
   id: String!
-  metadata: String
   status: String!
 }
 
@@ -416,15 +475,47 @@ enum PaymentStatus {
   refunded
 }
 
+type Payout {
+  amount: String!
+  createdAt: String!
+  failureReason: String
+  id: String!
+  processedAt: String
+  recipient: User
+  recipientId: String!
+  recipientType: String!
+  restaurant: Restaurant
+  status: PayoutStatus!
+  stripePayoutId: String
+  stripeTransferId: String
+  updatedAt: String!
+}
+
+enum PayoutStatus {
+  cancelled
+  completed
+  failed
+  pending
+  processing
+}
+
+input ProcessPayoutInput {
+  invoiceId: String!
+  stripeTransferId: String!
+}
+
 type Query {
   cart: Cart
   courierAssignments: [Delivery]!
   favoriteRestaurants: [Restaurant]!
+  invoice(id: String!): Invoice
+  invoices(courierId: String, limit: Int, offset: Int, restaurantId: String, status: InvoiceStatus): [Invoice]
   me: User
   merchantOrders(limit: Int, offset: Int, status: OrderStatus): [Order]!
   order(id: String!): Order
   orders(limit: Int, offset: Int, status: OrderStatus): [Order]!
   paymentIntent(paymentIntentId: String!): PaymentIntent
+  payoutSummary(role: String!, userId: String!): String
   restaurant(slug: String!): Restaurant
   restaurants(cuisine: String, isOpen: Boolean, limit: Int, offset: Int, search: String, sortBy: String, sortOrder: String): [Restaurant]!
   reviews(courierId: String, limit: Int, offset: Int, restaurantId: String): [Review]!
@@ -436,11 +527,11 @@ type RefreshTokenResponse {
 }
 
 type Refund {
-  amount: Int!
+  amount: String!
   createdAt: String!
   currency: String!
   id: String!
-  reason: String
+  reason: String!
   status: String!
 }
 
@@ -450,47 +541,39 @@ input RemoveFromCartInput {
 
 type Restaurant {
   address: Address
+  addressId: String!
   createdAt: String!
   cuisine: String!
-  deliveryFee: Float!
+  deliveryFee: String!
   deliveryTime: Int!
   description: String
-  id: String!
+  id: ID!
   image: String
   isActive: Boolean!
-  isFavorite: Boolean
   isOpen: Boolean!
   menuCategories: [MenuCategory]
-  minimumOrder: Float!
+  menuItems(categoryId: String, limit: Int = 50): [MenuItem]
+  minimumOrder: String!
   name: String!
+  owner: User
+  ownerId: String!
   phone: String
-  rating: Float
+  rating: String
   reviewCount: Int!
   slug: String!
   updatedAt: String!
 }
 
-input RestaurantAddressInput {
-  city: String!
-  country: String
-  state: String!
-  street: String!
-  zipCode: String!
-}
-
 type Review {
   comment: String
   courier: User
-  courierId: String
   createdAt: String!
   customer: User
   customerId: String!
   id: String!
-  order: Order
   orderId: String!
   rating: Int!
   restaurant: Restaurant
-  restaurantId: String
   type: ReviewType!
   updatedAt: String!
 }
@@ -506,6 +589,7 @@ input SignupInput {
   lastName: String!
   password: String!
   phone: String
+  role: UserRole!
 }
 
 type Subscription {
@@ -540,32 +624,67 @@ input UpdateCourierProfileInput {
   vehicleType: VehicleType
 }
 
+input UpdateInvoiceStatusInput {
+  id: String!
+  status: InvoiceStatus!
+  stripeTransferId: String
+}
+
+input UpdateMenuCategoryInput {
+  categoryId: String!
+  description: String
+  isActive: Boolean
+  name: String
+  sortOrder: Int
+}
+
+input UpdateMenuItemInput {
+  description: String
+  image: String
+  isAvailable: Boolean
+  menuItemId: String!
+  name: String
+  price: String
+  sortOrder: Int
+}
+
+input UpdateOrderStatusInput {
+  orderId: String!
+  status: OrderStatus!
+}
+
 input UpdateProfileInput {
-  avatar: String
   firstName: String
   lastName: String
   phone: String
 }
 
 input UpdateRestaurantInput {
-  address: RestaurantAddressInput
+  address: AddressInput
   cuisine: String
-  deliveryFee: Float
+  deliveryFee: String
   deliveryTime: Int
   description: String
-  email: String
-  minimumOrder: Float
+  image: String
+  isActive: Boolean
+  isOpen: Boolean
+  minimumOrder: String
   name: String
   phone: String
+  restaurantId: String!
+  slug: String
+}
+
+input UpdateReviewInput {
+  comment: String
+  rating: Int
+  reviewId: String!
 }
 
 type User {
-  addresses: [Address]
-  avatar: String
   courierProfile: CourierProfile
   createdAt: String!
   email: String!
-  emailVerified: Boolean!
   firstName: String!
   id: String!
   isActive: Boolean!
@@ -579,7 +698,7 @@ enum UserRole {
   admin
   courier
   customer
-  merchant
+  restaurant
 }
 
 enum VehicleType {
