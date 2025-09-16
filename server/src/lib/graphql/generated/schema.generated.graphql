@@ -1,0 +1,504 @@
+input AddToCartInput {
+  menuItemId: String!
+  quantity: Int!
+  selectedOptions: JSON
+  specialInstructions: String
+}
+
+type Address {
+  city: String!
+  country: String!
+  createdAt: DateTime!
+  id: ID!
+  isDefault: Boolean!
+  label: String!
+  latitude: Float!
+  longitude: Float!
+  state: String!
+  street: String!
+  updatedAt: DateTime!
+  zipCode: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+type BillingPortalSession {
+  createdAt: DateTime!
+  id: String!
+  returnUrl: String!
+  url: String!
+}
+
+type Cart {
+  createdAt: DateTime!
+  id: ID!
+  items: [CartItem!]!
+  restaurant: Restaurant
+  restaurantId: String!
+  updatedAt: DateTime!
+}
+
+type CartItem {
+  createdAt: DateTime!
+  id: ID!
+  menuItem: MenuItem
+  menuItemId: String!
+  quantity: Int!
+  selectedOptions: JSON
+  specialInstructions: String
+  updatedAt: DateTime!
+}
+
+type CheckoutSession {
+  createdAt: DateTime!
+  customerEmail: String
+  customerId: String
+  expiresAt: DateTime!
+  id: String!
+  paymentIntentId: String
+  status: String!
+  url: String!
+}
+
+type CourierLocationUpdate {
+  courierId: String!
+  deliveryId: String!
+  estimatedArrival: DateTime
+  location: Location!
+  timestamp: DateTime!
+}
+
+type CourierProfile {
+  createdAt: DateTime!
+  currentLocation: Location
+  id: ID!
+  isAvailable: Boolean!
+  licensePlate: String
+  rating: Float
+  reviewCount: Int!
+  totalDeliveries: Int!
+  updatedAt: DateTime!
+  vehicleType: VehicleType!
+}
+
+type CourierStatusUpdate {
+  courierId: String!
+  isAvailable: Boolean!
+  timestamp: DateTime!
+}
+
+input CreateBillingPortalSessionInput {
+  customerId: String!
+  returnUrl: String!
+}
+
+input CreateCheckoutSessionInput {
+  cancelUrl: String!
+  orderId: String!
+  successUrl: String!
+}
+
+input CreateOrderInput {
+  deliveryAddress: String!
+  specialInstructions: String
+  tip: Float
+}
+
+input CreatePaymentIntentInput {
+  amount: Int!
+  currency: String!
+  description: String
+  metadata: JSON
+  orderId: String!
+}
+
+input CreateRefundInput {
+  amount: Int
+  paymentIntentId: String!
+  reason: String
+}
+
+input CreateReviewInput {
+  comment: String
+  courierId: String
+  rating: Int!
+  restaurantId: String
+  type: ReviewType!
+}
+
+type CustomerOrderTracking {
+  courier: User
+  currentLocation: Location
+  estimatedDelivery: DateTime
+  orderId: String!
+  status: OrderStatus!
+  timestamp: DateTime!
+}
+
+scalar DateTime
+
+type Delivery {
+  acceptedAt: DateTime
+  assignedAt: DateTime!
+  courier: User!
+  courierId: String!
+  currentLocation: Location
+  deliveredAt: DateTime
+  estimatedArrival: DateTime
+  id: ID!
+  order: Order!
+  orderId: String!
+  pickedUpAt: DateTime
+  status: DeliveryStatus!
+}
+
+type DeliveryAssignment {
+  assignedBy: String!
+  courierId: String!
+  deliveryId: String!
+  timestamp: DateTime!
+}
+
+enum DeliveryStatus {
+  ACCEPTED
+  ASSIGNED
+  CANCELLED
+  DELIVERED
+  PICKED_UP
+}
+
+type DeliveryStatusUpdate {
+  deliveryId: String!
+  message: String!
+  status: DeliveryStatus!
+  timestamp: DateTime!
+}
+
+scalar JSON
+
+type Location {
+  latitude: Float!
+  longitude: Float!
+  timestamp: DateTime
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type MenuCategory {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isActive: Boolean!
+  menuItems: [MenuItem!]!
+  name: String!
+  sortOrder: Int!
+  updatedAt: DateTime!
+}
+
+type MenuItem {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  image: String
+  isAvailable: Boolean!
+  isPopular: Boolean!
+  name: String!
+  options: [MenuItemOption!]!
+  price: Float!
+  sortOrder: Int!
+  updatedAt: DateTime!
+}
+
+type MenuItemOption {
+  createdAt: DateTime!
+  id: ID!
+  isRequired: Boolean!
+  name: String!
+  sortOrder: Int!
+  type: OptionType!
+  values: [OptionValue!]!
+}
+
+type Mutation {
+  acceptDelivery(deliveryId: String!): Delivery!
+  addToCart(input: AddToCartInput!): CartItem!
+  cancelPaymentIntent(paymentIntentId: String!): PaymentIntent!
+  clearCart: Boolean!
+  confirmOrder(orderId: String!): Order!
+  confirmPaymentIntent(paymentIntentId: String!): PaymentIntent!
+  createBillingPortalSession(input: CreateBillingPortalSessionInput!): BillingPortalSession!
+  createCheckoutSession(input: CreateCheckoutSessionInput!): CheckoutSession!
+  createPaymentIntent(input: CreatePaymentIntentInput!): PaymentIntent!
+  createRefund(input: CreateRefundInput!): Refund!
+  createReview(input: CreateReviewInput!): Review!
+  deliverOrder(deliveryId: String!): Delivery!
+  login(input: LoginInput!): AuthResponse!
+  loginWithGoogle(idToken: String!): AuthResponse!
+  logout: Boolean!
+  pickupOrder(deliveryId: String!): Delivery!
+  placeOrder(input: CreateOrderInput!): Order!
+  refreshToken(refreshToken: String!): RefreshTokenResponse!
+  removeFromCart(input: RemoveFromCartInput!): Boolean!
+  setRestaurantOpen(id: String!, isOpen: Boolean!): Restaurant!
+  signup(input: SignupInput!): AuthResponse!
+  toggleFavorite(restaurantId: String!): Boolean!
+  updateCartItem(input: UpdateCartItemInput!): CartItem!
+  updateCourierLocation(input: UpdateCourierLocationInput!): CourierProfile!
+}
+
+enum OptionType {
+  MULTIPLE
+  SINGLE
+}
+
+type OptionValue {
+  createdAt: DateTime!
+  id: ID!
+  isDefault: Boolean!
+  name: String!
+  price: Float!
+  sortOrder: Int!
+}
+
+type Order {
+  courier: User
+  createdAt: DateTime!
+  customer: User!
+  deliveryAddress: String!
+  deliveryFee: Float!
+  estimatedDeliveryTime: DateTime
+  events: [OrderEvent!]!
+  id: ID!
+  items: [OrderItem!]!
+  orderNumber: String!
+  paymentStatus: PaymentStatus!
+  restaurant: Restaurant!
+  specialInstructions: String
+  status: OrderStatus!
+  subtotal: Float!
+  tax: Float!
+  tip: Float!
+  total: Float!
+  updatedAt: DateTime!
+}
+
+type OrderEvent {
+  createdAt: DateTime!
+  id: ID!
+  message: String!
+  metadata: JSON
+  status: OrderStatus!
+}
+
+type OrderItem {
+  id: ID!
+  menuItem: MenuItem
+  menuItemId: String!
+  quantity: Int!
+  selectedOptions: JSON
+  specialInstructions: String
+  totalPrice: Float!
+  unitPrice: Float!
+}
+
+enum OrderStatus {
+  CANCELLED
+  CONFIRMED
+  DELIVERED
+  PENDING
+  PICKED_UP
+  PREPARING
+  READY
+}
+
+type OrderUpdate {
+  message: String!
+  metadata: JSON
+  orderId: String!
+  status: OrderStatus!
+  timestamp: DateTime!
+}
+
+type PaymentIntent {
+  amount: Int!
+  clientSecret: String!
+  createdAt: DateTime!
+  currency: String!
+  description: String
+  id: String!
+  metadata: JSON
+  status: String!
+}
+
+enum PaymentStatus {
+  FAILED
+  PAID
+  PENDING
+  REFUNDED
+}
+
+type Payout {
+  amount: Float!
+  createdAt: DateTime!
+  id: ID!
+  processedAt: DateTime
+  restaurant: Restaurant!
+  restaurantId: String!
+  status: PayoutStatus!
+  updatedAt: DateTime!
+}
+
+enum PayoutStatus {
+  FAILED
+  PENDING
+  PROCESSED
+}
+
+type Query {
+  cart: Cart
+  courierAssignments: [Delivery!]!
+  favoriteRestaurants: [Restaurant!]!
+  me: User
+  merchantOrders(limit: Int, offset: Int, status: OrderStatus): [Order!]!
+  order(id: String!): Order
+  orders(limit: Int, offset: Int, status: OrderStatus): [Order!]!
+  paymentIntent(paymentIntentId: String!): PaymentIntent
+  restaurant(slug: String!): Restaurant
+  restaurants(cuisine: String, isOpen: Boolean, limit: Int, offset: Int, search: String, sortBy: String, sortOrder: String): [Restaurant!]!
+  reviews(courierId: String, limit: Int, offset: Int, restaurantId: String): [Review!]!
+}
+
+type RefreshTokenResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type Refund {
+  amount: Int!
+  createdAt: DateTime!
+  currency: String!
+  id: String!
+  reason: String
+  status: String!
+}
+
+input RemoveFromCartInput {
+  cartItemId: String!
+}
+
+type Restaurant {
+  address: Address!
+  createdAt: DateTime!
+  cuisine: String!
+  deliveryFee: Float!
+  deliveryTime: Int!
+  description: String
+  id: ID!
+  image: String
+  isActive: Boolean!
+  isFavorite: Boolean
+  isOpen: Boolean!
+  menuCategories: [MenuCategory!]!
+  minimumOrder: Float!
+  name: String!
+  phone: String
+  rating: Float
+  reviewCount: Int!
+  slug: String!
+  updatedAt: DateTime!
+}
+
+type RestaurantOrderQueue {
+  pendingOrders: [Order!]!
+  preparingOrders: [Order!]!
+  readyOrders: [Order!]!
+  restaurantId: String!
+  timestamp: DateTime!
+}
+
+type Review {
+  comment: String
+  courier: User
+  createdAt: DateTime!
+  customer: User!
+  id: ID!
+  rating: Int!
+  restaurant: Restaurant
+  type: ReviewType!
+  updatedAt: DateTime!
+}
+
+enum ReviewType {
+  COURIER
+  RESTAURANT
+}
+
+input SignupInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  phone: String
+}
+
+type Subscription {
+  courierLocation(deliveryId: String!): CourierLocationUpdate!
+  courierStatusChanged: CourierStatusUpdate!
+  customerOrderTracking(orderId: String!): CustomerOrderTracking!
+  deliveryAssigned(courierId: String!): DeliveryAssignment!
+  deliveryStatusChanged(deliveryId: String!): DeliveryStatusUpdate!
+  liveCourierTracking(courierId: String!): CourierLocationUpdate!
+  merchantIncomingOrders(restaurantId: String!): Order!
+  orderStatusChanged(orderId: String!): OrderEvent!
+  realTimeOrderUpdates(orderId: String!): OrderUpdate!
+  restaurantOrderQueue(restaurantId: String!): RestaurantOrderQueue!
+}
+
+input UpdateCartItemInput {
+  cartItemId: String!
+  quantity: Int!
+  selectedOptions: JSON
+  specialInstructions: String
+}
+
+input UpdateCourierLocationInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+type User {
+  addresses: [Address!]!
+  avatar: String
+  courierProfile: CourierProfile
+  createdAt: DateTime!
+  email: String!
+  emailVerified: Boolean!
+  firstName: String!
+  id: ID!
+  isActive: Boolean!
+  lastName: String!
+  phone: String
+  role: UserRole!
+  updatedAt: DateTime!
+}
+
+enum UserRole {
+  ADMIN
+  COURIER
+  CUSTOMER
+  MERCHANT
+}
+
+enum VehicleType {
+  BICYCLE
+  CAR
+  MOTORCYCLE
+  WALKING
+}

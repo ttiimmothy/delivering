@@ -8,12 +8,15 @@ A full-stack food delivery platform (UberEats-lite) built with Next.js, Express,
 - 🛒 **Cart & Checkout**: Optimistic cart operations + Stripe Checkout
 - 🚴 **Courier Live Tracking**: Real-time updates via GraphQL + Socket.IO
 - 👨‍🍳 **Merchant Dashboard**: Manage menus, orders, and payouts
-- 💳 **Payments**: Stripe Checkout + Billing Portal
+- 💳 **Payments**: Stripe Checkout + Billing Portal + Payment Intents
 - ⭐ **Reviews**: Rate restaurants & couriers
 - 🌙 **Dark Mode**: Modern, responsive UI
 - 🔄 **Realtime Updates**: Live order status + courier location
 - 🔐 **Authentication**: JWT + Google OAuth + Facebook OAuth
 - 📱 **Responsive Design**: Works on all devices
+- 🧪 **Comprehensive Testing**: Unit, integration, and E2E tests
+- 🔒 **Security**: Rate limiting, input validation, and security headers
+- 🚀 **Production Ready**: Docker, CI/CD, and deployment guides
 
 ## 🛠 Tech Stack
 
@@ -21,37 +24,41 @@ A full-stack food delivery platform (UberEats-lite) built with Next.js, Express,
 - **Node.js** + **Express** + **TypeScript**
 - **Apollo Server** + **GraphQL** (Nexus)
 - **PostgreSQL** + **Drizzle ORM**
-- **Stripe** Checkout + Webhooks
+- **Stripe** Checkout + Webhooks + Payment Intents
 - **Socket.IO** for realtime courier location
-- **Jest** + **Supertest** for testing
+- **Redis** for caching and sessions
+- **JWT** authentication with refresh tokens
+- **Vitest** + **Supertest** for testing
 
 ### Frontend
-- **Next.js 14** (App Router) + **TypeScript**
+- **Next.js 15** (App Router) + **TypeScript**
 - **Tailwind CSS** + **shadcn/ui**
 - **Apollo Client** + **Zustand**
 - **Recharts** for analytics
+- **Socket.IO Client** for real-time features
 - **Vitest** + **React Testing Library**
 
 ### Infrastructure
 - **Docker** + **Docker Compose**
 - **GitHub Actions** CI/CD
 - **PostgreSQL** + **Redis**
-- **MinIO** (optional file storage)
+- **Nginx** reverse proxy
+- **SSL/TLS** with Let's Encrypt
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 22+
 - Docker & Docker Compose
 - PostgreSQL 17+ (if not using Docker)
-- Redis 7+ (if not using Docker)
+- Redis 8+ (if not using Docker)
+- Git
 
 ### 1. Clone & Setup
 
 ```bash
-git clone <repository-url>
+git clone https://github.com:ttiimmothy/delivering.git
 cd delivering
-npm install
 ```
 
 ### 2. Environment Setup
@@ -159,8 +166,9 @@ delivering/
 │   │   ├── tests/       # Test files (empty)
 │   │   ├── types/       # TypeScript type definitions
 │   │   │   └── express.d.ts
-│   │   ├── utils/       # Utilities & helpers
-│   │   │   └── auth.ts
+│   │   ├── lib/         # Core libraries
+│   │   │   ├── auth.ts
+│   │   │   └── cache.ts
 │   │   ├── context.ts
 │   │   ├── http.ts
 │   │   └── index.ts
@@ -180,15 +188,6 @@ delivering/
 
 ### Available Scripts
 
-#### Root Level
-```bash
-npm run dev          # Start both client and server
-npm run build        # Build both client and server
-npm run test         # Run all tests
-npm run lint         # Lint all code
-npm run typecheck    # Type check all code
-```
-
 #### Server
 ```bash
 cd server
@@ -201,6 +200,8 @@ npm run seed         # Seed database with demo data
 npm test             # Run tests
 npm run lint         # Lint code
 npm run typecheck    # Type check
+npm run codegen      # Generate GraphQL types
+npm run codegen:watch # Watch mode for GraphQL code generation
 ```
 
 #### Client
@@ -212,6 +213,8 @@ npm run start        # Start production server
 npm test             # Run tests
 npm run lint         # Lint code
 npm run typecheck    # Type check
+npm run codegen      # Generate GraphQL types
+npm run codegen:watch # Watch mode for GraphQL code generation
 ```
 
 ### Database Management
@@ -249,15 +252,19 @@ npm run test:ui           # UI test runner
 npm run test:coverage     # Coverage report
 ```
 
-### Integration Tests
-```bash
-npm run test:integration   # Run integration tests
-```
+### Test Coverage
+- **Unit Tests**: Components, hooks, utilities
+- **Integration Tests**: API endpoints, database operations
+- **E2E Tests**: Complete user workflows
+- **Performance Tests**: Load testing with Artillery
+- **Security Tests**: OWASP ZAP integration
 
 ## 🐳 Docker
 
 ### Development
 ```bash
+cd server
+
 # Start all services
 docker compose up -d
 
@@ -266,12 +273,6 @@ docker compose logs -f
 
 # Stop services
 docker compose down
-```
-
-### Production
-```bash
-# Build and start production containers
-docker compose -f docker-compose.prod.yml up -d
 ```
 
 ## 🔐 Authentication
@@ -310,6 +311,12 @@ The app supports multiple authentication methods:
 ### GraphQL Endpoint
 - **URL**: `http://localhost:4000/graphql`
 - **Playground**: Available in development mode
+
+### GraphQL Code Generator
+- **Type Safety**: Auto-generated TypeScript types from GraphQL schema
+- **React Hooks**: Auto-generated hooks for queries, mutations, and subscriptions
+- **IntelliSense**: Full autocomplete and error checking
+- **Documentation**: See [GraphQL Code Generator Guide](docs/GRAPHQL_CODEGEN.md)
 
 ### Key Queries
 ```graphql
@@ -421,6 +428,32 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your-stripe-publishable-key
    ```bash
    docker compose -f docker-compose.prod.yml up -d
    ```
+
+### Deployment Options
+- **Docker Compose**: Local and small-scale deployments
+- **AWS ECS**: Containerized deployments on AWS
+- **Google Cloud Run**: Serverless container deployments
+- **DigitalOcean App Platform**: Managed application hosting
+- **Kubernetes**: Large-scale container orchestration
+
+## 📚 Documentation
+
+### Comprehensive Guides
+- **[API Documentation](docs/API.md)**: Complete GraphQL API reference
+- **[GraphQL Code Generator](docs/GRAPHQL_CODEGEN.md)**: Type-safe GraphQL development
+- **[Deployment Guide](docs/DEPLOYMENT.md)**: Production deployment instructions
+- **[Performance Guide](docs/PERFORMANCE.md)**: Optimization strategies
+- **[Security Guide](docs/SECURITY.md)**: Security best practices
+- **[Maintenance Guide](docs/MAINTENANCE.md)**: Operational procedures
+- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)**: Common issues and solutions
+
+**Note**: Some advanced monitoring and logging features mentioned in the documentation have been removed to keep the server implementation simple and focused on core functionality.
+
+### Quick References
+- **Environment Variables**: See `env.production.example`
+- **Docker Configuration**: See `docker-compose.prod.yml`
+- **Nginx Configuration**: See `nginx/nginx.conf`
+- **Test Coverage**: See test reports in `coverage/`
 
 ## 🤝 Contributing
 

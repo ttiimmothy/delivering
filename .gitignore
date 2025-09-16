@@ -121,3 +121,5 @@ client/.next/
 client/out/
 spec.txt
 client/Dockerfile
+docs
+nginx

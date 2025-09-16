@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { JWTPayload, getCurrentUser } from './utils/auth';
+import { JWTPayload, getCurrentUser } from './lib/auth';
 import { db } from './db/client';
 
 export interface Context {

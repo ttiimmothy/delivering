@@ -1,0 +1,121 @@
+import { useQuery, useMutation } from '@apollo/client';
+import { 
+  cartQuery, 
+  addToCartMutation, 
+  updateCartItemMutation,
+  removeFromCartMutation,
+  clearCartMutation 
+} from '@/lib/graphql/operations';
+import { 
+  AddToCartInput, 
+  UpdateCartItemInput, 
+  RemoveFromCartInput,
+  Cart,
+  CartItem 
+} from '@/types/graphql';
+
+export const useCart = () => {
+  const { data, loading, error, refetch } = useQuery(cartQuery, {
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-and-network',
+  });
+
+  return {
+    cart: data?.cart || null,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+export const useAddToCart = () => {
+  const [addToCartMutationFn, { loading, error }] = useMutation(addToCartMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const addToCart = async (input: AddToCartInput): Promise<CartItem | null> => {
+    try {
+      const { data } = await addToCartMutationFn({ variables: { input } });
+      return data?.addToCart || null;
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      throw error;
+    }
+  };
+
+  return {
+    addToCart,
+    loading,
+    error,
+  };
+};
+
+export const useUpdateCartItem = () => {
+  const [updateCartItemMutationFn, { loading, error }] = useMutation(updateCartItemMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const updateCartItem = async (input: UpdateCartItemInput): Promise<CartItem | null> => {
+    try {
+      const { data } = await updateCartItemMutationFn({ variables: { input } });
+      return data?.updateCartItem || null;
+    } catch (error) {
+      console.error('Update cart item error:', error);
+      throw error;
+    }
+  };
+
+  return {
+    updateCartItem,
+    loading,
+    error,
+  };
+};
+
+export const useRemoveFromCart = () => {
+  const [removeFromCartMutationFn, { loading, error }] = useMutation(removeFromCartMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const removeFromCart = async (input: RemoveFromCartInput): Promise<boolean> => {
+    try {
+      const { data } = await removeFromCartMutationFn({ variables: { input } });
+      return data?.removeFromCart || false;
+    } catch (error) {
+      console.error('Remove from cart error:', error);
+      throw error;
+    }
+  };
+
+  return {
+    removeFromCart,
+    loading,
+    error,
+  };
+};
+
+export const useClearCart = () => {
+  const [clearCartMutationFn, { loading, error }] = useMutation(clearCartMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const clearCart = async (): Promise<boolean> => {
+    try {
+      const { data } = await clearCartMutationFn();
+      return data?.clearCart || false;
+    } catch (error) {
+      console.error('Clear cart error:', error);
+      throw error;
+    }
+  };
+
+  return {
+    clearCart,
+    loading,
+    error,
+  };
+};

@@ -10,18 +10,18 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "allowUnusedLabels": true,
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src", 
+    "src/lib/graphql/nexus-typegen.d.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/lib/graphql/resolvers/**/*",
+    "src/lib/graphql/generated/**/*"
   ]
 }

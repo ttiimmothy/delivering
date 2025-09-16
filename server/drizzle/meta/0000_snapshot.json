@@ -1,5 +1,5 @@
 {
-  "id": "8eda2fb2-05d9-40b5-a4a7-8d6b9fc8b46b",
+  "id": "05b7b68d-9865-4b0b-aa6c-805615b76ae3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1028,6 +1028,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -1097,6 +1104,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -1777,9 +1791,9 @@
           "notNull": true,
           "default": true
         },
-        "address": {
-          "name": "address",
-          "type": "json",
+        "address_id": {
+          "name": "address_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -1834,6 +1848,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "restaurants_address_idx": {
+          "name": "restaurants_address_idx",
+          "columns": [
+            {
+              "expression": "address_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1843,6 +1872,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "restaurants_address_id_addresses_id_fk": {
+          "name": "restaurants_address_id_addresses_id_fk",
+          "tableFrom": "restaurants",
+          "tableTo": "addresses",
+          "columnsFrom": [
+            "address_id"
           ],
           "columnsTo": [
             "id"

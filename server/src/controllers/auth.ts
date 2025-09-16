@@ -9,9 +9,10 @@ import {
   signupSchema,
   loginSchema,
   JWTPayload
-} from '../utils/auth';
+} from '../lib/auth';
 // Removed custom error imports - using standard Error instead
 import { OAuth2Client } from 'google-auth-library';
+import { convertDateFields } from '../lib/dateHelpers';
 
 // Google OAuth client
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -79,7 +80,7 @@ export class AuthController {
     return {
       accessToken,
       refreshToken,
-      user: newUser,
+      user: convertDateFields(newUser, ['createdAt', 'updatedAt']),
     };
   }
   
@@ -145,7 +146,7 @@ export class AuthController {
     return {
       accessToken,
       refreshToken,
-      user: user[0],
+      user: convertDateFields(user[0], ['createdAt', 'updatedAt']),
     };
   }
   
@@ -234,7 +235,7 @@ export class AuthController {
       return {
         accessToken,
         refreshToken,
-        user: user[0],
+        user: convertDateFields(user[0], ['createdAt', 'updatedAt']),
       };
     } catch (error) {
       if (error instanceof Error && error.name === 'AuthenticationError') {

@@ -1,0 +1,13 @@
+overwrite: true
+schema: "src/lib/graphql/schema.graphql"
+generates:
+  src/lib/graphql/generated/:
+    preset: "@eddeee888/gcg-typescript-resolver-files"
+    presetConfig:
+      resolverGeneration: "minimal"
+      typesPluginsConfig:
+        contextType: "../context#GraphQLContext"
+      scalarsOverrides:
+        DateTime: "Date"
+        JSON: "Record<string, any>"
+        Upload: "File"
