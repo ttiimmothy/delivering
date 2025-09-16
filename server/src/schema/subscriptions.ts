@@ -3,6 +3,88 @@ import { withFilter } from 'graphql-subscriptions';
 import { pubsub } from '../http';
 import { getSocketService } from '../services/socket';
 
+// Subscription Types
+export const CourierLocationUpdate = objectType({
+  name: 'CourierLocationUpdate',
+  definition(t) {
+    t.nonNull.string('deliveryId');
+    t.nonNull.float('latitude');
+    t.nonNull.float('longitude');
+    t.nonNull.string('timestamp');
+  },
+});
+
+export const DeliveryAssignment = objectType({
+  name: 'DeliveryAssignment',
+  definition(t) {
+    t.nonNull.string('deliveryId');
+    t.nonNull.string('courierId');
+    t.nonNull.string('orderId');
+    t.nonNull.string('assignedAt');
+  },
+});
+
+export const DeliveryStatusUpdate = objectType({
+  name: 'DeliveryStatusUpdate',
+  definition(t) {
+    t.nonNull.string('deliveryId');
+    t.nonNull.string('status');
+    t.nonNull.string('updatedAt');
+    t.string('message');
+  },
+});
+
+export const CourierStatusUpdate = objectType({
+  name: 'CourierStatusUpdate',
+  definition(t) {
+    t.nonNull.string('courierId');
+    t.nonNull.boolean('isAvailable');
+    t.nonNull.string('updatedAt');
+  },
+});
+
+export const OrderUpdate = objectType({
+  name: 'OrderUpdate',
+  definition(t) {
+    t.nonNull.string('orderId');
+    t.nonNull.string('status');
+    t.nonNull.string('updatedAt');
+    t.string('message');
+  },
+});
+
+export const CourierTrackingUpdate = objectType({
+  name: 'CourierTrackingUpdate',
+  definition(t) {
+    t.nonNull.string('deliveryId');
+    t.nonNull.string('courierId');
+    t.nonNull.float('latitude');
+    t.nonNull.float('longitude');
+    t.nonNull.string('timestamp');
+    t.nonNull.string('status');
+  },
+});
+
+export const OrderQueueUpdate = objectType({
+  name: 'OrderQueueUpdate',
+  definition(t) {
+    t.nonNull.string('restaurantId');
+    t.nonNull.int('queueLength');
+    t.nonNull.string('updatedAt');
+  },
+});
+
+export const OrderTrackingUpdate = objectType({
+  name: 'OrderTrackingUpdate',
+  definition(t) {
+    t.nonNull.string('orderId');
+    t.nonNull.string('status');
+    t.nonNull.string('updatedAt');
+    t.string('message');
+    t.string('courierId');
+  },
+});
+
 // Order Status Subscription
 export const orderStatusChanged = subscriptionField('orderStatusChanged', {
   type: 'OrderEvent',
@@ -82,7 +164,7 @@ export const deliveryStatusChanged = subscriptionField('deliveryStatusChanged', 
 export const courierStatusChanged = subscriptionField('courierStatusChanged', {
   type: 'CourierStatusUpdate',
   subscribe: () => pubsub.asyncIterator('COURIER_STATUS_CHANGED'),
-  resolve: (payload) => payload.courierStatusChanged,
+  resolve: (payload) => payload.courierStatusUpdate,
 });
 
 // Real-time Order Updates Subscription
@@ -144,5 +226,3 @@ export const customerOrderTracking = subscriptionField('customerOrderTracking', 
   ),
   resolve: (payload) => payload.customerOrderTracking,
 });
-
-// Subscription types are now defined in consolidated.ts

@@ -62,13 +62,14 @@ export const restaurants = pgTable('restaurants', {
   minimumOrder: decimal('minimum_order', { precision: 8, scale: 2 }).notNull().default('10.00'),
   isOpen: boolean('is_open').notNull().default(true),
   isActive: boolean('is_active').notNull().default(true),
-  address: json('address').notNull(), // { street, city, state, zipCode, coordinates }
+  addressId: uuid('address_id').notNull().references(() => addresses.id, { onDelete: 'cascade' }),
   phone: text('phone'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => [
   index('restaurants_slug_idx').on(table.slug),
   index('restaurants_owner_idx').on(table.ownerId),
+  index('restaurants_address_idx').on(table.addressId),
 ]);
 
 // Menu Categories table

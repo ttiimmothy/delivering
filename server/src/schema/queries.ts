@@ -1,10 +1,11 @@
 import { queryField, nonNull, intArg, stringArg, booleanArg, arg, list } from 'nexus';
 import { db } from '../db/client';
 import { 
-  users, addresses, courierProfiles, restaurants, menuCategories, menuItems, menuItemOptions, menuItemOptionValues,
-  carts, cartItems, orders, orderItems, orderEvents, deliveries, reviews
+  users, addresses, courierProfiles, restaurants as restaurantsTable, menuCategories, menuItems, menuItemOptions, menuItemOptionValues,
+  carts, cartItems, orders as ordersTable, orderItems, orderEvents, deliveries, reviews as reviewsTable
 } from '../db/schema';
 import { eq, and, desc, asc, inArray, or, like } from 'drizzle-orm';
+import { convertDateFields } from '../lib/dateHelpers';
 
 // ===== QUERY FIELDS =====
 export const me = queryField('me', {
@@ -21,7 +22,7 @@ export const me = queryField('me', {
       .where(eq(users.id, ctx.user.userId))
       .limit(1);
 
-    return result[0] || null;
+    return result[0] ? convertDateFields(result[0], ['createdAt', 'updatedAt']) : null;
   },
 });
 
@@ -40,42 +41,42 @@ export const restaurants = queryField('restaurants', {
     let conditions = [];
 
     if (args.cuisine) {
-      conditions.push(eq(restaurants.cuisine, args.cuisine));
+      conditions.push(eq(restaurantsTable.cuisine, args.cuisine));
     }
     if (args.isOpen !== undefined) {
-      conditions.push(eq(restaurants.isOpen, args.isOpen));
+      conditions.push(eq(restaurantsTable.isOpen, args.isOpen));
     }
     if (args.search) {
       conditions.push(
         or(
-          like(restaurants.name, `%${args.search}%`),
-          like(restaurants.description, `%${args.search}%`)
+          like(restaurantsTable.name, `%${args.search}%`),
+          like(restaurantsTable.description, `%${args.search}%`)
         )
       );
     }
 
     let query = db.select({
-      id: restaurants.id,
-      name: restaurants.name,
-      description: restaurants.description,
-      image: restaurants.image,
-      cuisine: restaurants.cuisine,
-      rating: restaurants.rating,
-      reviewCount: restaurants.reviewCount,
-      deliveryTime: restaurants.deliveryTime,
-      deliveryFee: restaurants.deliveryFee,
-      minimumOrder: restaurants.minimumOrder,
-      isOpen: restaurants.isOpen,
-      address: restaurants.address,
-      phone: restaurants.phone,
-      email: restaurants.email,
-      website: restaurants.website,
-      createdAt: restaurants.createdAt,
-      updatedAt: restaurants.updatedAt,
+      id: restaurantsTable.id,
+      name: restaurantsTable.name,
+      description: restaurantsTable.description,
+      image: restaurantsTable.image,
+      cuisine: restaurantsTable.cuisine,
+      rating: restaurantsTable.rating,
+      reviewCount: restaurantsTable.reviewCount,
+      deliveryTime: restaurantsTable.deliveryTime,
+      deliveryFee: restaurantsTable.deliveryFee,
+      minimumOrder: restaurantsTable.minimumOrder,
+      isOpen: restaurantsTable.isOpen,
+      address: restaurantsTable.address,
+      phone: restaurantsTable.phone,
+      email: restaurantsTable.email,
+      website: restaurantsTable.website,
+      createdAt: restaurantsTable.createdAt,
+      updatedAt: restaurantsTable.updatedAt,
     })
       .from(restaurants)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(restaurants.createdAt));
+      .orderBy(desc(restaurantsTable.createdAt));
 
     if (args.limit) {
       query = query.limit(args.limit);
@@ -95,8 +96,8 @@ export const restaurant = queryField('restaurant', {
   },
   resolve: async (_, args, ctx) => {
     const result = await db.select()
-      .from(restaurants)
-      .where(eq(restaurants.slug, args.slug))
+      .from(restaurantsTable)
+      .where(eq(restaurantsTable.slug, args.slug))
       .limit(1);
 
     if (result.length === 0) {
@@ -105,7 +106,7 @@ export const restaurant = queryField('restaurant', {
       throw error;
     }
 
-    return result[0];
+    return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -138,7 +139,7 @@ export const cart = queryField('cart', {
       .where(eq(carts.userId, ctx.user.userId))
       .limit(1);
 
-    return result[0] || null;
+    return result[0] ? convertDateFields(result[0], ['createdAt', 'updatedAt']) : null;
   },
 });
 
@@ -155,8 +156,8 @@ export const order = queryField('order', {
     }
 
     const result = await db.select()
-      .from(orders)
-      .where(eq(orders.id, args.id))
+      .from(ordersTable)
+      .where(eq(ordersTable.id, args.id))
       .limit(1);
 
     if (result.length === 0) {
@@ -184,7 +185,7 @@ export const order = queryField('order', {
       // Check if user owns the restaurant
       const restaurant = await db.select()
         .from(restaurants)
-        .where(eq(restaurants.id, order.restaurantId))
+        .where(eq(restaurantsTable.id, order.restaurantId))
         .limit(1);
       
       if (restaurant.length === 0 || restaurant[0].ownerId !== ctx.user.userId) {
@@ -215,38 +216,34 @@ export const orders = queryField('orders', {
     let conditions = [];
 
     if (ctx.user.role === 'customer') {
-      conditions.push(eq(orders.customerId, ctx.user.userId));
+      conditions.push(eq(ordersTable.customerId, ctx.user.userId));
     } else if (ctx.user.role === 'courier') {
-      conditions.push(eq(orders.courierId, ctx.user.userId));
+      conditions.push(eq(ordersTable.courierId, ctx.user.userId));
     } else if (ctx.user.role === 'merchant') {
       // Get restaurants owned by this merchant
-      const userRestaurants = await db.select({ id: restaurants.id })
+      const userRestaurants = await db.select({ id: restaurantsTable.id })
         .from(restaurants)
-        .where(eq(restaurants.ownerId, ctx.user.userId));
+        .where(eq(restaurantsTable.ownerId, ctx.user.userId));
       
       const restaurantIds = userRestaurants.map(r => r.id);
       if (restaurantIds.length === 0) return [];
       
-      conditions.push(inArray(orders.restaurantId, restaurantIds));
+      conditions.push(inArray(ordersTable.restaurantId, restaurantIds));
     }
 
     if (args.status) {
-      conditions.push(eq(orders.status, args.status));
+      conditions.push(eq(ordersTable.status, args.status));
     }
 
     let query = db.select()
-      .from(orders)
+      .from(ordersTable)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(orders.createdAt));
+      .orderBy(desc(ordersTable.createdAt))
+      .limit(args.limit || 100)
+      .offset(args.offset || 0);
 
-    if (args.limit) {
-      query = query.limit(args.limit);
-    }
-    if (args.offset) {
-      query = query.offset(args.offset);
-    }
-
-    return await query;
+    const results = await query;
+    return results;
   },
 });
 
@@ -271,32 +268,28 @@ export const merchantOrders = queryField('merchantOrders', {
     }
 
     // Get restaurants owned by this merchant
-    const userRestaurants = await db.select({ id: restaurants.id })
+    const userRestaurants = await db.select({ id: restaurantsTable.id })
       .from(restaurants)
-      .where(eq(restaurants.ownerId, ctx.user.userId));
+      .where(eq(restaurantsTable.ownerId, ctx.user.userId));
     
     const restaurantIds = userRestaurants.map(r => r.id);
     if (restaurantIds.length === 0) return [];
 
-    let conditions = [inArray(orders.restaurantId, restaurantIds)];
+    let conditions = [inArray(ordersTable.restaurantId, restaurantIds)];
 
     if (args.status) {
-      conditions.push(eq(orders.status, args.status));
+      conditions.push(eq(ordersTable.status, args.status));
     }
 
     let query = db.select()
-      .from(orders)
+      .from(ordersTable)
       .where(and(...conditions))
-      .orderBy(desc(orders.createdAt));
+      .orderBy(desc(ordersTable.createdAt))
+      .limit(args.limit || 100)
+      .offset(args.offset || 0);
 
-    if (args.limit) {
-      query = query.limit(args.limit);
-    }
-    if (args.offset) {
-      query = query.offset(args.offset);
-    }
-
-    return await query;
+    const results = await query;
+    return results;
   },
 });
 
@@ -315,10 +308,12 @@ export const courierAssignments = queryField('courierAssignments', {
       throw error;
     }
 
-    return await db.select()
+    const deliveries = await db.select()
       .from(deliveries)
       .where(eq(deliveries.courierId, ctx.user.userId))
       .orderBy(desc(deliveries.createdAt));
+    
+    return deliveries.map(delivery => convertDateFields(delivery, ['createdAt', 'updatedAt']));
   },
 });
 
@@ -334,16 +329,16 @@ export const reviews = queryField('reviews', {
     let conditions = [];
 
     if (args.restaurantId) {
-      conditions.push(eq(reviews.restaurantId, args.restaurantId));
+      conditions.push(eq(reviewsTable.restaurantId, args.restaurantId));
     }
     if (args.courierId) {
-      conditions.push(eq(reviews.courierId, args.courierId));
+      conditions.push(eq(reviewsTable.courierId, args.courierId));
     }
 
     let query = db.select()
       .from(reviews)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(reviews.createdAt));
+      .orderBy(desc(reviewsTable.createdAt));
 
     if (args.limit) {
       query = query.limit(args.limit);

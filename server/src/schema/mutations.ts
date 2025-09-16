@@ -7,6 +7,7 @@ import {
 import { eq, and, desc, asc, inArray } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { convertDateFields } from '../lib/dateHelpers';
 
 // ===== AUTHENTICATION MUTATIONS =====
 export const signup = mutationField('signup', {
@@ -60,7 +61,7 @@ export const signup = mutationField('signup', {
     return {
       accessToken,
       refreshToken,
-      user,
+      user: convertDateFields(user, ['createdAt', 'updatedAt']),
     };
   },
 });
@@ -109,7 +110,7 @@ export const login = mutationField('login', {
     return {
       accessToken,
       refreshToken,
-      user,
+      user: convertDateFields(user, ['createdAt', 'updatedAt']),
     };
   },
 });
@@ -239,7 +240,7 @@ export const addToCart = mutationField('addToCart', {
         })
         .where(eq(cartItems.id, existingItem[0].id))
         .returning();
-      return result[0];
+      return convertDateFields(result[0], ['createdAt', 'updatedAt']);
     } else {
       // Add new item
       const result = await db.insert(cartItems).values({
@@ -249,7 +250,7 @@ export const addToCart = mutationField('addToCart', {
         selectedOptions: args.input.selectedOptions || '[]',
         specialInstructions: args.input.specialInstructions || '',
       }).returning();
-      return result[0];
+      return convertDateFields(result[0], ['createdAt', 'updatedAt']);
     }
   },
 });
@@ -285,7 +286,7 @@ export const updateCartItem = mutationField('updateCartItem', {
       .where(eq(cartItems.id, args.input.cartItemId))
       .returning();
 
-    return result[0];
+        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -385,7 +386,7 @@ export const placeOrder = mutationField('placeOrder', {
 
     const tax = subtotal * 0.08; // 8% tax
     const deliveryFee = 2.99;
-    const tip = args.input.tip || 0;
+    const tip = 0; // Tip not included in CreateOrderInput for now
     const total = subtotal + tax + deliveryFee + tip;
 
     // Generate order number
@@ -431,7 +432,7 @@ export const placeOrder = mutationField('placeOrder', {
     await db.delete(cartItems).where(eq(cartItems.cartId, cart[0].id));
     await db.delete(carts).where(eq(carts.id, cart[0].id));
 
-    return order[0];
+    return convertDateFields(order[0]);
   },
 });
 
@@ -492,7 +493,7 @@ export const confirmOrder = mutationField('confirmOrder', {
       message: 'Order confirmed by restaurant',
     });
 
-    return updatedOrder[0];
+    return convertDateFields(updatedOrder[0]);
   },
 });
 
@@ -555,7 +556,7 @@ export const acceptDelivery = mutationField('acceptDelivery', {
       .where(eq(deliveries.id, args.deliveryId))
       .returning();
 
-    return result[0];
+        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -605,7 +606,7 @@ export const pickupOrder = mutationField('pickupOrder', {
       .where(eq(deliveries.id, args.deliveryId))
       .returning();
 
-    return result[0];
+        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -655,7 +656,7 @@ export const deliverOrder = mutationField('deliverOrder', {
       .where(eq(deliveries.id, args.deliveryId))
       .returning();
 
-    return result[0];
+        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -696,7 +697,7 @@ export const updateCourierLocation = mutationField('updateCourierLocation', {
       throw error;
     }
 
-    return result[0];
+        return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -765,7 +766,7 @@ export const setRestaurantOpen = mutationField('setRestaurantOpen', {
       .where(eq(restaurants.id, args.id))
       .returning();
 
-    return result[0];
+    return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -783,15 +784,14 @@ export const createReview = mutationField('createReview', {
     }
 
     const result = await db.insert(reviews).values({
+      orderId: args.input.orderId,
       customerId: ctx.user.userId,
-      restaurantId: args.input.restaurantId,
-      courierId: args.input.courierId,
       rating: args.input.rating,
       comment: args.input.comment,
       type: args.input.type,
     }).returning();
 
-    return result[0];
+    return convertDateFields(result[0], ['createdAt', 'updatedAt']);
   },
 });
 
@@ -815,6 +815,11 @@ export const createCheckoutSession = mutationField('createCheckoutSession', {
       url: 'https://checkout.stripe.com/mock-session',
       successUrl: args.input.successUrl,
       cancelUrl: args.input.cancelUrl,
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
+      status: 'open',
+      customerEmail: ctx.user.email,
+      customerId: ctx.user.userId,
     };
   },
 });
@@ -836,6 +841,8 @@ export const createBillingPortalSession = mutationField('createBillingPortalSess
     return {
       id: `bps_${Date.now()}`,
       url: 'https://billing.stripe.com/mock-portal',
+      createdAt: new Date().toISOString(),
+      returnUrl: args.input.returnUrl,
     };
   },
 });
@@ -860,6 +867,7 @@ export const createPaymentIntent = mutationField('createPaymentIntent', {
       amount: args.input.amount,
       currency: args.input.currency,
       status: 'requires_payment_method',
+      createdAt: new Date().toISOString(),
     };
   },
 });
@@ -881,9 +889,10 @@ export const confirmPaymentIntent = mutationField('confirmPaymentIntent', {
     return {
       id: args.paymentIntentId,
       clientSecret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
-      amount: 2000,
+      amount: '2000',
       currency: 'usd',
       status: 'succeeded',
+      createdAt: new Date().toISOString(),
     };
   },
 });
@@ -905,9 +914,10 @@ export const cancelPaymentIntent = mutationField('cancelPaymentIntent', {
     return {
       id: args.paymentIntentId,
       clientSecret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
-      amount: 2000,
+      amount: '2000',
       currency: 'usd',
       status: 'canceled',
+      createdAt: new Date().toISOString(),
     };
   },
 });
@@ -928,10 +938,11 @@ export const createRefund = mutationField('createRefund', {
     // For now, returning a mock response
     return {
       id: `re_${Date.now()}`,
-      amount: args.input.amount,
-      currency: args.input.currency,
+      amount: args.input.amount || '0',
+      currency: 'usd', // Default currency since it's not in input
       status: 'succeeded',
       reason: args.input.reason,
+      createdAt: new Date().toISOString(),
     };
   },
 });

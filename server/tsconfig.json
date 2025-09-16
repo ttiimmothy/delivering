@@ -12,7 +12,9 @@
     "allowUnusedLabels": true,
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src", 
+    "src/lib/graphql/nexus-typegen.d.ts"
   ],
   "exclude": [
     "node_modules",

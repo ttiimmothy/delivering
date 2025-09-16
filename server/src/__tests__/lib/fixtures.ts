@@ -42,19 +42,30 @@ export async function createTestUser(overrides: Partial<typeof schema.users.$inf
 }
 
 export async function createTestRestaurant(overrides: Partial<typeof schema.restaurants.$inferInsert> = {}) {
+  // First create a test address
+  const testAddress = {
+    id: `test-address-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    userId: 'test-user-id',
+    label: 'Restaurant Address',
+    street: '123 Test St',
+    city: 'Test City',
+    state: 'TS',
+    zipCode: '12345',
+    country: 'US',
+    latitude: '40.7128',
+    longitude: '-74.0060',
+    isDefault: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const defaultRestaurant = {
     id: `test-restaurant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     ownerId: 'test-user-id',
     name: 'Test Restaurant',
     slug: `test-restaurant-${Date.now()}`,
     description: 'A test restaurant',
-    address: JSON.stringify({
-      street: '123 Test St',
-      city: 'Test City',
-      state: 'TS',
-      zipCode: '12345',
-      country: 'US'
-    }),
+    addressId: testAddress.id,
     phone: '+1234567890',
     cuisine: 'Test Cuisine',
     rating: '4.50',
@@ -72,9 +83,14 @@ export async function createTestRestaurant(overrides: Partial<typeof schema.rest
   
   try {
     const db = getTestDatabase();
+    // Insert address first
+    await db.insert(schema.addresses).values(testAddress);
+    // Then insert restaurant
     await db.insert(schema.restaurants).values(defaultRestaurant);
   } catch (error) {
     // If database is not available, store in mock data
+    mockData.addresses = mockData.addresses || [];
+    mockData.addresses.push(testAddress);
     mockData.restaurants.push(defaultRestaurant);
   }
   

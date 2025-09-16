@@ -110,6 +110,47 @@ async function seed() {
       totalDeliveries: 150,
     });
 
+    // Create restaurant addresses first
+    console.log('📍 Creating restaurant addresses...');
+    const [pizzaAddress, burgerAddress, sushiAddress] = await db.insert(addresses).values([
+      {
+        userId: bob.id,
+        label: 'Pizza Palace Address',
+        street: '789 Broadway',
+        city: 'San Francisco',
+        state: 'CA',
+        zipCode: '94133',
+        country: 'US',
+        latitude: '37.7849',
+        longitude: '-122.4094',
+        isDefault: false,
+      },
+      {
+        userId: bob.id,
+        label: 'Burger Joint Address',
+        street: '456 Market St',
+        city: 'San Francisco',
+        state: 'CA',
+        zipCode: '94105',
+        country: 'US',
+        latitude: '37.7849',
+        longitude: '-122.4094',
+        isDefault: false,
+      },
+      {
+        userId: bob.id,
+        label: 'Sushi Spot Address',
+        street: '321 Union St',
+        city: 'San Francisco',
+        state: 'CA',
+        zipCode: '94133',
+        country: 'US',
+        latitude: '37.7849',
+        longitude: '-122.4094',
+        isDefault: false,
+      },
+    ]).returning();
+
     // Create restaurants
     console.log('🍕 Creating restaurants...');
     const [pizzaPalace, burgerJoint, sushiSpot] = await db.insert(restaurants).values([
@@ -125,13 +166,7 @@ async function seed() {
         deliveryFee: '2.99',
         minimumOrder: '15.00',
         isOpen: true,
-        address: {
-          street: '789 Broadway',
-          city: 'San Francisco',
-          state: 'CA',
-          zipCode: '94133',
-          coordinates: { latitude: 37.7849, longitude: -122.4094 }
-        },
+        addressId: pizzaAddress.id,
         phone: '+1234567894',
       },
       {
@@ -146,13 +181,7 @@ async function seed() {
         deliveryFee: '1.99',
         minimumOrder: '12.00',
         isOpen: true,
-        address: {
-          street: '321 Mission St',
-          city: 'San Francisco',
-          state: 'CA',
-          zipCode: '94105',
-          coordinates: { latitude: 37.7949, longitude: -122.3994 }
-        },
+        addressId: burgerAddress.id,
         phone: '+1234567895',
       },
       {
@@ -167,13 +196,7 @@ async function seed() {
         deliveryFee: '3.99',
         minimumOrder: '20.00',
         isOpen: true,
-        address: {
-          street: '654 Geary St',
-          city: 'San Francisco',
-          state: 'CA',
-          zipCode: '94102',
-          coordinates: { latitude: 37.7649, longitude: -122.4294 }
-        },
+        addressId: sushiAddress.id,
         phone: '+1234567896',
       },
     ]).returning();

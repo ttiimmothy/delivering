@@ -1,8 +1,16 @@
 import { makeSchema, queryType, mutationType } from 'nexus';
 import { join } from 'path';
 
-// Import consolidated types
-import * as Types from './consolidated';
+// Import individual schema modules
+import * as UserTypes from './user';
+import * as RestaurantTypes from './restaurant';
+import * as OrderTypes from './order';
+import * as CartTypes from './cart';
+import * as ReviewTypes from './review';
+import * as DeliveryTypes from './delivery';
+import * as MenuTypes from './menu';
+import * as PayoutTypes from './payout';
+import * as PaymentTypes from './payment';
 import * as Queries from './queries';
 import * as Mutations from './mutations';
 import * as Subscriptions from './subscriptions';
@@ -11,79 +19,88 @@ import * as Scalars from './scalars';
 // Create the GraphQL schema
 export const schema = makeSchema({
   types: [
-    
     // Scalars
     Scalars.DateTime,
     Scalars.Location,
     Scalars.LocationInput,
     
-    // Types
-    Types.User,
-    Types.Address,
-    Types.CourierProfile,
-    Types.Restaurant,
-    Types.MenuCategory,
-    Types.MenuItem,
-    Types.MenuItemOption,
-    Types.OptionValue,
-    Types.Cart,
-    Types.CartItem,
-    Types.Order,
-    Types.OrderItem,
-    Types.OrderEvent,
-    Types.Delivery,
-    Types.Review,
+    // User Types
+    UserTypes.User,
+    UserTypes.Address,
+    UserTypes.CourierProfile,
+    UserTypes.UserRole,
+    UserTypes.VehicleType,
+    UserTypes.AuthResponse,
+    UserTypes.RefreshTokenResponse,
     
-    // Enums
-    Types.UserRole,
-    Types.VehicleType,
-    Types.OptionType,
-    Types.OrderStatus,
-    Types.PaymentStatus,
-    Types.DeliveryStatus,
-    Types.ReviewType,
+    // Restaurant Types  
+    RestaurantTypes.Restaurant,
+    
+    // Menu Types (from dedicated menu.ts file)
+    MenuTypes.MenuCategory,
+    MenuTypes.MenuItem,
+    MenuTypes.MenuItemOption,
+    MenuTypes.MenuItemOptionValue,
+    MenuTypes.MenuItemOptionType,
+    
+    // Order Types
+    OrderTypes.Order,
+    OrderTypes.OrderItem,
+    OrderTypes.OrderEvent,
+    OrderTypes.OrderStatus,
+    OrderTypes.PaymentStatus,
+    
+    // Cart Types
+    CartTypes.Cart,
+    CartTypes.CartItem,
+    
+    // Review Types
+    ReviewTypes.Review,
+    ReviewTypes.ReviewType,
+    
+    // Delivery Types
+    DeliveryTypes.Delivery,
+    DeliveryTypes.DeliveryStatus,
+    
+    // Payment Types
+    PaymentTypes.CheckoutSession,
+    PaymentTypes.BillingPortalSession,
+    PaymentTypes.PaymentIntent,
+    PaymentTypes.Refund,
     
     // Input Types
-    Types.SignupInput,
-    Types.LoginInput,
-    Types.AddressInput,
-    Types.AddToCartInput,
-    Types.UpdateCartItemInput,
-    Types.RemoveFromCartInput,
-    Types.CreateOrderInput,
-    Types.CreateReviewInput,
-    Types.UpdateCourierLocationInput,
-    Types.CreateRestaurantInput,
-    Types.UpdateRestaurantInput,
-    Types.RestaurantAddressInput,
-    Types.UpdateProfileInput,
-    Types.CourierProfileInput,
-    Types.CreateCourierProfileInput,
-    Types.UpdateCourierProfileInput,
+    UserTypes.SignupInput,
+    UserTypes.LoginInput,
+    UserTypes.AddressInput,
+    UserTypes.UpdateProfileInput,
+    UserTypes.CourierProfileInput,
+    UserTypes.CreateCourierProfileInput,
+    UserTypes.UpdateCourierProfileInput,
+    CartTypes.AddToCartInput,
+    CartTypes.UpdateCartItemInput,
+    CartTypes.RemoveFromCartInput,
+    OrderTypes.CreateOrderInput,
+    OrderTypes.UpdateOrderStatusInput,
+    OrderTypes.AssignCourierInput,
+    OrderTypes.UpdateCourierLocationInput,
+    ReviewTypes.CreateReviewInput,
+    ReviewTypes.UpdateReviewInput,
+    RestaurantTypes.CreateRestaurantInput,
+    RestaurantTypes.UpdateRestaurantInput,
     
-    // Response Types
-    Types.AuthResponse,
-    Types.RefreshTokenResponse,
-    Types.PaymentIntent,
-    Types.CheckoutSession,
-    Types.BillingPortalSession,
-    Types.Refund,
+    // Menu Input Types
+    MenuTypes.CreateMenuCategoryInput,
+    MenuTypes.UpdateMenuCategoryInput,
+    MenuTypes.CreateMenuItemInput,
+    MenuTypes.UpdateMenuItemInput,
+    MenuTypes.CreateMenuItemOptionInput,
+    MenuTypes.CreateMenuItemOptionValueInput,
     
     // Payment Input Types
-    Types.CreateCheckoutSessionInput,
-    Types.CreateBillingPortalSessionInput,
-    Types.CreatePaymentIntentInput,
-    Types.CreateRefundInput,
-    
-    // Subscription Types
-    Types.CourierLocationUpdate,
-    Types.DeliveryAssignment,
-    Types.DeliveryStatusUpdate,
-    Types.CourierStatusUpdate,
-    Types.OrderUpdate,
-    Types.CourierTrackingUpdate,
-    Types.OrderQueueUpdate,
-    Types.OrderTrackingUpdate,
+    PaymentTypes.CreateCheckoutSessionInput,
+    PaymentTypes.CreateBillingPortalSessionInput,
+    PaymentTypes.CreatePaymentIntentInput,
+    PaymentTypes.CreateRefundInput,
     
     // Queries
     Queries.me,
@@ -127,21 +144,29 @@ export const schema = makeSchema({
     Mutations.createRefund,
     
     // Subscriptions
-    Subscriptions.orderStatusChanged,
-    Subscriptions.courierLocation,
-    Subscriptions.merchantIncomingOrders,
-    Subscriptions.deliveryAssigned,
-    Subscriptions.deliveryStatusChanged,
-    Subscriptions.courierStatusChanged,
-    Subscriptions.realTimeOrderUpdates,
-    Subscriptions.liveCourierTracking,
-    Subscriptions.restaurantOrderQueue,
-    Subscriptions.customerOrderTracking,
+    Subscriptions.courierLocationUpdate,
+    Subscriptions.deliveryAssignment,
+    Subscriptions.deliveryStatusUpdate,
+    Subscriptions.courierStatusUpdate,
+    Subscriptions.orderUpdate,
+    Subscriptions.courierTrackingUpdate,
+    Subscriptions.orderQueueUpdate,
+    Subscriptions.orderTrackingUpdate,
+    
+    // Subscription Types
+    Subscriptions.CourierLocationUpdate,
+    Subscriptions.DeliveryAssignment,
+    Subscriptions.DeliveryStatusUpdate,
+    Subscriptions.CourierStatusUpdate,
+    Subscriptions.OrderUpdate,
+    Subscriptions.CourierTrackingUpdate,
+    Subscriptions.OrderQueueUpdate,
+    Subscriptions.OrderTrackingUpdate,
   ],
   
   outputs: {
     schema: join(process.cwd(), 'src', 'lib', 'graphql', 'schema.graphql'),
-    typegen: join(process.cwd(), 'src', 'lib', 'graphql', 'nexus-typegen.ts'),
+    typegen: join(process.cwd(), 'src', 'lib', 'graphql', 'nexus-typegen.d.ts'),
   },
   
   contextType: {

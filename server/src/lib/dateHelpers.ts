@@ -44,3 +44,21 @@ export function convertDateFields<T extends Record<string, any>>(
   }
   return converted as T;
 }
+
+// Type-safe version that properly transforms Date fields to string
+// export function convertDateFieldsToISO<T extends Record<string, any>>(
+//   obj: T,
+//   dateFields: string[]
+// ): T {
+//   if (obj === null || obj === undefined) {
+//     return obj;
+//   }
+
+//   const converted: any = { ...obj };
+//   for (const field of dateFields) {
+//     if (field in converted && converted[field] instanceof Date) {
+//       converted[field] = converted[field].toISOString();
+//     }
+//   }
+//   return converted as T;
+// }

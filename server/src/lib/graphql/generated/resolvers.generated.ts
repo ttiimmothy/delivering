@@ -46,11 +46,13 @@ import    { orderStatusChanged as Subscription_orderStatusChanged } from './../r
 import    { realTimeOrderUpdates as Subscription_realTimeOrderUpdates } from './../resolvers/Subscription/realTimeOrderUpdates';
 import    { restaurantOrderQueue as Subscription_restaurantOrderQueue } from './../resolvers/Subscription/restaurantOrderQueue';
 import    { DateTime } from './../resolvers/DateTime';
-import    { JSON } from './../resolvers/JSON';
+import    { Location } from './../resolvers/Location';
+import    { LocationInput } from './../resolvers/LocationInput';
     export const resolvers: Resolvers = {
       Query: { cart: Query_cart,courierAssignments: Query_courierAssignments,favoriteRestaurants: Query_favoriteRestaurants,me: Query_me,merchantOrders: Query_merchantOrders,order: Query_order,orders: Query_orders,paymentIntent: Query_paymentIntent,restaurant: Query_restaurant,restaurants: Query_restaurants,reviews: Query_reviews },
       Mutation: { acceptDelivery: Mutation_acceptDelivery,addToCart: Mutation_addToCart,cancelPaymentIntent: Mutation_cancelPaymentIntent,clearCart: Mutation_clearCart,confirmOrder: Mutation_confirmOrder,confirmPaymentIntent: Mutation_confirmPaymentIntent,createBillingPortalSession: Mutation_createBillingPortalSession,createCheckoutSession: Mutation_createCheckoutSession,createPaymentIntent: Mutation_createPaymentIntent,createRefund: Mutation_createRefund,createReview: Mutation_createReview,deliverOrder: Mutation_deliverOrder,login: Mutation_login,loginWithGoogle: Mutation_loginWithGoogle,logout: Mutation_logout,pickupOrder: Mutation_pickupOrder,placeOrder: Mutation_placeOrder,refreshToken: Mutation_refreshToken,removeFromCart: Mutation_removeFromCart,setRestaurantOpen: Mutation_setRestaurantOpen,signup: Mutation_signup,toggleFavorite: Mutation_toggleFavorite,updateCartItem: Mutation_updateCartItem,updateCourierLocation: Mutation_updateCourierLocation },
       Subscription: { courierLocation: Subscription_courierLocation,courierStatusChanged: Subscription_courierStatusChanged,customerOrderTracking: Subscription_customerOrderTracking,deliveryAssigned: Subscription_deliveryAssigned,deliveryStatusChanged: Subscription_deliveryStatusChanged,liveCourierTracking: Subscription_liveCourierTracking,merchantIncomingOrders: Subscription_merchantIncomingOrders,orderStatusChanged: Subscription_orderStatusChanged,realTimeOrderUpdates: Subscription_realTimeOrderUpdates,restaurantOrderQueue: Subscription_restaurantOrderQueue },
       DateTime: DateTime,
-JSON: JSON
+Location: Location,
+LocationInput: LocationInput
     }
