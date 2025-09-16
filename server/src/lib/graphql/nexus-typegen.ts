@@ -316,41 +316,26 @@ export interface NexusGenObjects {
   }
   Order: { // root type
     courierId?: string | null; // String
-    createdAt: string; // String!
     customerId: string; // String!
-    deliveryAddress: string; // String!
-    deliveryFee: number; // Float!
-    estimatedDeliveryTime?: string | null; // String
     id: string; // String!
     orderNumber: string; // String!
     paymentStatus: NexusGenEnums['PaymentStatus']; // PaymentStatus!
     restaurantId: string; // String!
     specialInstructions?: string | null; // String
     status: NexusGenEnums['OrderStatus']; // OrderStatus!
-    subtotal: number; // Float!
-    tax: number; // Float!
-    tip: number; // Float!
-    total: number; // Float!
-    updatedAt: string; // String!
   }
   OrderEvent: { // root type
-    createdAt: string; // String!
     id: string; // String!
     message?: string | null; // String
-    metadata?: string | null; // String
     orderId: string; // String!
     status: NexusGenEnums['OrderStatus']; // OrderStatus!
   }
   OrderItem: { // root type
-    createdAt: string; // String!
     id: string; // String!
     menuItemId: string; // String!
     orderId: string; // String!
     quantity: number; // Int!
-    selectedOptions: string; // String!
     specialInstructions?: string | null; // String
-    totalPrice: number; // Float!
-    unitPrice: number; // Float!
   }
   OrderQueueUpdate: { // root type
     pendingOrders: Array<NexusGenRootTypes['Order'] | null>; // [Order]!
