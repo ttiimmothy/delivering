@@ -10,8 +10,12 @@ export const Cart = objectType({
     t.nonNull.string('id');
     t.nonNull.string('userId');
     t.nonNull.string('restaurantId');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
+    t.nonNull.string('updatedAt', {
+      resolve: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt
+    });
     t.list.field('items', {
       type: 'CartItem',
       resolve: async (parent) => {
@@ -32,8 +36,12 @@ export const CartItem = objectType({
     t.nonNull.int('quantity');
     t.nonNull.string('selectedOptions');
     t.string('specialInstructions');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
+    t.nonNull.string('updatedAt', {
+      resolve: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt
+    });
     t.field('menuItem', {
       type: 'MenuItem',
       resolve: async (parent) => {

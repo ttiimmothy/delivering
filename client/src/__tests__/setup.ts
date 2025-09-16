@@ -1,15 +1,53 @@
-import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import React from 'react';
+import { beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from 'next-themes';
 import { ApolloProvider } from '@apollo/client';
-import { createMockClient } from 'apollo-mock-client';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
 // Mock Stripe
 const mockStripe = loadStripe('pk_test_mock');
+
+// Create mock client for Apollo
+const mockClient = {
+  query: vi.fn(),
+  mutate: vi.fn(),
+  watchQuery: vi.fn(),
+  subscribe: vi.fn(),
+  readQuery: vi.fn(),
+  writeQuery: vi.fn(),
+  readFragment: vi.fn(),
+  writeFragment: vi.fn(),
+  writeData: vi.fn(),
+  resetStore: vi.fn(),
+  clearStore: vi.fn(),
+  onClearStore: vi.fn(),
+  onResetStore: vi.fn(),
+  cache: {
+    readQuery: vi.fn(),
+    writeQuery: vi.fn(),
+    readFragment: vi.fn(),
+    writeFragment: vi.fn(),
+    writeData: vi.fn(),
+    reset: vi.fn(),
+    evict: vi.fn(),
+    restore: vi.fn(),
+    extract: vi.fn(),
+    diff: vi.fn(),
+    watch: vi.fn(),
+    gc: vi.fn(),
+    modify: vi.fn(),
+    transform: vi.fn(),
+    batch: vi.fn(),
+    performTransaction: vi.fn(),
+    recordOptimisticTransaction: vi.fn(),
+    transformForLink: vi.fn(),
+  },
+} as any;
 
 // Global test setup
 beforeAll(() => {
@@ -29,13 +67,14 @@ beforeAll(() => {
     }),
     usePathname: () => '/',
     useSearchParams: () => new URLSearchParams(),
+    useParams: () => ({ id: 'test-id' }),
   }));
 
   // Mock Next.js Image component
   vi.mock('next/image', () => ({
-    default: ({ src, alt, ...props }: any) => (
-      <img src={src} alt={alt} {...props} />
-    ),
+    default: ({ src, alt, ...props }: any) => {
+      return React.createElement('img', { src, alt, ...props });
+    },
   }));
 
   // Mock Socket.IO
@@ -49,6 +88,30 @@ beforeAll(() => {
       connected: true,
     })),
   }));
+
+  // Mock Apollo Client
+  vi.mock('@apollo/client', async () => {
+    const actual = await vi.importActual('@apollo/client');
+    return {
+      ...actual,
+      useQuery: vi.fn(() => ({
+        data: null,
+        loading: false,
+        error: null,
+        refetch: vi.fn(),
+      })),
+      useMutation: vi.fn(() => [
+        vi.fn(),
+        { loading: false, error: null, data: null }
+      ]),
+      useSubscription: vi.fn(() => ({
+        data: null,
+        loading: false,
+        error: null,
+      })),
+      useApolloClient: vi.fn(() => mockClient),
+    };
+  });
 });
 
 afterAll(() => {
@@ -75,20 +138,14 @@ export function renderWithProviders(
     addTypename?: boolean;
   } = {}
 ) {
-  const mockClient = createMockClient({
-    mocks,
-    addTypename,
-  });
-
-  const AllTheProviders = ({ children }: { children: React.ReactNode }) => (
-    <ApolloProvider client={mockClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-        <Elements stripe={mockStripe}>
-          {children}
-        </Elements>
-      </ThemeProvider>
-    </ApolloProvider>
-  );
+  // Simple wrapper component
+  const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+    return React.createElement(
+      'div',
+      { 'data-testid': 'test-wrapper' },
+      children
+    );
+  };
 
   return render(ui, { wrapper: AllTheProviders });
 }

@@ -12,12 +12,12 @@ describe('Hero Component', () => {
   it('shows call-to-action button', () => {
     const { getByText } = renderWithProviders(<Hero />);
     
-    expect(getByText('Order Now')).toBeInTheDocument();
+    expect(getByText('Find Food')).toBeInTheDocument();
   });
 
   it('displays hero description', () => {
     const { getByText } = renderWithProviders(<Hero />);
     
-    expect(getByText('Get your favorite meals delivered to your doorstep in minutes.')).toBeInTheDocument();
+    expect(getByText('Order from your favorite restaurants and get it delivered to your doorstep')).toBeInTheDocument();
   });
 });

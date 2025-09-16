@@ -1,10 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
-import { makeSchema } from 'nexus';
-import { createTestUser, resetTestData } from './utils/fixtures';
-import { mockJWT, mockBcrypt } from './utils/mocks';
-import { schema } from '../schema';
+import { ApolloServer } from '@apollo/server';
+import { createTestUser, resetTestData } from './lib/fixtures';
+import { mockJWT, mockBcrypt } from './lib/setup';
+import { createTestServer, executeOperation } from './setup';
 
 // Mock external dependencies
 mockJWT();
@@ -12,27 +10,19 @@ mockBcrypt();
 
 describe('Authentication', () => {
   let server: ApolloServer;
-  let mutate: any;
 
   beforeEach(async () => {
     await resetTestData();
-    
-    server = new ApolloServer({
-      schema,
-      context: () => ({ user: null })
-    });
-    
-    const { mutate: testMutate } = createTestClient(server);
-    mutate = testMutate;
+    server = createTestServer();
   });
 
   describe('User Registration', () => {
     it('should register a new user successfully', async () => {
       const mutation = `
-        mutation RegisterUser($input: RegisterInput!) {
-          register(input: $input) {
-            success
-            message
+        mutation RegisterUser($input: SignupInput!) {
+          signup(input: $input) {
+            accessToken
+            refreshToken
             user {
               id
               email
@@ -53,21 +43,26 @@ describe('Authentication', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: null });
       
-      expect(result.data.register.success).toBe(true);
-      expect(result.data.register.user.email).toBe('newuser@example.com');
-      expect(result.data.register.user.firstName).toBe('New');
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.signup).toBeDefined();
+      expect((data?.signup as any).user.email).toBe('newuser@example.com');
+      expect((data?.signup as any).user.firstName).toBe('New');
+      expect((data?.signup as any).accessToken).toBeDefined();
     });
 
     it('should fail to register with existing email', async () => {
       await createTestUser({ email: 'existing@example.com' });
 
       const mutation = `
-        mutation RegisterUser($input: RegisterInput!) {
-          register(input: $input) {
-            success
-            message
+        mutation RegisterUser($input: SignupInput!) {
+          signup(input: $input) {
+            accessToken
+            refreshToken
             user {
               id
               email
@@ -86,10 +81,14 @@ describe('Authentication', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: null });
       
-      expect(result.data.register.success).toBe(false);
-      expect(result.data.register.message).toContain('already exists');
+      const errors = result.body.kind === 'single' ? result.body.singleResult.errors : result.body.initialResult.errors;
+      expect(errors).toBeDefined();
+      expect(errors![0].message).toContain('already exists');
     });
   });
 
@@ -103,9 +102,8 @@ describe('Authentication', () => {
       const mutation = `
         mutation Login($input: LoginInput!) {
           login(input: $input) {
-            success
-            message
-            token
+            accessToken
+            refreshToken
             user {
               id
               email
@@ -123,20 +121,23 @@ describe('Authentication', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: null });
       
-      expect(result.data.login.success).toBe(true);
-      expect(result.data.login.token).toBe('mock-jwt-token');
-      expect(result.data.login.user.email).toBe('test@example.com');
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.login).toBeDefined();
+      expect((data?.login as any).accessToken).toBeDefined();
+      expect((data?.login as any).user.email).toBe('test@example.com');
     });
 
     it('should fail to login with invalid credentials', async () => {
       const mutation = `
         mutation Login($input: LoginInput!) {
           login(input: $input) {
-            success
-            message
-            token
+            accessToken
+            refreshToken
             user {
               id
               email
@@ -152,10 +153,14 @@ describe('Authentication', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: null });
       
-      expect(result.data.login.success).toBe(false);
-      expect(result.data.login.message).toContain('Invalid credentials');
+      const errors = result.body.kind === 'single' ? result.body.singleResult.errors : result.body.initialResult.errors;
+      expect(errors).toBeDefined();
+      expect(errors![0].message).toContain('Invalid credentials');
     });
   });
 });

@@ -22,10 +22,18 @@ export const Delivery = objectType({
     t.nonNull.string('orderId');
     t.nonNull.string('courierId');
     t.nonNull.field('status', { type: 'DeliveryStatus' });
-    t.nonNull.string('assignedAt');
-    t.string('acceptedAt');
-    t.string('pickedUpAt');
-    t.string('deliveredAt');
+    t.nonNull.string('assignedAt', {
+      resolve: (parent) => parent.assignedAt instanceof Date ? parent.assignedAt.toISOString() : parent.assignedAt
+    });
+    t.string('acceptedAt', {
+      resolve: (parent) => parent.acceptedAt ? (parent.acceptedAt instanceof Date ? parent.acceptedAt.toISOString() : parent.acceptedAt) : null
+    });
+    t.string('pickedUpAt', {
+      resolve: (parent) => parent.pickedUpAt ? (parent.pickedUpAt instanceof Date ? parent.pickedUpAt.toISOString() : parent.pickedUpAt) : null
+    });
+    t.string('deliveredAt', {
+      resolve: (parent) => parent.deliveredAt ? (parent.deliveredAt instanceof Date ? parent.deliveredAt.toISOString() : parent.deliveredAt) : null
+    });
     t.field('currentLocation', { 
       type: 'Location',
       resolve: (parent) => {
@@ -39,9 +47,15 @@ export const Delivery = objectType({
         }
       }
     });
-    t.string('estimatedArrival');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    t.string('estimatedArrival', {
+      resolve: (parent) => parent.estimatedArrival ? (parent.estimatedArrival instanceof Date ? parent.estimatedArrival.toISOString() : parent.estimatedArrival) : null
+    });
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
+    t.nonNull.string('updatedAt', {
+      resolve: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt
+    });
     t.field('order', {
       type: 'Order',
       resolve: async (parent) => {
@@ -89,8 +103,12 @@ export const CourierProfile = objectType({
     t.nonNull.string('rating');
     t.nonNull.int('reviewCount');
     t.nonNull.int('totalDeliveries');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
+    t.nonNull.string('updatedAt', {
+      resolve: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt
+    });
     t.field('user', {
       type: 'User',
       resolve: async (parent) => {

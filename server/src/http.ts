@@ -8,7 +8,7 @@ import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { PubSub } from 'graphql-subscriptions';
 import { createContext } from './context';
-import { schema } from './schema';
+import { schema } from './schema/consolidated-index';
 import { corsMiddleware } from './security/cors';
 import { helmetConfig } from './security/helmet';
 import { generalLimiter, apiLimiter, graphqlLimiter } from './security/rateLimit';

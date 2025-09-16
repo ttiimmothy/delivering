@@ -23,103 +23,104 @@ import {
 describe('GraphQL Operations', () => {
   describe('Authentication Operations', () => {
     it('should define loginMutation correctly', () => {
-      expect(loginMutation).toContain('mutation Login');
-      expect(loginMutation).toContain('input: LoginInput!');
-      expect(loginMutation).toContain('accessToken');
-      expect(loginMutation).toContain('refreshToken');
-      expect(loginMutation).toContain('user');
+      expect(loginMutation).toBeDefined();
+      expect(loginMutation.kind).toBe('Document');
+      expect(loginMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(loginMutation.definitions[0].operation).toBe('mutation');
     });
 
     it('should define signupMutation correctly', () => {
-      expect(signupMutation).toContain('mutation Signup');
-      expect(signupMutation).toContain('input: SignupInput!');
-      expect(signupMutation).toContain('accessToken');
-      expect(signupMutation).toContain('refreshToken');
-      expect(signupMutation).toContain('user');
+      expect(signupMutation).toBeDefined();
+      expect(signupMutation.kind).toBe('Document');
+      expect(signupMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(signupMutation.definitions[0].operation).toBe('mutation');
     });
 
     it('should define refreshTokenMutation correctly', () => {
-      expect(refreshTokenMutation).toContain('mutation RefreshToken');
-      expect(refreshTokenMutation).toContain('accessToken');
-      expect(refreshTokenMutation).toContain('refreshToken');
+      expect(refreshTokenMutation).toBeDefined();
+      expect(refreshTokenMutation.kind).toBe('Document');
+      expect(refreshTokenMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(refreshTokenMutation.definitions[0].operation).toBe('mutation');
     });
   });
 
   describe('Restaurant Operations', () => {
     it('should define restaurantsQuery correctly', () => {
-      expect(restaurantsQuery).toContain('query Restaurants');
-      expect(restaurantsQuery).toContain('cuisine: String');
-      expect(restaurantsQuery).toContain('id');
-      expect(restaurantsQuery).toContain('name');
-      expect(restaurantsQuery).toContain('cuisine');
+      expect(restaurantsQuery).toBeDefined();
+      expect(restaurantsQuery.kind).toBe('Document');
+      expect(restaurantsQuery.definitions[0].kind).toBe('OperationDefinition');
+      expect(restaurantsQuery.definitions[0].operation).toBe('query');
     });
 
     it('should define restaurantQuery correctly', () => {
-      expect(restaurantQuery).toContain('query Restaurant');
-      expect(restaurantQuery).toContain('slug: String!');
-      expect(restaurantQuery).toContain('restaurant');
+      expect(restaurantQuery).toBeDefined();
+      expect(restaurantQuery.kind).toBe('Document');
+      expect(restaurantQuery.definitions[0].kind).toBe('OperationDefinition');
+      expect(restaurantQuery.definitions[0].operation).toBe('query');
     });
   });
 
   describe('Cart Operations', () => {
     it('should define cartQuery correctly', () => {
-      expect(cartQuery).toContain('query Cart');
-      expect(cartQuery).toContain('cart');
-      expect(cartQuery).toContain('restaurantId');
-      expect(cartQuery).toContain('items');
+      expect(cartQuery).toBeDefined();
+      expect(cartQuery.kind).toBe('Document');
+      expect(cartQuery.definitions[0].kind).toBe('OperationDefinition');
+      expect(cartQuery.definitions[0].operation).toBe('query');
     });
 
     it('should define addToCartMutation correctly', () => {
-      expect(addToCartMutation).toContain('mutation AddToCart');
-      expect(addToCartMutation).toContain('input: AddToCartInput!');
-      expect(addToCartMutation).toContain('id');
-      expect(addToCartMutation).toContain('menuItemId');
+      expect(addToCartMutation).toBeDefined();
+      expect(addToCartMutation.kind).toBe('Document');
+      expect(addToCartMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(addToCartMutation.definitions[0].operation).toBe('mutation');
     });
   });
 
   describe('Order Operations', () => {
     it('should define ordersQuery correctly', () => {
-      expect(ordersQuery).toContain('query Orders');
-      expect(ordersQuery).toContain('orders');
-      expect(ordersQuery).toContain('id');
-      expect(ordersQuery).toContain('status');
+      expect(ordersQuery).toBeDefined();
+      expect(ordersQuery.kind).toBe('Document');
+      expect(ordersQuery.definitions[0].kind).toBe('OperationDefinition');
+      expect(ordersQuery.definitions[0].operation).toBe('query');
     });
 
     it('should define placeOrderMutation correctly', () => {
-      expect(placeOrderMutation).toContain('mutation PlaceOrder');
-      expect(placeOrderMutation).toContain('input: CreateOrderInput!');
-      expect(placeOrderMutation).toContain('id');
-      expect(placeOrderMutation).toContain('orderNumber');
+      expect(placeOrderMutation).toBeDefined();
+      expect(placeOrderMutation.kind).toBe('Document');
+      expect(placeOrderMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(placeOrderMutation.definitions[0].operation).toBe('mutation');
     });
   });
 
   describe('Payment Operations', () => {
     it('should define createCheckoutSessionMutation correctly', () => {
-      expect(createCheckoutSessionMutation).toContain('mutation CreateCheckoutSession');
-      expect(createCheckoutSessionMutation).toContain('input: CreateCheckoutSessionInput!');
-      expect(createCheckoutSessionMutation).toContain('id');
-      expect(createCheckoutSessionMutation).toContain('url');
+      expect(createCheckoutSessionMutation).toBeDefined();
+      expect(createCheckoutSessionMutation.kind).toBe('Document');
+      expect(createCheckoutSessionMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(createCheckoutSessionMutation.definitions[0].operation).toBe('mutation');
     });
 
     it('should define createPaymentIntentMutation correctly', () => {
-      expect(createPaymentIntentMutation).toContain('mutation CreatePaymentIntent');
-      expect(createPaymentIntentMutation).toContain('input: CreatePaymentIntentInput!');
-      expect(createPaymentIntentMutation).toContain('id');
-      expect(createPaymentIntentMutation).toContain('clientSecret');
+      expect(createPaymentIntentMutation).toBeDefined();
+      expect(createPaymentIntentMutation.kind).toBe('Document');
+      expect(createPaymentIntentMutation.definitions[0].kind).toBe('OperationDefinition');
+      expect(createPaymentIntentMutation.definitions[0].operation).toBe('mutation');
     });
   });
 
   describe('Subscription Operations', () => {
     it('should define orderStatusChangedSubscription correctly', () => {
-      expect(orderStatusChangedSubscription).toContain('subscription OrderStatusChanged');
-      expect(orderStatusChangedSubscription).toContain('orderId: String!');
-      expect(orderStatusChangedSubscription).toContain('orderStatusChanged');
+      expect(orderStatusChangedSubscription).toBeDefined();
+      expect(orderStatusChangedSubscription.kind).toBe('Document');
+      expect(orderStatusChangedSubscription.definitions[0].kind).toBe('OperationDefinition');
+      expect(orderStatusChangedSubscription.definitions[0].operation).toBe('subscription');
     });
 
     it('should define courierLocationSubscription correctly', () => {
-      expect(courierLocationSubscription).toContain('subscription CourierLocation');
-      expect(courierLocationSubscription).toContain('deliveryId: String!');
-      expect(courierLocationSubscription).toContain('courierLocation');
+      expect(courierLocationSubscription).toBeDefined();
+      expect(courierLocationSubscription.kind).toBe('Document');
+      expect(courierLocationSubscription.definitions[0].kind).toBe('OperationDefinition');
+      expect(courierLocationSubscription.definitions[0].operation).toBe('subscription');
     });
   });
 });

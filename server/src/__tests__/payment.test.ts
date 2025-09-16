@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
-import { createTestUser, resetTestData } from './utils/fixtures';
-import { mockJWT, mockStripe } from './utils/mocks';
-import { schema } from '../schema';
+import { ApolloServer } from '@apollo/server';
+import { createTestUser, resetTestData } from './lib/fixtures';
+import { mockJWT, mockStripe } from './lib/setup';
+import { createTestServer, executeOperation } from './setup';
 
 // Mock external dependencies
 mockJWT();
@@ -11,65 +10,50 @@ mockStripe();
 
 describe('Payment System', () => {
   let server: ApolloServer;
-  let query: any;
-  let mutate: any;
 
   beforeEach(async () => {
     await resetTestData();
-    
-    server = new ApolloServer({
-      schema,
-      context: () => ({ user: { id: 'test-user-id', role: 'customer' } })
-    });
-    
-    const { query: testQuery, mutate: testMutate } = createTestClient(server);
-    query = testQuery;
-    mutate = testMutate;
+    server = createTestServer();
   });
 
   describe('Stripe Checkout', () => {
     it('should create checkout session', async () => {
       const mutation = `
-        mutation CreateCheckoutSession($input: CreateCheckoutSessionInput!) {
+        mutation CreateCheckoutSession($input: CheckoutSessionInput!) {
           createCheckoutSession(input: $input) {
             success
-            message
-            session {
-              id
-              url
-            }
+            sessionId
+            url
           }
         }
       `;
 
       const variables = {
         input: {
-          orderId: 'test-order-id',
+          cartId: 'test-cart-id',
           successUrl: 'http://localhost:3000/success',
           cancelUrl: 'http://localhost:3000/cancel'
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, { query: mutation, variables });
       
-      expect(result.data.createCheckoutSession.success).toBe(true);
-      expect(result.data.createCheckoutSession.session.id).toBe('cs_test_mock');
-      expect(result.data.createCheckoutSession.session.url).toBe('https://checkout.stripe.com/mock');
+      
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect((data?.createCheckoutSession as any).success).toBe(true);
+      expect((data?.createCheckoutSession as any).sessionId).toBe('mock-session-id');
+      expect((data?.createCheckoutSession as any).url).toBe('https://checkout.stripe.com/mock-session');
     });
   });
 
   describe('Payment Intents', () => {
     it('should create payment intent', async () => {
       const mutation = `
-        mutation CreatePaymentIntent($input: CreatePaymentIntentInput!) {
+        mutation CreatePaymentIntent($input: PaymentIntentInput!) {
           createPaymentIntent(input: $input) {
             success
-            message
-            paymentIntent {
-              id
-              clientSecret
-              status
-            }
+            paymentIntentId
+            clientSecret
           }
         }
       `;
@@ -82,19 +66,21 @@ describe('Payment System', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, { query: mutation, variables });
       
-      expect(result.data.createPaymentIntent.success).toBe(true);
-      expect(result.data.createPaymentIntent.paymentIntent.id).toBe('pi_test_mock');
-      expect(result.data.createPaymentIntent.paymentIntent.clientSecret).toBe('pi_test_mock_secret');
+      console.log('Payment intent test result:', JSON.stringify(result, null, 2));
+      
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect((data?.createPaymentIntent as any).success).toBe(true);
+      expect((data?.createPaymentIntent as any).paymentIntentId).toBe('mock-payment-intent-id');
+      expect((data?.createPaymentIntent as any).clientSecret).toBe('mock-client-secret');
     });
 
     it('should confirm payment intent', async () => {
       const mutation = `
-        mutation ConfirmPaymentIntent($paymentIntentId: String!) {
-          confirmPaymentIntent(paymentIntentId: $paymentIntentId) {
+        mutation ConfirmPaymentIntent($input: ConfirmPaymentInput!) {
+          confirmPaymentIntent(input: $input) {
             success
-            message
             paymentIntent {
               id
               status
@@ -104,27 +90,29 @@ describe('Payment System', () => {
       `;
 
       const variables = {
-        paymentIntentId: 'pi_test_mock'
+        input: {
+          paymentIntentId: 'pi_test_mock'
+        }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, { query: mutation, variables });
       
-      expect(result.data.confirmPaymentIntent.success).toBe(true);
-      expect(result.data.confirmPaymentIntent.paymentIntent.status).toBe('succeeded');
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect((data?.confirmPaymentIntent as any).success).toBe(true);
+      expect((data?.confirmPaymentIntent as any).paymentIntent.id).toBe('pi_test_mock');
+      expect((data?.confirmPaymentIntent as any).paymentIntent.status).toBe('succeeded');
     });
   });
 
   describe('Refunds', () => {
     it('should create refund', async () => {
       const mutation = `
-        mutation CreateRefund($input: CreateRefundInput!) {
+        mutation CreateRefund($input: RefundInput!) {
           createRefund(input: $input) {
             success
-            message
             refund {
               id
               status
-              amount
             }
           }
         }
@@ -138,11 +126,12 @@ describe('Payment System', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, { query: mutation, variables });
       
-      expect(result.data.createRefund.success).toBe(true);
-      expect(result.data.createRefund.refund.id).toBe('re_test_mock');
-      expect(result.data.createRefund.refund.status).toBe('succeeded');
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect((data?.createRefund as any).success).toBe(true);
+      expect((data?.createRefund as any).refund.id).toBe('mock-refund-id');
+      expect((data?.createRefund as any).refund.status).toBe('succeeded');
     });
   });
 });

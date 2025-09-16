@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
-import { createTestUser, createTestOrder, resetTestData } from './utils/fixtures';
-import { mockJWT, mockSocketIO } from './utils/mocks';
-import { schema } from '../schema';
+import { ApolloServer } from '@apollo/server';
+import { createTestUser, createTestOrder, resetTestData } from './lib/fixtures';
+import { mockJWT, mockSocketIO } from './lib/setup';
+import { createTestServer, executeOperation } from './setup';
 
 // Mock external dependencies
 mockJWT();
@@ -11,18 +10,10 @@ const { mockIO } = mockSocketIO();
 
 describe('Real-time Subscriptions', () => {
   let server: ApolloServer;
-  let query: any;
 
   beforeEach(async () => {
     await resetTestData();
-    
-    server = new ApolloServer({
-      schema,
-      context: () => ({ user: { id: 'test-user-id', role: 'customer' } })
-    });
-    
-    const { query: testQuery } = createTestClient(server);
-    query = testQuery;
+    server = createTestServer();
   });
 
   describe('Order Status Subscriptions', () => {

@@ -1,4 +1,4 @@
-import { makeSchema } from 'nexus';
+import { makeSchema, queryType, mutationType } from 'nexus';
 import { join } from 'path';
 
 // Import consolidated types
@@ -6,10 +6,17 @@ import * as Types from './consolidated';
 import * as Queries from './queries';
 import * as Mutations from './mutations';
 import * as Subscriptions from './subscriptions';
+import * as Scalars from './scalars';
 
 // Create the GraphQL schema
 export const schema = makeSchema({
   types: [
+    
+    // Scalars
+    Scalars.DateTime,
+    Scalars.Location,
+    Scalars.LocationInput,
+    
     // Types
     Types.User,
     Types.Address,

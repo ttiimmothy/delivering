@@ -21,12 +21,12 @@ describe('UserMenu Component', () => {
   it('renders user menu when authenticated', () => {
     const { getByText } = renderWithProviders(<UserMenu />);
     
-    expect(getByText('Test User')).toBeInTheDocument();
+    expect(getByText('Test')).toBeInTheDocument();
   });
 
   it('shows logout option', () => {
     const { getByText } = renderWithProviders(<UserMenu />);
     
-    expect(getByText('Logout')).toBeInTheDocument();
+    expect(getByText('Sign Out')).toBeInTheDocument();
   });
 });

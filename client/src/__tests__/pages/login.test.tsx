@@ -14,16 +14,16 @@ vi.mock('@/hooks/useAuth', () => ({
 
 describe('Login Page', () => {
   it('renders login form', () => {
-    const { getByText, getByLabelText } = renderWithProviders(<LoginPage />);
+    const { getByRole, getByLabelText } = renderWithProviders(<LoginPage />);
     
-    expect(getByText('Sign In')).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
     expect(getByLabelText('Email')).toBeInTheDocument();
     expect(getByLabelText('Password')).toBeInTheDocument();
   });
 
   it('shows login button', () => {
-    const { getByText } = renderWithProviders(<LoginPage />);
+    const { getByRole } = renderWithProviders(<LoginPage />);
     
-    expect(getByText('Sign In')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
   });
 });

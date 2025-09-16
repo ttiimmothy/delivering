@@ -1,29 +1,19 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
-import { createTestUser, createTestRestaurant, createTestMenu, createTestMenuItem, createTestCart, resetTestData } from './utils/fixtures';
-import { mockJWT } from './utils/mocks';
-import { schema } from '../schema';
+import { ApolloServer } from '@apollo/server';
+import { createTestUser, createTestRestaurant, createTestMenu, createTestMenuItem, resetTestData } from './lib/fixtures';
+import { mockJWT } from './lib/setup';
+import { createTestServer, executeOperation, createTestCart, resetMockData } from './setup';
 
 // Mock external dependencies
 mockJWT();
 
 describe('Cart Management', () => {
   let server: ApolloServer;
-  let query: any;
-  let mutate: any;
 
   beforeEach(async () => {
     await resetTestData();
-    
-    server = new ApolloServer({
-      schema,
-      context: () => ({ user: { id: 'test-user-id', role: 'customer' } })
-    });
-    
-    const { query: testQuery, mutate: testMutate } = createTestClient(server);
-    query = testQuery;
-    mutate = testMutate;
+    resetMockData();
+    server = createTestServer();
   });
 
   describe('Cart Queries', () => {
@@ -38,8 +28,10 @@ describe('Cart Management', () => {
         query GetCart {
           cart {
             id
-            totalAmount
-            itemCount
+            userId
+            restaurantId
+            createdAt
+            updatedAt
             items {
               id
               quantity
@@ -53,11 +45,13 @@ describe('Cart Management', () => {
         }
       `;
 
-      const result = await query({ query: queryString });
+      const result = await executeOperation(server, {
+        query: queryString
+      }, { user: { id: 'test-user-id', role: 'customer' } });
       
-      expect(result.data.cart).toBeDefined();
-      expect(result.data.cart.totalAmount).toBe(25.99);
-      expect(result.data.cart.itemCount).toBe(2);
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.cart).toBeDefined();
+      expect((data?.cart as any).userId).toBe('test-user-id');
     });
 
     it('should return null for non-existent cart', async () => {
@@ -65,15 +59,18 @@ describe('Cart Management', () => {
         query GetCart {
           cart {
             id
-            totalAmount
-            itemCount
+            userId
+            restaurantId
           }
         }
       `;
 
-      const result = await query({ query: queryString });
+      const result = await executeOperation(server, {
+        query: queryString
+      }, { user: { id: 'test-user-id', role: 'customer' } });
       
-      expect(result.data.cart).toBeNull();
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.cart).toBeNull();
     });
   });
 
@@ -83,26 +80,24 @@ describe('Cart Management', () => {
       await createTestMenu();
       await createTestMenuItem({
         name: 'Test Burger',
-        price: 12.99
+        price: "12.99"
       });
 
       const mutation = `
         mutation AddToCart($input: AddToCartInput!) {
           addToCart(input: $input) {
-            success
-            message
-            cart {
+            id
+            cartId
+            menuItemId
+            quantity
+            selectedOptions
+            specialInstructions
+            createdAt
+            updatedAt
+            menuItem {
               id
-              totalAmount
-              itemCount
-              items {
-                id
-                quantity
-                menuItem {
-                  name
-                  price
-                }
-              }
+              name
+              price
             }
           }
         }
@@ -115,11 +110,16 @@ describe('Cart Management', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: { id: 'test-user-id', role: 'customer' } });
       
-      expect(result.data.addToCart.success).toBe(true);
-      expect(result.data.addToCart.cart.itemCount).toBe(2);
-      expect(result.data.addToCart.cart.totalAmount).toBe(25.98); // 12.99 * 2
+      console.log('Mutation result:', JSON.stringify(result, null, 2));
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.addToCart).toBeDefined();
+      expect((data?.addToCart as any).quantity).toBe(2);
+      expect((data?.addToCart as any).menuItem.name).toBe('Test Burger');
     });
 
     it('should update cart item quantity', async () => {
@@ -127,16 +127,16 @@ describe('Cart Management', () => {
       await createTestMenu();
       await createTestMenuItem({
         name: 'Test Pizza',
-        price: 15.99
+        price: "15.99"
       });
       
       // First add item to cart
-      await mutate({
-        mutation: `
+      await executeOperation(server, {
+        query: `
           mutation AddToCart($input: AddToCartInput!) {
             addToCart(input: $input) {
-              success
-              cart { id }
+              id
+              cartId
             }
           }
         `,
@@ -146,18 +146,19 @@ describe('Cart Management', () => {
             quantity: 1
           }
         }
-      });
+      }, { user: { id: 'test-user-id', role: 'customer' } });
 
       const mutation = `
         mutation UpdateCartItem($input: UpdateCartItemInput!) {
           updateCartItem(input: $input) {
-            success
-            message
-            cart {
-              id
-              totalAmount
-              itemCount
-            }
+            id
+            cartId
+            menuItemId
+            quantity
+            selectedOptions
+            specialInstructions
+            createdAt
+            updatedAt
           }
         }
       `;
@@ -169,10 +170,15 @@ describe('Cart Management', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: { id: 'test-user-id', role: 'customer' } });
       
-      expect(result.data.updateCartItem.success).toBe(true);
-      expect(result.data.updateCartItem.cart.itemCount).toBe(3);
+      console.log('Update mutation result:', JSON.stringify(result, null, 2));
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.updateCartItem).toBeDefined();
+      expect((data?.updateCartItem as any).quantity).toBe(3);
     });
 
     it('should remove item from cart', async () => {
@@ -181,12 +187,12 @@ describe('Cart Management', () => {
       await createTestMenuItem();
       
       // First add item to cart
-      await mutate({
-        mutation: `
+      await executeOperation(server, {
+        query: `
           mutation AddToCart($input: AddToCartInput!) {
             addToCart(input: $input) {
-              success
-              cart { id }
+              id
+              cartId
             }
           }
         `,
@@ -196,18 +202,11 @@ describe('Cart Management', () => {
             quantity: 1
           }
         }
-      });
+      }, { user: { id: 'test-user-id', role: 'customer' } });
 
       const mutation = `
         mutation RemoveFromCart($input: RemoveFromCartInput!) {
-          removeFromCart(input: $input) {
-            success
-            message
-            cart {
-              id
-              itemCount
-            }
-          }
+          removeFromCart(input: $input)
         }
       `;
 
@@ -217,24 +216,31 @@ describe('Cart Management', () => {
         }
       };
 
-      const result = await mutate({ mutation, variables });
+      const result = await executeOperation(server, {
+        query: mutation,
+        variables
+      }, { user: { id: 'test-user-id', role: 'customer' } });
       
-      expect(result.data.removeFromCart.success).toBe(true);
-      expect(result.data.removeFromCart.cart.itemCount).toBe(0);
+      console.log('Remove from cart result:', JSON.stringify(result, null, 2));
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.removeFromCart).toBe(true);
     });
 
     it('should clear entire cart', async () => {
+      // Create a cart first
+      createTestCart('test-user-id');
+      
       await createTestRestaurant();
       await createTestMenu();
       await createTestMenuItem();
       
       // First add item to cart
-      await mutate({
-        mutation: `
+      await executeOperation(server, {
+        query: `
           mutation AddToCart($input: AddToCartInput!) {
             addToCart(input: $input) {
-              success
-              cart { id }
+              id
+              cartId
             }
           }
         `,
@@ -244,27 +250,21 @@ describe('Cart Management', () => {
             quantity: 2
           }
         }
-      });
+      }, { user: { id: 'test-user-id', role: 'customer' } });
 
       const mutation = `
         mutation ClearCart {
-          clearCart {
-            success
-            message
-            cart {
-              id
-              itemCount
-              totalAmount
-            }
-          }
+          clearCart
         }
       `;
 
-      const result = await mutate({ mutation });
+      const result = await executeOperation(server, {
+        query: mutation
+      }, { user: { id: 'test-user-id', role: 'customer' } });
       
-      expect(result.data.clearCart.success).toBe(true);
-      expect(result.data.clearCart.cart.itemCount).toBe(0);
-      expect(result.data.clearCart.cart.totalAmount).toBe(0);
+      console.log('Clear cart result:', JSON.stringify(result, null, 2));
+      const data = result.body.kind === 'single' ? result.body.singleResult.data : result.body.initialResult.data;
+      expect(data?.clearCart).toBe(true);
     });
   });
 });
