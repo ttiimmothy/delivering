@@ -106,6 +106,13 @@ type CourierProfile {
   vehicleType: VehicleType!
 }
 
+input CourierProfileInput {
+  currentLocation: LocationInput
+  isAvailable: Boolean
+  licensePlate: String
+  vehicleType: VehicleType!
+}
+
 type CourierStatusUpdate {
   courierId: String!
   isAvailable: Boolean!
@@ -131,6 +138,13 @@ input CreateCheckoutSessionInput {
   successUrl: String!
 }
 
+input CreateCourierProfileInput {
+  currentLocation: LocationInput
+  isAvailable: Boolean
+  licensePlate: String
+  vehicleType: VehicleType!
+}
+
 input CreateOrderInput {
   deliveryAddress: String!
   specialInstructions: String
@@ -150,6 +164,18 @@ input CreateRefundInput {
   reason: String
 }
 
+input CreateRestaurantInput {
+  address: RestaurantAddressInput!
+  cuisine: String!
+  deliveryFee: Float
+  deliveryTime: Int
+  description: String
+  email: String
+  minimumOrder: Float
+  name: String!
+  phone: String!
+}
+
 input CreateReviewInput {
   comment: String
   courierId: String
@@ -157,6 +183,11 @@ input CreateReviewInput {
   restaurantId: String
   type: ReviewType!
 }
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 type Delivery {
   acceptedAt: String
@@ -196,16 +227,11 @@ type DeliveryStatusUpdate {
   timestamp: String!
 }
 
-type Location {
-  latitude: Float!
-  longitude: Float!
-  timestamp: String
-}
+"""A location object with latitude and longitude"""
+scalar Location
 
-input LocationInput {
-  latitude: Float!
-  longitude: Float!
-}
+"""A location input object with latitude and longitude"""
+scalar LocationInput
 
 input LoginInput {
   email: String!
@@ -447,6 +473,14 @@ type Restaurant {
   updatedAt: String!
 }
 
+input RestaurantAddressInput {
+  city: String!
+  country: String
+  state: String!
+  street: String!
+  zipCode: String!
+}
+
 type Review {
   comment: String
   courier: User
@@ -498,6 +532,32 @@ input UpdateCartItemInput {
 input UpdateCourierLocationInput {
   latitude: Float!
   longitude: Float!
+}
+
+input UpdateCourierProfileInput {
+  currentLocation: LocationInput
+  isAvailable: Boolean
+  licensePlate: String
+  vehicleType: VehicleType
+}
+
+input UpdateProfileInput {
+  avatar: String
+  firstName: String
+  lastName: String
+  phone: String
+}
+
+input UpdateRestaurantInput {
+  address: RestaurantAddressInput
+  cuisine: String
+  deliveryFee: Float
+  deliveryTime: Int
+  description: String
+  email: String
+  minimumOrder: Float
+  name: String
+  phone: String
 }
 
 type User {

@@ -101,14 +101,6 @@ export const CourierProfile = objectType({
   },
 });
 
-export const Location = objectType({
-  name: 'Location',
-  definition(t) {
-    t.nonNull.float('latitude');
-    t.nonNull.float('longitude');
-    t.string('timestamp');
-  },
-});
 
 export const Restaurant = objectType({
   name: 'Restaurant',
@@ -300,16 +292,34 @@ export const Order = objectType({
     t.string('courierId');
     t.nonNull.field('status', { type: 'OrderStatus' });
     t.nonNull.field('paymentStatus', { type: 'PaymentStatus' });
-    t.nonNull.float('subtotal');
-    t.nonNull.float('tax');
-    t.nonNull.float('deliveryFee');
-    t.nonNull.float('tip');
-    t.nonNull.float('total');
-    t.nonNull.string('deliveryAddress');
+    t.nonNull.float('subtotal', {
+      resolve: (parent) => parseFloat(parent.subtotal)
+    });
+    t.nonNull.float('tax', {
+      resolve: (parent) => parseFloat(parent.tax)
+    });
+    t.nonNull.float('deliveryFee', {
+      resolve: (parent) => parseFloat(parent.deliveryFee)
+    });
+    t.nonNull.float('tip', {
+      resolve: (parent) => parseFloat(parent.tip)
+    });
+    t.nonNull.float('total', {
+      resolve: (parent) => parseFloat(parent.total)
+    });
+    t.nonNull.string('deliveryAddress', {
+      resolve: (parent) => typeof parent.deliveryAddress === 'string' ? parent.deliveryAddress : JSON.stringify(parent.deliveryAddress)
+    });
     t.string('specialInstructions');
-    t.string('estimatedDeliveryTime');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    t.string('estimatedDeliveryTime', {
+      resolve: (parent) => parent.estimatedDeliveryTime ? (parent.estimatedDeliveryTime instanceof Date ? parent.estimatedDeliveryTime.toISOString() : parent.estimatedDeliveryTime) : null
+    });
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
+    t.nonNull.string('updatedAt', {
+      resolve: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt
+    });
     t.field('customer', {
       type: 'User',
       resolve: async (parent) => {
@@ -369,11 +379,19 @@ export const OrderItem = objectType({
     t.nonNull.string('orderId');
     t.nonNull.string('menuItemId');
     t.nonNull.int('quantity');
-    t.nonNull.float('unitPrice');
-    t.nonNull.float('totalPrice');
-    t.nonNull.string('selectedOptions');
+    t.nonNull.float('unitPrice', {
+      resolve: (parent) => parseFloat(parent.unitPrice)
+    });
+    t.nonNull.float('totalPrice', {
+      resolve: (parent) => parseFloat(parent.totalPrice)
+    });
+    t.nonNull.string('selectedOptions', {
+      resolve: (parent) => typeof parent.selectedOptions === 'string' ? parent.selectedOptions : JSON.stringify(parent.selectedOptions)
+    });
     t.string('specialInstructions');
-    t.nonNull.string('createdAt');
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
     t.field('menuItem', {
       type: 'MenuItem',
       resolve: async (parent) => {
@@ -394,8 +412,12 @@ export const OrderEvent = objectType({
     t.nonNull.string('orderId');
     t.nonNull.field('status', { type: 'OrderStatus' });
     t.string('message');
-    t.string('metadata');
-    t.nonNull.string('createdAt');
+    t.string('metadata', {
+      resolve: (parent) => typeof parent.metadata === 'string' ? parent.metadata : JSON.stringify(parent.metadata)
+    });
+    t.nonNull.string('createdAt', {
+      resolve: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt
+    });
   },
 });
 
@@ -574,13 +596,6 @@ export const AddressInput = inputObjectType({
   },
 });
 
-export const LocationInput = inputObjectType({
-  name: 'LocationInput',
-  definition(t) {
-    t.nonNull.float('latitude');
-    t.nonNull.float('longitude');
-  },
-});
 
 export const AddToCartInput = inputObjectType({
   name: 'AddToCartInput',
@@ -1028,5 +1043,88 @@ export const createRefund = mutationField('createRefund', {
       console.error('Error creating refund:', error);
       throw new Error('Failed to create refund');
     }
+  },
+});
+
+// ===== MISSING INPUT TYPES =====
+
+export const CreateRestaurantInput = inputObjectType({
+  name: 'CreateRestaurantInput',
+  definition(t) {
+    t.nonNull.string('name');
+    t.string('description');
+    t.nonNull.field('address', { type: 'RestaurantAddressInput' });
+    t.nonNull.string('phone');
+    t.string('email');
+    t.nonNull.string('cuisine');
+    t.int('deliveryTime');
+    t.float('deliveryFee');
+    t.float('minimumOrder');
+  },
+});
+
+export const UpdateRestaurantInput = inputObjectType({
+  name: 'UpdateRestaurantInput',
+  definition(t) {
+    t.string('name');
+    t.string('description');
+    t.field('address', { type: 'RestaurantAddressInput' });
+    t.string('phone');
+    t.string('email');
+    t.string('cuisine');
+    t.int('deliveryTime');
+    t.float('deliveryFee');
+    t.float('minimumOrder');
+  },
+});
+
+export const RestaurantAddressInput = inputObjectType({
+  name: 'RestaurantAddressInput',
+  definition(t) {
+    t.nonNull.string('street');
+    t.nonNull.string('city');
+    t.nonNull.string('state');
+    t.nonNull.string('zipCode');
+    t.string('country');
+  },
+});
+
+export const UpdateProfileInput = inputObjectType({
+  name: 'UpdateProfileInput',
+  definition(t) {
+    t.string('firstName');
+    t.string('lastName');
+    t.string('phone');
+    t.string('avatar');
+  },
+});
+
+export const CourierProfileInput = inputObjectType({
+  name: 'CourierProfileInput',
+  definition(t) {
+    t.nonNull.field('vehicleType', { type: 'VehicleType' });
+    t.string('licensePlate');
+    t.boolean('isAvailable');
+    t.field('currentLocation', { type: 'LocationInput' });
+  },
+});
+
+export const CreateCourierProfileInput = inputObjectType({
+  name: 'CreateCourierProfileInput',
+  definition(t) {
+    t.nonNull.field('vehicleType', { type: 'VehicleType' });
+    t.string('licensePlate');
+    t.boolean('isAvailable');
+    t.field('currentLocation', { type: 'LocationInput' });
+  },
+});
+
+export const UpdateCourierProfileInput = inputObjectType({
+  name: 'UpdateCourierProfileInput',
+  definition(t) {
+    t.field('vehicleType', { type: 'VehicleType' });
+    t.string('licensePlate');
+    t.boolean('isAvailable');
+    t.field('currentLocation', { type: 'LocationInput' });
   },
 });

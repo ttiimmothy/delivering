@@ -44,20 +44,24 @@ export async function createTestUser(overrides: Partial<typeof schema.users.$inf
 export async function createTestRestaurant(overrides: Partial<typeof schema.restaurants.$inferInsert> = {}) {
   const defaultRestaurant = {
     id: `test-restaurant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    ownerId: 'test-user-id',
     name: 'Test Restaurant',
+    slug: `test-restaurant-${Date.now()}`,
     description: 'A test restaurant',
-    address: '123 Test St',
-    city: 'Test City',
-    state: 'TS',
-    zipCode: '12345',
+    address: JSON.stringify({
+      street: '123 Test St',
+      city: 'Test City',
+      state: 'TS',
+      zipCode: '12345',
+      country: 'US'
+    }),
     phone: '+1234567890',
-    email: 'restaurant@test.com',
     cuisine: 'Test Cuisine',
-    rating: 4.5,
+    rating: '4.50',
     reviewCount: 100,
     deliveryTime: 30,
-    deliveryFee: 2.99,
-    minimumOrder: 15.00,
+    deliveryFee: '2.99',
+    minimumOrder: '15.00',
     isActive: true,
     isOpen: true,
     image: 'https://example.com/restaurant.jpg',
@@ -77,13 +81,14 @@ export async function createTestRestaurant(overrides: Partial<typeof schema.rest
   return defaultRestaurant;
 }
 
-export async function createTestMenu(overrides: Partial<typeof schema.menus.$inferInsert> = {}) {
-  const defaultMenu = {
-    id: 'test-menu-id',
+export async function createTestMenuCategory(overrides: Partial<typeof schema.menuCategories.$inferInsert> = {}) {
+  const defaultMenuCategory = {
+    id: 'test-menu-category-id',
     restaurantId: 'test-restaurant-id',
-    name: 'Test Menu',
-    description: 'A test menu',
+    name: 'Test Menu Category',
+    description: 'A test menu category',
     isActive: true,
+    sortOrder: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides
@@ -91,25 +96,27 @@ export async function createTestMenu(overrides: Partial<typeof schema.menus.$inf
   
   try {
     const db = getTestDatabase();
-    await db.insert(schema.menus).values(defaultMenu);
+    await db.insert(schema.menuCategories).values(defaultMenuCategory);
   } catch (error) {
     // If database is not available, store in mock data
-    mockData.menus = mockData.menus || [];
-    mockData.menus.push(defaultMenu);
+    mockData.menuCategories = mockData.menuCategories || [];
+    mockData.menuCategories.push(defaultMenuCategory);
   }
   
-  return defaultMenu;
+  return defaultMenuCategory;
 }
 
 export async function createTestMenuItem(overrides: Partial<typeof schema.menuItems.$inferInsert> = {}) {
   const defaultMenuItem = {
     id: 'test-menu-item-id',
-    menuId: 'test-menu-id',
+    restaurantId: 'test-restaurant-id',
+    categoryId: 'test-menu-category-id',
     name: 'Test Item',
     description: 'A test menu item',
-    price: 9.99,
-    category: 'Main',
+    price: '9.99',
     isAvailable: true,
+    isPopular: false,
+    sortOrder: 1,
     image: 'https://example.com/item.jpg',
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -154,19 +161,24 @@ export async function createTestCart(overrides: Partial<typeof schema.carts.$inf
 export async function createTestOrder(overrides: Partial<typeof schema.orders.$inferInsert> = {}) {
   const defaultOrder = {
     id: 'test-order-id',
-    userId: 'test-user-id',
+    orderNumber: 'ORD-001',
+    customerId: 'test-user-id',
     restaurantId: 'test-restaurant-id',
     status: 'pending' as const,
-    totalAmount: 25.99,
-    deliveryFee: 2.99,
-    tax: 2.50,
-    subtotal: 20.50,
-    deliveryAddress: '123 Test St',
-    deliveryCity: 'Test City',
-    deliveryState: 'TS',
-    deliveryZipCode: '12345',
+    total: '25.99',
+    deliveryFee: '2.99',
+    tax: '2.50',
+    subtotal: '20.50',
+    deliveryAddress: JSON.stringify({
+      street: '123 Test St',
+      city: 'Test City',
+      state: 'TS',
+      zipCode: '12345',
+      country: 'US'
+    }),
     deliveryPhone: '+1234567890',
     specialInstructions: 'Test instructions',
+    stripeSessionId: 'cs_test_123',
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides
@@ -202,6 +214,6 @@ export async function resetTestData() {
   }
   await createTestUser();
   await createTestRestaurant();
-  await createTestMenu();
+  await createTestMenuCategory();
   await createTestMenuItem();
 }

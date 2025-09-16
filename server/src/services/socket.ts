@@ -1,4 +1,4 @@
-import { Server as SocketIOServer } from 'socket.io';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
 import { verify } from 'jsonwebtoken';
 import { db } from '../db/client';
@@ -309,7 +309,7 @@ export class SocketService {
 
   public emitCourierLocationUpdate(courierId: string, location: LocationUpdate, estimatedArrival?: string) {
     this.courierLocations.set(courierId, location);
-    this.broadcastCourierLocationUpdate(courierId, { courierId, location, estimatedArrival });
+    this.broadcastCourierLocationUpdate(courierId, { courierId, deliveryId: '', location, estimatedArrival });
   }
 
   public getConnectedUsers(): string[] {

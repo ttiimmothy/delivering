@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ApolloServer } from '@apollo/server';
-import { createTestUser, createTestRestaurant, createTestMenu, createTestMenuItem, resetTestData } from './lib/fixtures';
+import { createTestUser, createTestRestaurant, createTestMenuCategory, createTestMenuItem, resetTestData } from './lib/fixtures';
 import { mockJWT } from './lib/setup';
 import { createTestServer, executeOperation, createTestCart, resetMockData } from './setup';
 
@@ -77,7 +77,7 @@ describe('Cart Management', () => {
   describe('Cart Mutations', () => {
     it('should add item to cart', async () => {
       await createTestRestaurant();
-      await createTestMenu();
+      await createTestMenuCategory();
       await createTestMenuItem({
         name: 'Test Burger',
         price: "12.99"
@@ -124,7 +124,7 @@ describe('Cart Management', () => {
 
     it('should update cart item quantity', async () => {
       await createTestRestaurant();
-      await createTestMenu();
+      await createTestMenuCategory();
       await createTestMenuItem({
         name: 'Test Pizza',
         price: "15.99"
@@ -183,7 +183,7 @@ describe('Cart Management', () => {
 
     it('should remove item from cart', async () => {
       await createTestRestaurant();
-      await createTestMenu();
+      await createTestMenuCategory();
       await createTestMenuItem();
       
       // First add item to cart
@@ -231,7 +231,7 @@ describe('Cart Management', () => {
       createTestCart('test-user-id');
       
       await createTestRestaurant();
-      await createTestMenu();
+      await createTestMenuCategory();
       await createTestMenuItem();
       
       // First add item to cart

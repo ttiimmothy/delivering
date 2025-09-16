@@ -46,14 +46,15 @@ export async function clearTestDatabase() {
   const db = getTestDatabase();
   
   // Clear all tables in reverse order of dependencies
-  await db.delete(schema.deliveryUpdates);
   await db.delete(schema.deliveries);
   await db.delete(schema.orders);
   await db.delete(schema.cartItems);
   await db.delete(schema.carts);
   await db.delete(schema.reviews);
+  await db.delete(schema.menuItemOptionValues);
+  await db.delete(schema.menuItemOptions);
   await db.delete(schema.menuItems);
-  await db.delete(schema.menus);
+  await db.delete(schema.menuCategories);
   await db.delete(schema.restaurants);
   await db.delete(schema.users);
 }

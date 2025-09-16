@@ -5,6 +5,7 @@ import { eq, and } from 'drizzle-orm';
 // import { AuthenticationError, AuthorizationError, NotFoundError } from '../utils/errors';
 import { JWTPayload } from '../lib/auth';
 import { AuthController } from '../controllers/auth';
+import { convertDateFields } from '../lib/dateHelpers';
 
 // Enums
 export const UserRole = enumType({
@@ -33,7 +34,10 @@ export const User = objectType({
     t.list.field('addresses', {
       type: 'Address',
       resolve: async (parent) => {
-        return await db.select().from(addresses).where(eq(addresses.userId, parent.id));
+        const userAddresses = await db.select().from(addresses).where(eq(addresses.userId, parent.id));
+        return userAddresses.map(address => 
+          convertDateFields(address, ['createdAt', 'updatedAt'])
+        );
       },
     });
     
@@ -42,7 +46,8 @@ export const User = objectType({
       resolve: async (parent) => {
         if (parent.role !== 'courier') return null;
         const profile = await db.select().from(courierProfiles).where(eq(courierProfiles.userId, parent.id)).limit(1);
-        return profile[0] || null;
+        if (!profile[0]) return null;
+        return convertDateFields(profile[0], ['createdAt', 'updatedAt']);
       },
     });
   },
@@ -170,7 +175,7 @@ export const UserQueries = extendType({
           throw error;
         }
         
-        return user[0];
+        return convertDateFields(user[0], ['createdAt', 'updatedAt']);
       },
     });
 

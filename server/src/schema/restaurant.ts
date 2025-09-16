@@ -1,6 +1,7 @@
 import { objectType, inputObjectType, extendType, nonNull, stringArg, intArg, booleanArg, floatArg } from 'nexus';
 import { db } from '../db/client';
 import { restaurants, menuCategories, menuItems, menuItemOptions, menuItemOptionValues, users, favorites } from '../db/schema';
+import { convertDateFields } from '../lib/dateHelpers';
 import { eq, and, desc, asc, like, sql } from 'drizzle-orm';
 // Removed custom error imports - using standard Error instead
 
@@ -38,13 +39,17 @@ export const Restaurant = objectType({
     t.list.field('menuCategories', {
       type: 'MenuCategory',
       resolve: async (parent) => {
-        return await db.select()
+        const categories = await db.select()
           .from(menuCategories)
           .where(and(
             eq(menuCategories.restaurantId, parent.id),
             eq(menuCategories.isActive, true)
           ))
           .orderBy(asc(menuCategories.sortOrder));
+        
+        return categories.map(category => 
+          convertDateFields(category, ['createdAt', 'updatedAt'])
+        );
       },
     });
     
@@ -116,13 +121,17 @@ export const MenuCategory = objectType({
     t.list.field('menuItems', {
       type: 'MenuItem',
       resolve: async (parent) => {
-        return await db.select()
+        const items = await db.select()
           .from(menuItems)
           .where(and(
             eq(menuItems.categoryId, parent.id),
             eq(menuItems.isAvailable, true)
           ))
           .orderBy(asc(menuItems.sortOrder));
+        
+        return items.map(item => 
+          convertDateFields(item, ['createdAt', 'updatedAt'])
+        );
       },
     });
   },
@@ -157,10 +166,14 @@ export const MenuItem = objectType({
     t.list.field('options', {
       type: 'MenuItemOption',
       resolve: async (parent) => {
-        return await db.select()
+        const options = await db.select()
           .from(menuItemOptions)
           .where(eq(menuItemOptions.menuItemId, parent.id))
           .orderBy(asc(menuItemOptions.sortOrder));
+        
+        return options.map(option => 
+          convertDateFields(option, ['createdAt'])
+        );
       },
     });
   },
@@ -178,12 +191,16 @@ export const MenuItemOption = objectType({
     
     // Relations
     t.list.field('values', {
-      type: 'MenuItemOptionValue',
+      type: 'OptionValue',
       resolve: async (parent) => {
-        return await db.select()
+        const values = await db.select()
           .from(menuItemOptionValues)
           .where(eq(menuItemOptionValues.optionId, parent.id))
           .orderBy(asc(menuItemOptionValues.sortOrder));
+        
+        return values.map(value => 
+          convertDateFields(value, ['createdAt'])
+        );
       },
     });
   },
@@ -340,12 +357,17 @@ export const RestaurantQueries = extendType({
           orderByClause = desc(restaurants.createdAt);
         }
         
-        return await db.select()
+        const results = await db.select()
           .from(restaurants)
           .where(and(...conditions))
           .orderBy(orderByClause)
           .limit(args.limit || 20)
           .offset(args.offset || 0);
+        
+        // Convert Date objects to ISO strings
+        return results.map(restaurant => 
+          convertDateFields(restaurant, ['createdAt', 'updatedAt'])
+        );
       },
     });
 
@@ -369,7 +391,8 @@ export const RestaurantQueries = extendType({
           throw error;
         }
         
-        return restaurant[0];
+        // Convert Date objects to ISO strings
+        return convertDateFields(restaurant[0], ['createdAt', 'updatedAt']);
       },
     });
 

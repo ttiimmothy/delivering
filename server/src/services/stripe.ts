@@ -8,7 +8,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-08-27.basil',
   typescript: true,
 });
 
@@ -142,7 +142,7 @@ export class StripeService {
         .set({
           paymentStatus: 'paid',
           status: 'confirmed',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         })
         .where(eq(orders.id, orderId));
 
@@ -155,7 +155,7 @@ export class StripeService {
           stripeSessionId: sessionId,
           paymentIntentId: session.payment_intent,
         },
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
       });
 
       return { success: true, orderId };
@@ -184,7 +184,7 @@ export class StripeService {
         .set({
           paymentStatus: 'failed',
           status: 'cancelled',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         })
         .where(eq(orders.id, orderId));
 
@@ -196,7 +196,7 @@ export class StripeService {
         metadata: {
           stripeSessionId: sessionId,
         },
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
       });
 
       return { success: true, orderId };
