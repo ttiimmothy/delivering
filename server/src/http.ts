@@ -2,17 +2,18 @@ import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { createServer } from 'http';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { PubSub } from 'graphql-subscriptions';
 import { createContext } from './context';
-import { schema } from './schema/consolidated-index';
+import { schema } from './schema';
 import { corsMiddleware } from './security/cors';
 import { helmetConfig } from './security/helmet';
 import { generalLimiter, apiLimiter, graphqlLimiter } from './security/rateLimit';
-import {db} from "./db/client";
+import {db} from "./database/drizzle/client";
 import stripeRoutes from './routes/stripe';
 import { initializeSocketService } from './services/socket';
 
@@ -23,7 +24,7 @@ export const httpServer = createServer(app);
 // Create WebSocket server
 const wsServer = new WebSocketServer({
   server: httpServer,
-  path: '/graphql',
+  path: '/api/graphql',
 });
 
 // Create PubSub for subscriptions
@@ -42,6 +43,14 @@ export const server = new ApolloServer({
     // Proper shutdown for the HTTP server
     ApolloServerPluginDrainHttpServer({ httpServer }),
     
+    // Enable Apollo Sandbox for development
+    // ApolloServerPluginLandingPageLocalDefault({ 
+    //   embed: {
+    //     endpointIsEditable: true,
+    //   },
+    //   includeCookies: true,
+    // }),
+    
     // Proper shutdown for the WebSocket server
     {
       async serverWillStart() {
@@ -54,9 +63,15 @@ export const server = new ApolloServer({
     },
   ],
   formatError: (error) => {
-    console.error('GraphQL Error:', error);
+    // console.error('GraphQL Error:', error);
     return error;
   },
+  
+  // Enable introspection and sandbox for development
+  // introspection: true,
+  // includeStacktraceInErrorResponses: process.env.NODE_ENV !== 'production',
+  // // Disable CSRF protection in development to allow sandbox
+  // csrfPrevention: process.env.NODE_ENV === 'production',
 });
 
 // WebSocket server cleanup
@@ -90,7 +105,7 @@ export function setupMiddleware() {
   // Rate limiting
   app.use(generalLimiter);
   app.use('/api', apiLimiter);
-  app.use('/graphql', graphqlLimiter);
+  app.use('/api/graphql', graphqlLimiter);
   
   // Logging - using console for basic request logging
   app.use((req, res, next) => {
@@ -120,8 +135,13 @@ export function setupMiddleware() {
     });
   });
   
+  // Test sandbox page
+  // app.get('/test-sandbox', (req, res) => {
+  //   res.sendFile('test-sandbox.html', { root: '.' });
+  // });
+  
   // Webhook endpoints
-  app.use('/webhooks/stripe', stripeRoutes);
+  app.use('/api/webhooks/stripe', stripeRoutes);
   
   // GraphQL endpoint (will be set up after server starts)
   // This is a placeholder that will be replaced by setupGraphQLEndpoint()
@@ -240,8 +260,25 @@ export function setupGraphQLEndpoint() {
     context: createContext,
   });
   
+  // Add CSP override middleware for GraphQL endpoint
+  // app.use('/api/graphql', (req, res, next) => {
+  //   // Override Apollo Server's CSP with our own
+  //   res.setHeader('Content-Security-Policy', 
+  //     "default-src 'self'; " +
+  //     "script-src 'self' 'unsafe-inline' https://apollo-server-landing-page.cdn.apollographql.com https://embeddable-sandbox.cdn.apollographql.com https://embeddable-explorer.cdn.apollographql.com; " +
+  //     "style-src 'self' 'unsafe-inline' https://apollo-server-landing-page.cdn.apollographql.com https://embeddable-sandbox.cdn.apollographql.com https://embeddable-explorer.cdn.apollographql.com https://fonts.googleapis.com; " +
+  //     "font-src 'self' https://fonts.gstatic.com; " +
+  //     "img-src 'self' https://apollo-server-landing-page.cdn.apollographql.com; " +
+  //     "connect-src 'self' http://localhost:4000 https://embeddable-sandbox.cdn.apollographql.com wss: ws:; " +
+  //     "frame-src 'self' https://sandbox.embed.apollographql.com https://embed.apollo.local:3000; " +
+  //     "manifest-src 'self' https://apollo-server-landing-page.cdn.apollographql.com; " +
+  //     "object-src 'none';"
+  //   );
+  //   next();
+  // });
+  
   // Add the GraphQL middleware
-  app.use('/graphql', graphqlMiddleware);
+  app.use('/api/graphql', graphqlMiddleware);
 }
 
 export default app;

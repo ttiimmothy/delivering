@@ -21,8 +21,8 @@ async function startServer() {
     // Start HTTP server
     httpServer.listen(PORT, () => {
       console.log(`🚀 Server ready at http://localhost:${PORT}`);
-      console.log(`📊 GraphQL endpoint: http://localhost:${PORT}/graphql`);
-      console.log(`🔌 WebSocket endpoint: ws://localhost:${PORT}/graphql`);
+      console.log(`📊 GraphQL endpoint: http://localhost:${PORT}/api/graphql`);
+      console.log(`🔌 WebSocket endpoint: ws://localhost:${PORT}/api/graphql`);
       console.log(`🦾 Health check: http://localhost:${PORT}/health`);
     });
     

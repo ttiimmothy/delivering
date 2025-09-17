@@ -1,6 +1,6 @@
 import { objectType, inputObjectType, enumType, nonNull, intArg, stringArg, arg } from 'nexus';
-import { db } from '../db/client';
-import { orders, orderItems, orderEvents, users, restaurants, menuItems, carts, cartItems } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { orders, orderItems, orderEvents, users, restaurants, menuItems, carts, cartItems } from '../database/drizzle/schema';
 import { eq, and, desc, asc, inArray } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 
@@ -53,6 +53,8 @@ export const Order = objectType({
           firstName: user.firstName,
           lastName: user.lastName,
           phone: user.phone,
+          avatar: user.avatar,
+          emailVerified: user.emailVerified,
           role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
           isActive: user.isActive,
           createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
@@ -92,6 +94,8 @@ export const Order = objectType({
           firstName: user.firstName,
           lastName: user.lastName,
           phone: user.phone,
+          avatar: user.avatar,
+          emailVerified: user.emailVerified,
           role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
           isActive: user.isActive,
           createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),

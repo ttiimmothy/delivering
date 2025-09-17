@@ -1,6 +1,6 @@
 import { objectType, inputObjectType, nonNull, stringArg, arg } from 'nexus';
-import { db } from '../db/client';
-import { carts, cartItems, menuItems } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { carts, cartItems, menuItems } from '../database/drizzle/schema';
 import { eq, and } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 

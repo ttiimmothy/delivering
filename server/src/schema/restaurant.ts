@@ -1,6 +1,6 @@
 import { objectType, inputObjectType, nonNull, intArg, stringArg, booleanArg, arg } from 'nexus';
-import { db } from '../db/client';
-import { restaurants, addresses, users, menuCategories, menuItems } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { restaurants, addresses, users, menuCategories, menuItems, favorites } from '../database/drizzle/schema';
 import { eq, and, desc, asc } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 
@@ -26,6 +26,7 @@ export const Restaurant = objectType({
     t.nonNull.string('updatedAt');
     t.nonNull.string('ownerId');
     t.string('phone');
+    t.boolean('isFavorited');
 
     t.field('address', {
       type: 'Address',
@@ -136,6 +137,28 @@ export const Restaurant = objectType({
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
           updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt),
         }));
+      },
+    });
+
+    t.field('isFavorited', {
+      type: 'Boolean',
+      resolve: async (parent, args, ctx) => {
+        if (!ctx.user) {
+          return false;
+        }
+
+        const favorite = await db
+          .select()
+          .from(favorites)
+          .where(
+            and(
+              eq(favorites.userId, ctx.user.userId),
+              eq(favorites.restaurantId, parent.id)
+            )
+          )
+          .limit(1);
+
+        return favorite.length > 0;
       },
     });
   },

@@ -123,3 +123,4 @@ spec.txt
 client/Dockerfile
 docs
 nginx
+test-sandbox*

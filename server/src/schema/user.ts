@@ -1,6 +1,6 @@
 import { objectType, inputObjectType, enumType, nonNull, intArg, stringArg, booleanArg, arg } from 'nexus';
-import { db } from '../db/client';
-import { users, addresses, courierProfiles } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { users, addresses, courierProfiles } from '../database/drizzle/schema';
 import { eq, and, desc, asc } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 
@@ -19,7 +19,9 @@ export const User = objectType({
     t.nonNull.string('firstName');
     t.nonNull.string('lastName');
     t.string('phone');
+    t.string("avatar");
     t.nonNull.field('role', { type: 'UserRole' });
+    t.nonNull.boolean("emailVerified")
     t.nonNull.boolean('isActive');
     t.nonNull.string('createdAt');
     t.nonNull.string('updatedAt');
@@ -62,6 +64,8 @@ export const Address = objectType({
     t.nonNull.string('state');
     t.nonNull.string('zipCode');
     t.nonNull.string('country');
+    t.string("latitude");
+    t.string("longitude");
     t.nonNull.boolean('isDefault');
     t.nonNull.string('createdAt');
     t.nonNull.string('updatedAt');

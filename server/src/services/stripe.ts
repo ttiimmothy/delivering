@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
-import { db } from '../db/client';
-import { orders, orderEvents } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { orders, orderEvents } from '../database/drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 if (!process.env.STRIPE_SECRET_KEY) {

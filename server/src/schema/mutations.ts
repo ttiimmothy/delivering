@@ -1,9 +1,9 @@
 import { mutationField, nonNull, intArg, stringArg, booleanArg, arg } from 'nexus';
-import { db } from '../db/client';
+import { db } from '../database/drizzle/client';
 import { 
   users, addresses, courierProfiles, restaurants, menuCategories, menuItems, menuItemOptions, menuItemOptionValues,
-  carts, cartItems, orders, orderItems, orderEvents, deliveries, reviews
-} from '../db/schema';
+  carts, cartItems, orders, orderItems, orderEvents, deliveries, reviews, favorites
+} from '../database/drizzle/schema';
 import { eq, and, desc, asc, inArray } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -67,6 +67,8 @@ export const signup = mutationField('signup', {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        avatar: user.avatar,
+        emailVerified: user.emailVerified,
         role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
         isActive: user.isActive,
         createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
@@ -126,6 +128,8 @@ export const login = mutationField('login', {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        avatar: user.avatar,
+        emailVerified: user.emailVerified,
         role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
         isActive: user.isActive,
         createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
@@ -824,9 +828,50 @@ export const toggleFavorite = mutationField('toggleFavorite', {
       throw error;
     }
 
-    // This would need to be implemented based on your favorite system
-    // For now, returning true
-    return true;
+    // Check if restaurant exists
+    const restaurant = await db
+      .select()
+      .from(restaurants)
+      .where(eq(restaurants.id, args.restaurantId))
+      .limit(1);
+
+    if (restaurant.length === 0) {
+      const error = new Error('Restaurant not found');
+      error.name = 'NotFoundError';
+      throw error;
+    }
+
+    // Check if already favorited
+    const existingFavorite = await db
+      .select()
+      .from(favorites)
+      .where(
+        and(
+          eq(favorites.userId, ctx.user.userId),
+          eq(favorites.restaurantId, args.restaurantId)
+        )
+      )
+      .limit(1);
+
+    if (existingFavorite.length > 0) {
+      // Remove from favorites
+      await db
+        .delete(favorites)
+        .where(
+          and(
+            eq(favorites.userId, ctx.user.userId),
+            eq(favorites.restaurantId, args.restaurantId)
+          )
+        );
+      return false; // Removed from favorites
+    } else {
+      // Add to favorites
+      await db.insert(favorites).values({
+        userId: ctx.user.userId,
+        restaurantId: args.restaurantId,
+      });
+      return true; // Added to favorites
+    }
   },
 });
 

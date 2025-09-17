@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { JWTPayload, getCurrentUser } from './lib/auth';
-import { db } from './db/client';
+import { db } from './database/drizzle/client';
 
 export interface Context {
   req: Request;

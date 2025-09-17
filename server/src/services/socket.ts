@@ -1,8 +1,8 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
 import { verify } from 'jsonwebtoken';
-import { db } from '../db/client';
-import { users } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { users } from '../database/drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 export interface AuthenticatedSocket extends Socket {
@@ -41,7 +41,7 @@ export class SocketService {
   constructor(httpServer: HTTPServer) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"],
         credentials: true
       },

@@ -112,11 +112,7 @@ export const meQuery = gql`
         vehicleType
         licensePlate
         isAvailable
-        currentLocation {
-          latitude
-          longitude
-          timestamp
-        }
+        currentLocation
         rating
         reviewCount
         totalDeliveries
@@ -203,7 +199,6 @@ export const restaurantQuery = gql`
       phone
       createdAt
       updatedAt
-      isFavorite
       menuCategories {
         id
         name
