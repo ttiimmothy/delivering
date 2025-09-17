@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Footer } from '@/components/footer';
+import { renderWithProviders } from '../setup';
+import { Footer } from '../../components/Footer';
 
 describe('Footer Component', () => {
   it('renders footer with copyright', () => {
@@ -13,6 +13,6 @@ describe('Footer Component', () => {
   it('shows company name', () => {
     const { getByText } = renderWithProviders(<Footer />);
     
-    expect(getByText('🍔 Delivering')).toBeInTheDocument();
+    expect(getByText('Delivering')).toBeInTheDocument();
   });
 });

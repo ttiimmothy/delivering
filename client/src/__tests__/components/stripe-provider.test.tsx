@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { StripeProvider } from '@/components/stripe-provider';
+import { renderWithProviders } from '../setup';
+import { StripeProvider } from '../../components/StripeProvider';
 
 // Mock Stripe
 vi.mock('@stripe/stripe-js', () => ({

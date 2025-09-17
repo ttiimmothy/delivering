@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSocket } from '@/components/socket-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useSocket } from './SocketProvider';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
+import { Badge } from './ui/Badge';
 import { MapPin, Clock, User, Phone, Car } from 'lucide-react';
-import { Order } from '@/types/graphql';
+import { Order } from '../types/graphql';
 
 interface OrderTrackingProps {
   order: Order;

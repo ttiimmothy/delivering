@@ -6,13 +6,13 @@ import {
   confirmPaymentIntentMutation,
   cancelPaymentIntentMutation,
   createRefundMutation 
-} from '@/lib/graphql/operations';
+} from '../lib/graphql/operations';
 import { 
   CreateCheckoutSessionInput,
   CreateBillingPortalSessionInput,
   CreatePaymentIntentInput,
   CreateRefundInput 
-} from '@/types/graphql';
+} from '../types/graphql';
 
 export const useCreateCheckoutSession = () => {
   const [createCheckoutSessionMutationFn, { loading, error }] = useMutation(createCheckoutSessionMutation, {

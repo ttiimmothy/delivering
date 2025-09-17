@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { useAuth } from '@/hooks/useAuth';
+import {renderHook} from '@testing-library/react';
+import {act} from "react"
+import { useAuth } from '../../hooks/useAuth';
 
 // Mock Apollo Client
 const mockMutate = vi.fn();

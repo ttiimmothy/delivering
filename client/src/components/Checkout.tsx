@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCreateCheckoutSession } from '@/hooks/usePayment';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useCreateCheckoutSession } from '../hooks/usePayment';
+import { Button } from './ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
+import { Alert, AlertDescription } from './ui/Alert';
 import { Loader2, CreditCard, Shield, Clock } from 'lucide-react';
-import { CreateCheckoutSessionInput } from '@/types/graphql';
+import { CreateCheckoutSessionInput } from '../types/graphql';
 
 interface CheckoutProps {
   orderId: string;
@@ -28,9 +28,10 @@ export function Checkout({ orderId, total, restaurantName, onSuccess, onCancel }
       
       const input: CreateCheckoutSessionInput = {
         orderId,
+        amount: parseFloat(total.replace('$', '')), // Convert total string to number
+        currency: 'usd', // Default currency
         successUrl: `${window.location.origin}/orders/${orderId}?payment=success`,
         cancelUrl: `${window.location.origin}/orders/${orderId}?payment=cancelled`,
-        customerEmail: undefined, // Will be filled from user context
       };
 
       const session = await createCheckoutSession(input);

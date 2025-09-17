@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import RootLayout from '@/app/layout';
+import { renderWithProviders } from '../setup';
+import RootLayout from '../../app/layout';
 
 // Mock the child components
 const MockChildren = () => <div data-testid="children">Test Content</div>;
@@ -17,13 +17,13 @@ describe('RootLayout Component', () => {
   });
 
   it('includes header component', () => {
-    const { getByText } = renderWithProviders(
+    const { getAllByText } = renderWithProviders(
       <RootLayout>
         <MockChildren />
       </RootLayout>
     );
     
-    expect(getByText('Delivering')).toBeInTheDocument();
+    expect(getAllByText('Delivering')).toHaveLength(2); // Header and footer both have "Delivering"
   });
 
   it('includes footer component', () => {

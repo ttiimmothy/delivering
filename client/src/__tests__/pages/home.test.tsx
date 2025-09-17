@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '../setup';
-import HomePage from '@/app/page';
+import HomePage from '../../app/page';
 
 // Mock the useRestaurants hook
 const mockRestaurants = [
@@ -17,7 +17,7 @@ const mockRestaurants = [
   }
 ];
 
-vi.mock('@/hooks/useRestaurants', () => ({
+vi.mock('../../hooks/useRestaurants', () => ({
   useRestaurants: () => ({
     restaurants: mockRestaurants,
     loading: false,
@@ -26,7 +26,7 @@ vi.mock('@/hooks/useRestaurants', () => ({
 }));
 
 // Mock the RestaurantGrid component
-vi.mock('@/components/restaurant-grid', () => ({
+vi.mock('../../components/RestaurantGrid', () => ({
   RestaurantGrid: ({ restaurants, loading, error }: any) => (
     <div data-testid="restaurant-grid">
       {loading && 'Loading...'}

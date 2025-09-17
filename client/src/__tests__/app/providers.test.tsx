@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Providers } from '@/app/providers';
+import { renderWithProviders } from '../setup';
+import { Providers } from '../../app/providers';
 
 // Mock the child components
 const MockChildren = () => <div data-testid="children">Test Content</div>;

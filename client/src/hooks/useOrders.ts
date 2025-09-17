@@ -5,12 +5,12 @@ import {
   placeOrderMutation,
   orderStatusChangedSubscription,
   cartQuery
-} from '@/lib/graphql/operations';
+} from '../lib/graphql/operations';
 import { 
   OrdersQueryVariables, 
   CreateOrderInput,
   Order 
-} from '@/types/graphql';
+} from '../types/graphql';
 
 export const useOrders = (variables?: OrdersQueryVariables) => {
   const { data, loading, error, refetch, fetchMore } = useQuery(ordersQuery, {

@@ -7,14 +7,14 @@ import {
   refreshTokenMutation,
   logoutMutation,
   meQuery 
-} from '@/lib/graphql/operations';
+} from '../lib/graphql/operations';
 import { 
   LoginInput, 
   SignupInput, 
   AuthResponse, 
   RefreshTokenResponse,
   User 
-} from '@/types/graphql';
+} from '../types/graphql';
 
 export const useAuth = () => {
   // Queries

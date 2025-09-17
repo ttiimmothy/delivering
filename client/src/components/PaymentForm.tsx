@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
-import { useCreatePaymentIntent, useConfirmPaymentIntent } from '@/hooks/usePayment';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useCreatePaymentIntent, useConfirmPaymentIntent } from '../hooks/usePayment';
+import { Button } from './ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
+import { Alert, AlertDescription } from './ui/Alert';
 import { Loader2, CreditCard, CheckCircle } from 'lucide-react';
-import { CreatePaymentIntentInput } from '@/types/graphql';
+import { CreatePaymentIntentInput } from '../types/graphql';
 
 interface PaymentFormProps {
   amount: number;

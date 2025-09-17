@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Button } from '@/components/ui/button';
+import { renderWithProviders } from '../../setup';
+import { Button } from '../../../components/ui/Button';
 
 describe('Button Component', () => {
   it('renders button with text', () => {

@@ -18,7 +18,7 @@ import {
   createPaymentIntentMutation,
   orderStatusChangedSubscription,
   courierLocationSubscription
-} from '@/lib/graphql/operations';
+} from '../../../lib/graphql/operations';
 
 describe('GraphQL Operations', () => {
   describe('Authentication Operations', () => {

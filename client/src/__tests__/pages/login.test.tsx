@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '../setup';
-import LoginPage from '@/app/login/page';
+import LoginPage from '../../app/login/page';
 
 // Mock the useAuth hook
 const mockLogin = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     login: mockLogin,
     loading: false,

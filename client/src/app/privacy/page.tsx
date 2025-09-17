@@ -1,10 +1,10 @@
 import { Shield, Eye, Lock, Database, Users, Globe } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container py-8">
         {/* Header Section */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">

@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, ReactNode } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import socketService from '@/lib/socket';
+import { useAuth } from '../hooks/useAuth';
+import socketService from '../lib/socket';
 
 interface SocketContextType {
   socketService: typeof socketService;

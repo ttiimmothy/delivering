@@ -62,9 +62,14 @@ export const apolloClient = new ApolloClient({
       Query: {
         fields: {
           restaurants: {
-            keyArgs: ['cuisine', 'isOpen', 'search', 'sortBy', 'sortOrder'],
-            merge(existing = [], incoming) {
-              return [...existing, ...incoming]
+            keyArgs: ['cuisine', 'isOpen', 'search', 'sortBy', 'sortOrder', 'limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              // If this is a pagination request (has offset), append to existing
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming]
+              }
+              // Otherwise, replace the existing data
+              return incoming
             }
           }
         }

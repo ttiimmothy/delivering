@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import TermsPage from '@/app/terms/page';
+import { renderWithProviders } from '../../setup';
+import TermsPage from '../../../app/terms/page';
 
 describe('Terms Page', () => {
   it('renders terms of service', () => {

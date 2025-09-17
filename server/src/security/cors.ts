@@ -13,8 +13,7 @@ const corsOptions = {
     if (!origin) return callback(null, true);
 
     const allowedOrigins = [
-      // 'http://localhost:3000', // Next.js dev server
-      // 'http://localhost:3001', // Alternative dev port
+      'http://localhost:3000', // Next.js dev server
       'https://delivering.vercel.app', // Production frontend
       // process.env.CORS_ORIGIN, // Custom origin from env
     ].filter(Boolean);

@@ -5,26 +5,102 @@ import {
   updateCartItemMutation,
   removeFromCartMutation,
   clearCartMutation 
-} from '@/lib/graphql/operations';
+} from '../lib/graphql/operations';
 import { 
   AddToCartInput, 
   UpdateCartItemInput, 
   RemoveFromCartInput,
   Cart,
   CartItem 
-} from '@/types/graphql';
+} from '../types/graphql';
 
 export const useCart = () => {
   const { data, loading, error, refetch } = useQuery(cartQuery, {
     errorPolicy: 'all',
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
   });
 
+  const [addToCartMutationFn, { loading: addLoading }] = useMutation(addToCartMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const [updateCartItemMutationFn, { loading: updateLoading }] = useMutation(updateCartItemMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const [removeFromCartMutationFn, { loading: removeLoading }] = useMutation(removeFromCartMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const [clearCartMutationFn, { loading: clearLoading }] = useMutation(clearCartMutation, {
+    refetchQueries: [cartQuery],
+    errorPolicy: 'all',
+  });
+
+  const addToCart = async (input: AddToCartInput): Promise<CartItem | null> => {
+    try {
+      const { data } = await addToCartMutationFn({ variables: { input } });
+      return data?.addToCart || null;
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      throw error;
+    }
+  };
+
+  const updateCartItem = async (itemId: string, quantity: number): Promise<CartItem | null> => {
+    try {
+      const { data } = await updateCartItemMutationFn({ 
+        variables: { input: { itemId, quantity } } 
+      });
+      return data?.updateCartItem || null;
+    } catch (error) {
+      console.error('Update cart item error:', error);
+      throw error;
+    }
+  };
+
+  const removeFromCart = async (itemId: string): Promise<boolean> => {
+    try {
+      const { data } = await removeFromCartMutationFn({ 
+        variables: { input: { itemId } } 
+      });
+      return data?.removeFromCart || false;
+    } catch (error) {
+      console.error('Remove from cart error:', error);
+      throw error;
+    }
+  };
+
+  const clearCart = async (): Promise<boolean> => {
+    try {
+      const { data } = await clearCartMutationFn();
+      return data?.clearCart || false;
+    } catch (error) {
+      console.error('Clear cart error:', error);
+      throw error;
+    }
+  };
+
+  const cart = data?.cart;
+  const items = cart?.items || [];
+  const total = cart?.total || 0;
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
   return {
-    cart: data?.cart || null,
-    loading,
+    cart,
+    items,
+    total,
+    itemCount,
+    loading: loading || addLoading || updateLoading || removeLoading || clearLoading,
     error,
     refetch,
+    addToCart,
+    updateCartItem,
+    removeFromCart,
+    clearCart,
   };
 };
 

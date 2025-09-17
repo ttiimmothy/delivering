@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { ThemeProvider } from '@/components/theme-provider';
+import { renderWithProviders } from '../setup';
+import { ThemeProvider } from '../../components/ThemeProvider';
 
 // Mock next-themes
 vi.mock('next-themes', () => ({

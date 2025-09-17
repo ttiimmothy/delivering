@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import PrivacyPage from '@/app/privacy/page';
+import { renderWithProviders } from '../../setup';
+import PrivacyPage from '../../../app/privacy/page';
 
 describe('Privacy Page', () => {
   it('renders privacy policy', () => {

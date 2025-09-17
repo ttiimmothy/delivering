@@ -70,7 +70,7 @@ export const restaurants = queryField('restaurants', {
       );
     }
 
-    let query = db.select({
+    const baseQuery = db.select({
       id: restaurantsTable.id,
       ownerId: restaurantsTable.ownerId,
       name: restaurantsTable.name,
@@ -90,16 +90,18 @@ export const restaurants = queryField('restaurants', {
       createdAt: restaurantsTable.createdAt,
       updatedAt: restaurantsTable.updatedAt,
     })
-      .from(restaurants)
+      .from(restaurantsTable)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(restaurantsTable.createdAt));
 
-    if (args.limit) {
-      query = query.limit(args.limit);
-    }
-    if (args.offset) {
-      query = query.offset(args.offset);
-    }
+    // Apply limit and offset conditionally
+    const query = args.limit && args.offset 
+      ? baseQuery.limit(args.limit).offset(args.offset)
+      : args.limit 
+        ? baseQuery.limit(args.limit)
+        : args.offset
+          ? baseQuery.offset(args.offset)
+          : baseQuery;
 
     const results = await query;
     return results.map(restaurant => ({
@@ -248,7 +250,7 @@ export const order = queryField('order', {
     if (ctx.user.role === 'merchant') {
       // Check if user owns the restaurant
       const restaurant = await db.select()
-        .from(restaurants)
+        .from(restaurantsTable)
         .where(eq(restaurantsTable.id, order.restaurantId))
         .limit(1);
       
@@ -306,7 +308,7 @@ export const orders = queryField('orders', {
     } else if (ctx.user.role === 'merchant') {
       // Get restaurants owned by this merchant
       const userRestaurants = await db.select({ id: restaurantsTable.id })
-        .from(restaurants)
+        .from(restaurantsTable)
         .where(eq(restaurantsTable.ownerId, ctx.user.userId));
       
       const restaurantIds = userRestaurants.map(r => r.id);
@@ -373,7 +375,7 @@ export const merchantOrders = queryField('merchantOrders', {
 
     // Get restaurants owned by this merchant
     const userRestaurants = await db.select({ id: restaurantsTable.id })
-      .from(restaurants)
+      .from(restaurantsTable)
       .where(eq(restaurantsTable.ownerId, ctx.user.userId));
     
     const restaurantIds = userRestaurants.map(r => r.id);

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { useToast } from '@/hooks/useToast';
+import {renderHook} from '@testing-library/react';
+import {act} from "react"
+import { useToast } from '../../hooks/useToast';
 
 describe('useToast Hook', () => {
   it('should provide toast function', () => {
