@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCreateCheckoutSession } from '@/hooks/usePayment';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { useCreateCheckoutSession } from '../hooks/usePayment';
+import { Button } from './ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
+import { Alert, AlertDescription } from './ui/Alert';
 import { Loader2, CreditCard, Shield, Clock } from 'lucide-react';
-import { CreateCheckoutSessionInput } from '@/types/graphql';
+import { CreateCheckoutSessionInput } from '../types/graphql';
 
 interface CheckoutProps {
   orderId: string;

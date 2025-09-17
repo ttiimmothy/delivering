@@ -2,12 +2,12 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useOrder } from '@/hooks/useOrders';
-import { Checkout } from '@/components/Checkout';
-import { PaymentForm } from '@/components/PaymentForm';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { useOrder } from '../../hooks/useOrders';
+import { Checkout } from '../../components/Checkout';
+import { PaymentForm } from '../../components/PaymentForm';
+import { Button } from '../../components/ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Alert, AlertDescription } from '../../components/ui/Alert';
 import { Loader2, ArrowLeft, CreditCard, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 

@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Search, Filter, Star, Clock, MapPin } from 'lucide-react'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
+import { Input } from '../../components/ui/Input'
+import { Button } from '../../components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Badge } from '../../components/ui/Badge'
 
 // Mock data for restaurants
 const mockRestaurants = [

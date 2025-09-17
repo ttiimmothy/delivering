@@ -4,11 +4,11 @@ import {
   restaurantQuery, 
   favoriteRestaurantsQuery,
   toggleFavoriteMutation 
-} from '@/lib/graphql/operations';
+} from '../lib/graphql/operations';
 import { 
   RestaurantsQueryVariables, 
   Restaurant 
-} from '@/types/graphql';
+} from '../types/graphql';
 
 export const useRestaurants = (variables?: RestaurantsQueryVariables) => {
   const { data, loading, error, refetch, fetchMore } = useQuery(restaurantsQuery, {

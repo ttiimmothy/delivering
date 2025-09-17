@@ -5,14 +5,14 @@ import {
   updateCartItemMutation,
   removeFromCartMutation,
   clearCartMutation 
-} from '@/lib/graphql/operations';
+} from '../lib/graphql/operations';
 import { 
   AddToCartInput, 
   UpdateCartItemInput, 
   RemoveFromCartInput,
   Cart,
   CartItem 
-} from '@/types/graphql';
+} from '../types/graphql';
 
 export const useCart = () => {
   const { data, loading, error, refetch } = useQuery(cartQuery, {

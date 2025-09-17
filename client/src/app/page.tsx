@@ -1,8 +1,8 @@
 'use client';
 
-import { Hero } from '@/components/Hero'
-import { RestaurantGrid } from '@/components/RestaurantGrid'
-import { useRestaurants } from '@/hooks/useRestaurants'
+import { Hero } from '../components/Hero'
+import { RestaurantGrid } from '../components/RestaurantGrid'
+import { useRestaurants } from '../hooks/useRestaurants'
 
 export default function HomePage() {
   const { restaurants, loading, error } = useRestaurants({

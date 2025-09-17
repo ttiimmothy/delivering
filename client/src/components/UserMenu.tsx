@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/Button'
+import { Button } from './ui/Button'
 import { User, LogIn, UserPlus, LogOut, Settings, Package, Heart } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '../hooks/useAuth'
 
 export function UserMenu() {
   const { user, isAuthenticated, logout } = useAuth()

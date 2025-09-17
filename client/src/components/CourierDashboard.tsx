@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSocket } from '@/components/SocketProvider';
-import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Switch } from '@/components/ui/Switch';
+import { useSocket } from './SocketProvider';
+import { useAuth } from '../hooks/useAuth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
+import { Button } from './ui/Button';
+import { Badge } from './ui/Badge';
+import { Switch } from './ui/Switch';
 import { MapPin, Clock, Package, CheckCircle, XCircle, Navigation } from 'lucide-react';
-import { Order } from '@/types/graphql';
+import { Order } from '../types/graphql';
 
 interface DeliveryAssignment {
   deliveryId: string;

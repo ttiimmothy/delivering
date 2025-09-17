@@ -70,7 +70,7 @@ export const restaurants = queryField('restaurants', {
       );
     }
 
-    let query = db.select({
+    const baseQuery = db.select({
       id: restaurantsTable.id,
       ownerId: restaurantsTable.ownerId,
       name: restaurantsTable.name,
@@ -94,12 +94,14 @@ export const restaurants = queryField('restaurants', {
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(restaurantsTable.createdAt));
 
-    if (args.limit) {
-      query = query.limit(args.limit);
-    }
-    if (args.offset) {
-      query = query.offset(args.offset);
-    }
+    // Apply limit and offset conditionally
+    const query = args.limit && args.offset 
+      ? baseQuery.limit(args.limit).offset(args.offset)
+      : args.limit 
+        ? baseQuery.limit(args.limit)
+        : args.offset
+          ? baseQuery.offset(args.offset)
+          : baseQuery;
 
     const results = await query;
     return results.map(restaurant => ({
