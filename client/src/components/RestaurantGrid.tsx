@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { Star, Clock, DollarSign, Heart, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { Restaurant } from '@/types/graphql'
@@ -16,7 +16,7 @@ interface RestaurantGridProps {
 export function RestaurantGrid({ restaurants, loading, error }: RestaurantGridProps) {
   return (
     <section className="py-16 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Popular Restaurants

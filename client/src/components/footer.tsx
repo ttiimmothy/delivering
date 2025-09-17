@@ -10,7 +10,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold">🍔 Delivering</h3>
+            <h3 className="text-2xl font-bold">Delivering</h3>
             <p className="text-gray-400">
               Your favorite food, delivered fast. Connecting you with the best restaurants in your area.
             </p>

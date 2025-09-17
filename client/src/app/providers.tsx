@@ -2,10 +2,10 @@
 
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from '@/lib/apollo'
-import { ThemeProvider } from '@/components/theme-provider'
-import { StripeProvider } from '@/components/stripe-provider'
-import { SocketProvider } from '@/components/socket-provider'
-import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { StripeProvider } from '@/components/StripeProvider'
+import { SocketProvider } from '@/components/SocketProvider'
+import { Toaster } from '@/components/ui/Toaster'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

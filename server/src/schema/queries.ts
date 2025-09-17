@@ -90,7 +90,7 @@ export const restaurants = queryField('restaurants', {
       createdAt: restaurantsTable.createdAt,
       updatedAt: restaurantsTable.updatedAt,
     })
-      .from(restaurants)
+      .from(restaurantsTable)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(restaurantsTable.createdAt));
 
@@ -248,7 +248,7 @@ export const order = queryField('order', {
     if (ctx.user.role === 'merchant') {
       // Check if user owns the restaurant
       const restaurant = await db.select()
-        .from(restaurants)
+        .from(restaurantsTable)
         .where(eq(restaurantsTable.id, order.restaurantId))
         .limit(1);
       
@@ -306,7 +306,7 @@ export const orders = queryField('orders', {
     } else if (ctx.user.role === 'merchant') {
       // Get restaurants owned by this merchant
       const userRestaurants = await db.select({ id: restaurantsTable.id })
-        .from(restaurants)
+        .from(restaurantsTable)
         .where(eq(restaurantsTable.ownerId, ctx.user.userId));
       
       const restaurantIds = userRestaurants.map(r => r.id);
@@ -373,7 +373,7 @@ export const merchantOrders = queryField('merchantOrders', {
 
     // Get restaurants owned by this merchant
     const userRestaurants = await db.select({ id: restaurantsTable.id })
-      .from(restaurants)
+      .from(restaurantsTable)
       .where(eq(restaurantsTable.ownerId, ctx.user.userId));
     
     const restaurantIds = userRestaurants.map(r => r.id);

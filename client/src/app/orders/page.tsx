@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Clock, MapPin, Star, Package, CheckCircle, XCircle, Truck } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 
 // Mock data for orders
 const mockOrders = [
@@ -186,7 +186,7 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container py-8">
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">My Orders</h1>

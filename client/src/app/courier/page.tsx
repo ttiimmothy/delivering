@@ -1,9 +1,9 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { CourierDashboard } from '@/components/courier-dashboard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CourierDashboard } from '@/components/CourierDashboard';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { Loader2, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -67,7 +67,7 @@ export default function CourierPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Courier Dashboard</h1>

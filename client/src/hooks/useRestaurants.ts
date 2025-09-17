@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { 
   restaurantsQuery, 
   restaurantQuery, 
@@ -14,7 +14,8 @@ export const useRestaurants = (variables?: RestaurantsQueryVariables) => {
   const { data, loading, error, refetch, fetchMore } = useQuery(restaurantsQuery, {
     variables,
     errorPolicy: 'all',
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: true,
   });
 
   return {
@@ -30,7 +31,7 @@ export const useRestaurant = (slug: string) => {
   const { data, loading, error, refetch } = useQuery(restaurantQuery, {
     variables: { slug },
     errorPolicy: 'all',
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
     skip: !slug,
   });
 
@@ -45,7 +46,7 @@ export const useRestaurant = (slug: string) => {
 export const useFavoriteRestaurants = () => {
   const { data, loading, error, refetch } = useQuery(favoriteRestaurantsQuery, {
     errorPolicy: 'all',
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
   });
 
   return {
@@ -79,4 +80,15 @@ export const useToggleFavorite = () => {
     loading,
     error,
   };
+};
+
+export const useClearRestaurantCache = () => {
+  const client = useApolloClient();
+
+  const clearRestaurantCache = () => {
+    client.cache.evict({ fieldName: 'restaurants' });
+    client.cache.gc();
+  };
+
+  return { clearRestaurantCache };
 };

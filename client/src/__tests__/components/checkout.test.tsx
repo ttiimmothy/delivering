@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { Checkout } from '@/components/checkout';
+import { Checkout } from '@/components/Checkout';
 
 // Mock the usePayment hook
 const mockCreateCheckoutSession = vi.fn();

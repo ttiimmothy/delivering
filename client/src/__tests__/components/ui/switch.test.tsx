@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '@/components/ui/Switch';
 import { fireEvent } from '@testing-library/react';
 
 describe('Switch Component', () => {

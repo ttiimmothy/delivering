@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 
 describe('Card Components', () => {
   it('renders card with content', () => {

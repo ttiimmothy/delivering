@@ -26,7 +26,7 @@ vi.mock('@/hooks/useRestaurants', () => ({
 }));
 
 // Mock the RestaurantGrid component
-vi.mock('@/components/restaurant-grid', () => ({
+vi.mock('@/components/RestaurantGrid', () => ({
   RestaurantGrid: ({ restaurants, loading, error }: any) => (
     <div data-testid="restaurant-grid">
       {loading && 'Loading...'}

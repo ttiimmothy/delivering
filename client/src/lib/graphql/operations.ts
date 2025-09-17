@@ -93,20 +93,6 @@ export const meQuery = gql`
       emailVerified
       createdAt
       updatedAt
-      addresses {
-        id
-        label
-        street
-        city
-        state
-        zipCode
-        country
-        latitude
-        longitude
-        isDefault
-        createdAt
-        updatedAt
-      }
       courierProfile {
         id
         vehicleType
@@ -167,7 +153,6 @@ export const restaurantsQuery = gql`
       phone
       createdAt
       updatedAt
-      isFavorite
     }
   }
 `;

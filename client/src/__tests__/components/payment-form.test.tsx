@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { PaymentForm } from '@/components/payment-form';
+import { PaymentForm } from '@/components/PaymentForm';
 
 // Mock Stripe Elements
 vi.mock('@stripe/react-stripe-js', () => ({

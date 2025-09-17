@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { Hero } from '@/components/hero';
+import { Hero } from '@/components/Hero';
 
 describe('Hero Component', () => {
   it('renders hero section', () => {

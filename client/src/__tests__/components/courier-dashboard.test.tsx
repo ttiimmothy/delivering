@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { CourierDashboard } from '@/components/courier-dashboard';
-import { SocketProvider } from '@/components/socket-provider';
+import { CourierDashboard } from '@/components/CourierDashboard';
+import { SocketProvider } from '@/components/SocketProvider';
 
 // Mock Socket.IO
 vi.mock('@/lib/socket', () => ({

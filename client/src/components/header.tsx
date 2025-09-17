@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { UserMenu } from '@/components/user-menu'
+import { Button } from '@/components/ui/Button'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { UserMenu } from '@/components/UserMenu'
 import { ShoppingCart } from 'lucide-react'
 
 export function Header() {

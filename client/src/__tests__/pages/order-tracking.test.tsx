@@ -20,7 +20,7 @@ vi.mock('@/hooks/useOrders', () => ({
 }));
 
 // Mock the OrderTracking component
-vi.mock('@/components/order-tracking', () => ({
+vi.mock('@/components/OrderTracking', () => ({
   OrderTracking: () => <div data-testid="order-tracking">Order Tracking</div>
 }));
 

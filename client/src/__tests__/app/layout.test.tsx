@@ -17,13 +17,13 @@ describe('RootLayout Component', () => {
   });
 
   it('includes header component', () => {
-    const { getByText } = renderWithProviders(
+    const { getAllByText } = renderWithProviders(
       <RootLayout>
         <MockChildren />
       </RootLayout>
     );
     
-    expect(getByText('Delivering')).toBeInTheDocument();
+    expect(getAllByText('Delivering')).toHaveLength(2); // Header and footer both have "Delivering"
   });
 
   it('includes footer component', () => {

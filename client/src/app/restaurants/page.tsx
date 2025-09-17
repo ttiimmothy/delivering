@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Search, Filter, Star, Clock, MapPin } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
 
 // Mock data for restaurants
 const mockRestaurants = [
@@ -91,8 +91,7 @@ export default function RestaurantsPage() {
   const [sortBy, setSortBy] = useState('rating')
 
   const filteredRestaurants = mockRestaurants.filter(restaurant => {
-    const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) || restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCuisine = selectedCuisine === 'All' || restaurant.cuisine === selectedCuisine
     return matchesSearch && matchesCuisine
   })
@@ -112,7 +111,7 @@ export default function RestaurantsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container py-8">
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Restaurants</h1>

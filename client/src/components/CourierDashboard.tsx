@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSocket } from '@/components/socket-provider';
+import { useSocket } from '@/components/SocketProvider';
 import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Switch } from '@/components/ui/Switch';
 import { MapPin, Clock, Package, CheckCircle, XCircle, Navigation } from 'lucide-react';
 import { Order } from '@/types/graphql';
 

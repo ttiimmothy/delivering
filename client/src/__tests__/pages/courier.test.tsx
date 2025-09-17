@@ -19,7 +19,7 @@ vi.mock('@/hooks/useAuth', () => ({
 }));
 
 // Mock the CourierDashboard component
-vi.mock('@/components/courier-dashboard', () => ({
+vi.mock('@/components/CourierDashboard', () => ({
   CourierDashboard: () => <div data-testid="courier-dashboard">Courier Dashboard</div>
 }));
 

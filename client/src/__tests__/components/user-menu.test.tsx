@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { UserMenu } from '@/components/user-menu';
+import { UserMenu } from '@/components/UserMenu';
 import { fireEvent } from '@testing-library/react';
 
 // Mock the useAuth hook

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '@/__tests__/setup';
-import { SocketProvider } from '@/components/socket-provider';
+import { SocketProvider } from '@/components/SocketProvider';
 
 // Mock Socket.IO
 vi.mock('@/lib/socket', () => ({
