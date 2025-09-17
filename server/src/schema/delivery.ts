@@ -1,6 +1,6 @@
 import { objectType, inputObjectType, enumType, nonNull, intArg, stringArg, booleanArg, arg } from 'nexus';
-import { db } from '../db/client';
-import { deliveries, courierProfiles, users, orders } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { deliveries, courierProfiles, users, orders } from '../database/drizzle/schema';
 import { eq, and, desc, asc } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 

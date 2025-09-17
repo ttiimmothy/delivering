@@ -379,11 +379,7 @@ mutation PlaceOrder($input: PlaceOrderInput!) {
 #### Server (.env)
 ```env
 # Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=delivering
+DATABASE_URL=postgresql://myuser:mysecretpassword@localhost:5432/delivering
 
 # JWT
 JWT_SECRET=your-super-secret-jwt-key
@@ -397,10 +393,12 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
 STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
 
-# Server
-PORT=4000
-NODE_ENV=production
-CORS_ORIGIN=https://your-domain.com
+# Redis (for rate limiting and caching)
+REDIS_URL=redis://localhost:6379
+
+# File uploads (optional - for restaurant images)
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=5242880
 ```
 
 #### Client (.env.local)

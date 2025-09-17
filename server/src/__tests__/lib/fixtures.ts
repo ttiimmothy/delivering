@@ -1,5 +1,5 @@
 import { getTestDatabase, clearTestDatabase } from './database';
-import * as schema from '../../db/schema';
+import * as schema from '../../database/drizzle/schema';
 import bcrypt from 'bcryptjs';
 
 // Mock database for tests when real database is not available

@@ -1,6 +1,6 @@
 import { objectType, inputObjectType, enumType, queryField, mutationField, nonNull, intArg, stringArg, arg, list } from 'nexus';
-import { db } from '../db/client';
-import { invoices, orders, users, restaurants } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { invoices, orders, users, restaurants } from '../database/drizzle/schema';
 import { eq, and, desc, asc, inArray } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 
@@ -92,6 +92,8 @@ export const Invoice = objectType({
           firstName: user.firstName,
           lastName: user.lastName,
           phone: user.phone,
+          avatar: user.avatar,
+          emailVerified: user.emailVerified,
           role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
           isActive: user.isActive,
           createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
@@ -133,6 +135,8 @@ export const Payout = objectType({
           firstName: user.firstName,
           lastName: user.lastName,
           phone: user.phone,
+          avatar: user.avatar,
+          emailVerified: user.emailVerified,
           role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
           isActive: user.isActive,
           createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),

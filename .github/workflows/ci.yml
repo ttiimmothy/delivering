@@ -101,32 +101,35 @@ jobs:
         working-directory: server
         run: npm run migrate
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: delivering_test
+          # DB_HOST: localhost
+          # DB_PORT: 5432
+          # DB_USER: postgres
+          # DB_PASSWORD: postgres
+          # DB_NAME: delivering_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/delivering_test
 
       - name: Seed test database
         working-directory: server
         run: npm run seed
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: delivering_test
+          # DB_HOST: localhost
+          # DB_PORT: 5432
+          # DB_USER: postgres
+          # DB_PASSWORD: postgres
+          # DB_NAME: delivering_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/delivering_test
 
       - name: Run server tests
         working-directory: server
         run: npm test -- --coverage
         env:
           NODE_ENV: test
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: delivering_test
+          # DB_HOST: localhost
+          # DB_PORT: 5432
+          # DB_USER: postgres
+          # DB_PASSWORD: postgres
+          # DB_NAME: delivering_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/delivering_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-jwt-secret
           JWT_REFRESH_SECRET: test-refresh-secret

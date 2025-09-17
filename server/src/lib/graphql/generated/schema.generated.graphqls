@@ -682,9 +682,11 @@ input UpdateReviewInput {
 }
 
 type User {
+  avatar: String
   courierProfile: CourierProfile
   createdAt: String!
   email: String!
+  emailVerified: Boolean!
   firstName: String!
   id: String!
   isActive: Boolean!

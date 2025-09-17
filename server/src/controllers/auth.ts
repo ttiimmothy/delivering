@@ -1,5 +1,5 @@
-import { db } from '../db/client';
-import { users } from '../db/schema';
+import { db } from '../database/drizzle/client';
+import { users } from '../database/drizzle/schema';
 import { eq, and } from 'drizzle-orm';
 import { 
   hashPassword, 

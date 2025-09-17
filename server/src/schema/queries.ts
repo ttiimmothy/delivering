@@ -1,9 +1,9 @@
 import { queryField, nonNull, intArg, stringArg, booleanArg, arg, list } from 'nexus';
-import { db } from '../db/client';
+import { db } from '../database/drizzle/client';
 import { 
   users, addresses, courierProfiles, restaurants as restaurantsTable, menuCategories, menuItems, menuItemOptions, menuItemOptionValues,
-  carts, cartItems, orders as ordersTable, orderItems, orderEvents, deliveries, reviews as reviewsTable
-} from '../db/schema';
+  carts, cartItems, orders as ordersTable, orderItems, orderEvents, deliveries, reviews as reviewsTable, favorites
+} from '../database/drizzle/schema';
 import { eq, and, desc, asc, inArray, or, like } from 'drizzle-orm';
 import { convertDateFields } from '../lib/dateHelpers';
 
@@ -25,11 +25,14 @@ export const me = queryField('me', {
     if (!result[0]) return null;
     const user = result[0];
     return {
+      ...user,
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone,
+      avatar: user.avatar,
+      emailVerified: user.emailVerified,
       role: user.role === 'merchant' ? 'restaurant' : user.role as "customer" | "courier" | "admin" | "restaurant",
       isActive: user.isActive,
       createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : String(user.createdAt),
@@ -157,9 +160,24 @@ export const favoriteRestaurants = queryField('favoriteRestaurants', {
       throw error;
     }
 
-    // This would need to be implemented based on your favorite system
-    // For now, returning empty array
-    return [];
+    // Get user's favorite restaurants
+    const userFavorites = await db
+      .select({
+        restaurant: restaurantsTable,
+      })
+      .from(favorites)
+      .innerJoin(restaurantsTable, eq(favorites.restaurantId, restaurantsTable.id))
+      .where(eq(favorites.userId, ctx.user.userId))
+      .orderBy(desc(favorites.createdAt));
+
+    return userFavorites.map(fav => {
+      const restaurant = convertDateFields(fav.restaurant, ['createdAt', 'updatedAt']);
+      return {
+        ...restaurant,
+        createdAt: restaurant.createdAt instanceof Date ? restaurant.createdAt.toISOString() : String(restaurant.createdAt),
+        updatedAt: restaurant.updatedAt instanceof Date ? restaurant.updatedAt.toISOString() : String(restaurant.updatedAt),
+      };
+    });
   },
 });
 

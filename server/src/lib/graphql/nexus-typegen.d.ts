@@ -256,6 +256,8 @@ export interface NexusGenObjects {
     createdAt: string; // String!
     id: string; // String!
     isDefault: boolean; // Boolean!
+    latitude?: string | null; // String
+    longitude?: string | null; // String
     state: string; // String!
     street: string; // String!
     updatedAt: string; // String!
@@ -530,8 +532,10 @@ export interface NexusGenObjects {
   }
   Subscription: {};
   User: { // root type
+    avatar?: string | null; // String
     createdAt: string; // String!
     email: string; // String!
+    emailVerified: boolean; // Boolean!
     firstName: string; // String!
     id: string; // String!
     isActive: boolean; // Boolean!
@@ -559,6 +563,8 @@ export interface NexusGenFieldTypes {
     createdAt: string; // String!
     id: string; // String!
     isDefault: boolean; // Boolean!
+    latitude: string | null; // String
+    longitude: string | null; // String
     state: string; // String!
     street: string; // String!
     updatedAt: string; // String!
@@ -880,6 +886,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     image: string | null; // String
     isActive: boolean; // Boolean!
+    isFavorited: boolean | null; // Boolean
     isOpen: boolean; // Boolean!
     menuCategories: Array<NexusGenRootTypes['MenuCategory'] | null> | null; // [MenuCategory]
     menuItems: Array<NexusGenRootTypes['MenuItem'] | null> | null; // [MenuItem]
@@ -919,9 +926,11 @@ export interface NexusGenFieldTypes {
     restaurantOrderQueue: NexusGenRootTypes['OrderQueueUpdate'] | null; // OrderQueueUpdate
   }
   User: { // field return type
+    avatar: string | null; // String
     courierProfile: NexusGenRootTypes['CourierProfile'] | null; // CourierProfile
     createdAt: string; // String!
     email: string; // String!
+    emailVerified: boolean; // Boolean!
     firstName: string; // String!
     id: string; // String!
     isActive: boolean; // Boolean!
@@ -939,6 +948,8 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'String'
     id: 'String'
     isDefault: 'Boolean'
+    latitude: 'String'
+    longitude: 'String'
     state: 'String'
     street: 'String'
     updatedAt: 'String'
@@ -1260,6 +1271,7 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     image: 'String'
     isActive: 'Boolean'
+    isFavorited: 'Boolean'
     isOpen: 'Boolean'
     menuCategories: 'MenuCategory'
     menuItems: 'MenuItem'
@@ -1299,9 +1311,11 @@ export interface NexusGenFieldTypeNames {
     restaurantOrderQueue: 'OrderQueueUpdate'
   }
   User: { // field return type name
+    avatar: 'String'
     courierProfile: 'CourierProfile'
     createdAt: 'String'
     email: 'String'
+    emailVerified: 'Boolean'
     firstName: 'String'
     id: 'String'
     isActive: 'Boolean'

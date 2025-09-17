@@ -131,9 +131,9 @@ export const carts = pgTable('carts', {
   restaurantId: uuid('restaurant_id').notNull().references(() => restaurants.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-}, (table) => ({
-  userIdx: index('carts_user_idx').on(table.userId),
-}));
+}, (table) => [
+  index('carts_user_idx').on(table.userId),
+]);
 
 // Cart Items table
 export const cartItems = pgTable('cart_items', {
