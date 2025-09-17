@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Footer } from '@/components/Footer';
+import { renderWithProviders } from '../setup';
+import { Footer } from '../../components/Footer';
 
 describe('Footer Component', () => {
   it('renders footer with copyright', () => {

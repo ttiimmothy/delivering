@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import HelpPage from '@/app/help/page';
+import { renderWithProviders } from '../../setup';
+import HelpPage from '../../../app/help/page';
 
 describe('Help Page', () => {
   it('renders help page', () => {

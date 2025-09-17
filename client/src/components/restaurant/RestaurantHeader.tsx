@@ -1,10 +1,10 @@
 'use client';
 
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
 import { Star, Clock, DollarSign, MapPin, Phone, Heart } from 'lucide-react';
-import { Restaurant } from '@/types/graphql';
-import { useToggleFavorite } from '@/hooks/useRestaurants';
+import { Restaurant } from '../../types/graphql';
+import { useToggleFavorite } from '../../hooks/useRestaurants';
 import { useState } from 'react';
 
 interface RestaurantHeaderProps {

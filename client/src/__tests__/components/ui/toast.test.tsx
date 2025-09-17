@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import {ReactNode} from 'react';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Toast, ToastDescription, ToastTitle, ToastProvider } from '@/components/ui/Toast';
+import { renderWithProviders } from '../../setup';
+import { Toast, ToastDescription, ToastTitle, ToastProvider } from '../../../components/ui/Toast';
 
 // Mock Radix UI Toast components for testing
 vi.mock('@radix-ui/react-toast', () => ({

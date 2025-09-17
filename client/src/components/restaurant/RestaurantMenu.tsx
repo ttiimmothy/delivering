@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { MenuItem } from '@/components/restaurant/MenuItem';
-import { Restaurant } from '@/types/graphql';
-import { useCart } from '@/hooks/useCart';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
+import { MenuItem } from './MenuItem';
+import { Restaurant } from '../../types/graphql';
+import { useCart } from '../../hooks/useCart';
 
 interface RestaurantMenuProps {
   restaurant: Restaurant;

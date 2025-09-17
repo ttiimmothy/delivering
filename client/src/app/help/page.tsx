@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Search, ChevronDown, ChevronRight, HelpCircle, MessageCircle, Phone, Mail, Clock } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
-import { Badge } from '@/components/ui/Badge'
+import { Button } from '../../components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Input } from '../../components/ui/Input'
+import { Badge } from '../../components/ui/Badge'
 
 // FAQ data
 const faqCategories = [

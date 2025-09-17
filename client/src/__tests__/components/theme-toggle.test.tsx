@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { renderWithProviders } from '../setup';
+import { ThemeToggle } from '../../components/ThemeToggle';
 
 // Mock next-themes
 const mockSetTheme = vi.fn();

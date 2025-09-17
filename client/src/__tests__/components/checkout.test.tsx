@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Checkout } from '@/components/Checkout';
+import { renderWithProviders } from '../setup';
+import { Checkout } from '../../components/Checkout';
 
 // Mock the usePayment hook
 const mockCreateCheckoutSession = vi.fn();
-vi.mock('@/hooks/usePayment', () => ({
+vi.mock('../../hooks/usePayment', () => ({
   useCreateCheckoutSession: vi.fn(() => ({
     createCheckoutSession: mockCreateCheckoutSession,
     loading: false,

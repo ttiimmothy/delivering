@@ -1,5 +1,5 @@
 import { Shield, Eye, Lock, Database, Users, Globe } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
 
 export default function PrivacyPage() {
   return (

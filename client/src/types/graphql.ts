@@ -296,6 +296,7 @@ export interface RemoveFromCartInput {
 }
 
 export interface CreateOrderInput {
+  restaurantId?: string
   deliveryAddress: any;
   specialInstructions?: string;
   tip?: string;
@@ -402,6 +403,8 @@ export interface Refund {
 
 // ===== PAYMENT INPUT TYPES =====
 export interface CreateCheckoutSessionInput {
+  amount: number;
+  currency: string
   orderId: string;
   successUrl: string;
   cancelUrl: string;
@@ -417,7 +420,7 @@ export interface CreatePaymentIntentInput {
   amount: number;
   currency?: string;
   description?: string;
-  metadata?: string;
+  metadata?: any;
 }
 
 export interface CreateRefundInput {

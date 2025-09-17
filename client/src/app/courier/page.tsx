@@ -1,9 +1,9 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
-import { CourierDashboard } from '@/components/CourierDashboard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { useAuth } from '../../hooks/useAuth';
+import { CourierDashboard } from '../../components/CourierDashboard';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Alert, AlertDescription } from '../../components/ui/Alert';
 import { Loader2, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

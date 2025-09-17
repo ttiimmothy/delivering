@@ -1,11 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import {renderHook} from '@testing-library/react';
+import {act} from "react"
 import { 
   useRestaurants, 
   useRestaurant, 
   useFavoriteRestaurants,
   useToggleFavorite 
-} from '@/hooks/useRestaurants';
+} from '../../hooks/useRestaurants';
 
 // Mock Apollo Client
 const mockMutate = vi.fn();

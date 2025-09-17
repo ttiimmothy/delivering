@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { renderWithProviders } from '../../setup';
+import { Alert, AlertDescription } from '../../../components/ui/Alert';
 
 describe('Alert Component', () => {
   it('renders alert with content', () => {

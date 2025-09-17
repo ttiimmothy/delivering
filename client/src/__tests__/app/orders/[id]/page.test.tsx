@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import OrderTrackingPage from '@/app/orders/[id]/page';
+import { renderWithProviders } from '../../../setup';
+import OrderTrackingPage from '../../../../app/orders/[id]/page';
 
 // Mock the useOrder hook
-vi.mock('@/hooks/useOrders', () => ({
+vi.mock('../../../../hooks/useOrders', () => ({
   useOrder: () => ({
     order: {
       id: 'test-order-id',
@@ -20,7 +20,7 @@ vi.mock('@/hooks/useOrders', () => ({
 }));
 
 // Mock the OrderTracking component
-vi.mock('@/components/OrderTracking', () => ({
+vi.mock('../../../../components/OrderTracking', () => ({
   OrderTracking: () => <div data-testid="order-tracking">Order Tracking</div>
 }));
 

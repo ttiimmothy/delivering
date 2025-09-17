@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '../setup';
-import CourierPage from '@/app/courier/page';
+import CourierPage from '../../app/courier/page';
 
 // Mock the useAuth hook
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     isAuthenticated: true,
     user: {
@@ -19,7 +19,7 @@ vi.mock('@/hooks/useAuth', () => ({
 }));
 
 // Mock the CourierDashboard component
-vi.mock('@/components/CourierDashboard', () => ({
+vi.mock('../../components/CourierDashboard', () => ({
   CourierDashboard: () => <div data-testid="courier-dashboard">Courier Dashboard</div>
 }));
 

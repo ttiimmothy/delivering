@@ -1,11 +1,11 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useRestaurant } from '@/hooks/useRestaurants';
-import { RestaurantHeader } from '@/components/restaurant/RestaurantHeader';
-import { RestaurantMenu } from '@/components/restaurant/RestaurantMenu';
-import { RestaurantInfo } from '@/components/restaurant/RestaurantInfo';
-import { CartSidebar } from '@/components/restaurant/CartSidebar';
+import { useRestaurant } from '../../../hooks/useRestaurants';
+import { RestaurantHeader } from '../../../components/restaurant/RestaurantHeader';
+import { RestaurantMenu } from '../../../components/restaurant/RestaurantMenu';
+import { RestaurantInfo } from '../../../components/restaurant/RestaurantInfo';
+import { CartSidebar } from '../../../components/restaurant/CartSidebar';
 import { Loader2 } from 'lucide-react';
 
 export default function RestaurantPage() {

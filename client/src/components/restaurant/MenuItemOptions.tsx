@@ -1,8 +1,8 @@
 'use client';
 
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { Label } from '@/components/ui/Label';
+import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
+import { Checkbox } from '../ui/Checkbox';
+import { Label } from '../ui/Label';
 
 interface MenuItemOptionsProps {
   options: Array<{

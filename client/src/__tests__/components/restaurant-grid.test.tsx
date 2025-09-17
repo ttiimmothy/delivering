@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { RestaurantGrid } from '@/components/RestaurantGrid';
+import { renderWithProviders } from '../setup';
+import { RestaurantGrid } from '../../components/RestaurantGrid';
 
 const mockRestaurants = [
   {

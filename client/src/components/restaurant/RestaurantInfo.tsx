@@ -1,9 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { Badge } from '../ui/Badge';
 import { MapPin, Phone, Clock, DollarSign, Star } from 'lucide-react';
-import { Restaurant } from '@/types/graphql';
+import { Restaurant } from '../../types/graphql';
 
 interface RestaurantInfoProps {
   restaurant: Restaurant;

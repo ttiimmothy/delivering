@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Header } from '@/components/Header';
+import { renderWithProviders } from '../setup';
+import { Header } from '../../components/Header';
 
 // Mock the useAuth hook
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     isAuthenticated: true,
     user: {

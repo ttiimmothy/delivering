@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import {renderHook} from '@testing-library/react';
+import {act} from "react"
 import { 
   useCreatePaymentIntent, 
   useConfirmPaymentIntent,
   useCreateCheckoutSession 
-} from '@/hooks/usePayment';
+} from '../../hooks/usePayment';
 
 // Mock Apollo Client
 const mockMutate = vi.fn();
@@ -71,10 +72,13 @@ describe('Payment Hooks', () => {
       const { result } = renderHook(() => useConfirmPaymentIntent());
       
       await act(async () => {
-        const response = await result.current.confirmPaymentIntent({
-          paymentIntentId: 'pi_test_123',
-          paymentMethodId: 'pm_test_123'
-        });
+        const response = await result.current.confirmPaymentIntent(
+          // {
+          // paymentIntentId: 'pi_test_123',
+          // paymentMethodId: 'pm_test_123'
+          // }
+          "pi_test_123"
+        );
         
         expect(response).toBeDefined();
         expect(response?.id).toBe('pi_test_123');
@@ -100,6 +104,7 @@ describe('Payment Hooks', () => {
         const response = await result.current.createCheckoutSession({
           amount: 2500,
           currency: 'usd',
+          orderId:"order_test_123",
           successUrl: 'https://example.com/success',
           cancelUrl: 'https://example.com/cancel'
         });

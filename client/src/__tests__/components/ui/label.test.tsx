@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Label } from '@/components/ui/Label';
+import { renderWithProviders } from '../../setup';
+import { Label } from '../../../components/ui/Label';
 
 describe('Label Component', () => {
   it('renders label with text', () => {

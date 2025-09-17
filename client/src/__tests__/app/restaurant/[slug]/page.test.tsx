@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import RestaurantPage from '@/app/restaurant/[slug]/page';
+import { renderWithProviders } from '../../../setup';
+import RestaurantPage from '../../../../app/restaurant/[slug]/page';
 
 // Mock the useParams hook
 vi.mock('next/navigation', () => ({
@@ -61,7 +61,7 @@ const mockRestaurant = {
   ],
 };
 
-vi.mock('@/hooks/useRestaurants', () => ({
+vi.mock('../../../../hooks/useRestaurants', () => ({
   useRestaurant: vi.fn(() => ({
     restaurant: mockRestaurant,
     loading: false,
@@ -75,7 +75,7 @@ vi.mock('@/hooks/useRestaurants', () => ({
 }));
 
 // Mock the useCart hook
-vi.mock('@/hooks/useCart', () => ({
+vi.mock('../../../../hooks/useCart', () => ({
   useCart: vi.fn(() => ({
     items: [],
     total: 0,

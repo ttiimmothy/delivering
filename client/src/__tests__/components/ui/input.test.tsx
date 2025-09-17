@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders } from '@/__tests__/setup';
-import { Input } from '@/components/ui/Input';
+import { renderWithProviders } from '../../setup';
+import { Input } from '../../../components/ui/Input';
 
 describe('Input Component', () => {
   it('renders input with placeholder', () => {

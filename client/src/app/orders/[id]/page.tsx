@@ -1,11 +1,11 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useOrder } from '@/hooks/useOrders';
-import { OrderTracking } from '@/components/OrderTracking';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { Button } from '@/components/ui/Button';
+import { useOrder } from '../../../hooks/useOrders';
+import { OrderTracking } from '../../../components/OrderTracking';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/Card';
+import { Alert, AlertDescription } from '../../../components/ui/Alert';
+import { Button } from '../../../components/ui/Button';
 import { Loader2, ArrowLeft, Package } from 'lucide-react';
 import Link from 'next/link';
 

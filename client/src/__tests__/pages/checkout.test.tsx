@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderWithProviders } from '../setup';
-import CheckoutPage from '@/app/checkout/page';
+import CheckoutPage from '../../app/checkout/page';
 
 // Mock the useOrder hook
-vi.mock('@/hooks/useOrders', () => ({
+vi.mock('../../hooks/useOrders', () => ({
   useOrder: () => ({
     order: {
       id: 'test-order-id',

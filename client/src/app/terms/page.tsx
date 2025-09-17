@@ -1,5 +1,5 @@
 import { FileText, Scale, AlertTriangle, Shield, Users, CreditCard } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
 
 export default function TermsPage() {
   return (
