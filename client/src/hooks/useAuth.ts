@@ -106,7 +106,6 @@ export const useAuth = () => {
   const logout = useCallback(async (): Promise<boolean> => {
     try {
       const {data} = await logoutMutationFn();
-      console.log(data)
       // Refetch user data (should return null)
       await refetchMe();
       
