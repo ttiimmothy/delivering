@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FieldError, FieldPath, FieldValues, UseFormRegister } from 'react-hook-form';
+import { FieldError, FieldPath, FieldValues, UseFormRegister, useWatch } from 'react-hook-form';
 import { Input } from '../ui/Input';
 import { Label } from '../ui/Label';
 import { Alert, AlertDescription } from '../ui/Alert';
@@ -36,6 +36,7 @@ export function PasswordField<T extends FieldValues>({
 }: PasswordFieldProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
   const fieldId = `password-${name}`;
+  const passwordValue = useWatch({ name }) as string || '';
 
   const getPasswordStrength = (password: string) => {
     let strength = 0;
@@ -97,15 +98,15 @@ export function PasswordField<T extends FieldValues>({
               <div
                 key={level}
                 className={`h-1 flex-1 rounded ${
-                  level <= getPasswordStrength(register(name).value || '')
-                    ? getStrengthColor(getPasswordStrength(register(name).value || ''))
+                  level <= getPasswordStrength(passwordValue)
+                    ? getStrengthColor(getPasswordStrength(passwordValue))
                     : 'bg-gray-200'
                 }`}
               />
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Password strength: {getStrengthText(getPasswordStrength(register(name).value || ''))}
+            Password strength: {getStrengthText(getPasswordStrength(passwordValue))}
           </p>
         </div>
       )}
