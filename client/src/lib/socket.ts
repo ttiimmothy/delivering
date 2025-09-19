@@ -4,17 +4,17 @@ class SocketService {
   private socket: Socket | null = null;
   private token: string | null = null;
 
-  connect(token: string) {
+  // connect(token: string) {
+  connect() {
     if (this.socket?.connected) {
       return;
     }
 
-    this.token = token;
-    this.socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000', {
-      auth: {
-        token,
-      },
-      path: '/socket.io',
+    this.socket = io('http://localhost:4000', {
+      // auth: {
+      //   token,
+      // },
+      // path: '/socket.io',
     });
 
     this.setupEventListeners();

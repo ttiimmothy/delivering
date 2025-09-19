@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useCreatePaymentIntent, useConfirmPaymentIntent } from '../hooks/usePayment';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
 import { Alert, AlertDescription } from './ui/Alert';
+import { FormSubmitButton } from './forms';
+import { paymentSchema, type PaymentFormData } from '../schemas/forms';
 import { Loader2, CreditCard, CheckCircle } from 'lucide-react';
 import { CreatePaymentIntentInput } from '../types/graphql';
 
@@ -29,28 +33,35 @@ export function PaymentForm({
   const { createPaymentIntent, loading: creatingIntent } = useCreatePaymentIntent();
   const { confirmPaymentIntent, loading: confirmingPayment } = useConfirmPaymentIntent();
   
-  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const methods = useForm<PaymentFormData>({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: {
+      amount,
+      description: description || '',
+      metadata: metadata || {}
+    }
+  });
 
+  const { handleSubmit, formState: { isSubmitting } } = methods;
+
+  const onSubmit = async (data: PaymentFormData) => {
     if (!stripe || !elements) {
       setError('Stripe has not loaded yet. Please try again.');
       return;
     }
 
     try {
-      setIsProcessing(true);
       setError(null);
 
       // Create payment intent
       const input: CreatePaymentIntentInput = {
-        amount,
+        amount: data.amount,
         currency: 'usd',
-        description,
-        metadata: metadata ? JSON.stringify(metadata) : undefined,
+        description: data.description,
+        metadata: data.metadata ? JSON.stringify(data.metadata) : undefined,
       };
 
       const paymentIntent = await createPaymentIntent(input);
@@ -80,8 +91,6 @@ export function PaymentForm({
       const errorMessage = error instanceof Error ? error.message : 'Payment failed';
       setError(errorMessage);
       onError?.(errorMessage);
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -116,7 +125,7 @@ export function PaymentForm({
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Card Information</label>
             <div className="p-3 border rounded-md">
@@ -147,24 +156,15 @@ export function PaymentForm({
             <p className="text-sm text-muted-foreground">Total amount</p>
           </div>
 
-          <Button 
-            type="submit" 
-            disabled={!stripe || isProcessing || creatingIntent || confirmingPayment}
+          <FormSubmitButton
+            isLoading={isSubmitting || creatingIntent || confirmingPayment}
+            disabled={!stripe}
             className="w-full"
             size="lg"
           >
-            {isProcessing || creatingIntent || confirmingPayment ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing Payment...
-              </>
-            ) : (
-              <>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Pay ${amount.toFixed(2)}
-              </>
-            )}
-          </Button>
+            <CreditCard className="mr-2 h-4 w-4" />
+            Pay ${amount.toFixed(2)}
+          </FormSubmitButton>
         </form>
 
         <div className="mt-4 text-xs text-center text-muted-foreground">

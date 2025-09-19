@@ -1,39 +1,38 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Label } from '../../components/ui/Label';
 import { Alert, AlertDescription } from '../../components/ui/Alert';
-import { Loader2 } from 'lucide-react';
+import { FormField, FormSubmitButton } from '../../components/forms';
+import { loginSchema, type LoginFormData } from '../../schemas/forms';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading, error } = useAuth();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(formData);
+      await login(data);
       router.push('/');
     } catch (error) {
       console.error('Login failed:', error);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
   };
 
   return (
@@ -46,31 +45,26 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              register={register}
+              error={errors.email}
+              required
+            />
+            
+            <FormField
+              name="password"
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              register={register}
+              error={errors.password}
+              required
+            />
             
             {error && (
               <Alert variant="destructive">
@@ -80,16 +74,12 @@ export default function LoginPage() {
               </Alert>
             )}
             
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign in'
-              )}
-            </Button>
+            <FormSubmitButton
+              isLoading={isLoading || isSubmitting}
+              className="w-full"
+            >
+              Sign in
+            </FormSubmitButton>
           </form>
           
           <div className="mt-6 text-center text-sm">

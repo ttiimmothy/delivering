@@ -35,7 +35,7 @@ async function seed() {
 
     // Create demo users
     console.log('👥 Creating demo users...');
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash('12', 10);
 
     const [alice, bob, charlie, admin] = await db.insert(users).values([
       {

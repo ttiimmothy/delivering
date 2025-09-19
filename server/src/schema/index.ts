@@ -32,6 +32,7 @@ export const schema = makeSchema({
     UserTypes.VehicleType,
     UserTypes.AuthResponse,
     UserTypes.RefreshTokenResponse,
+    UserTypes.LogoutResponse,
     
     // Restaurant Types  
     RestaurantTypes.Restaurant,
@@ -82,6 +83,7 @@ export const schema = makeSchema({
     UserTypes.CourierProfileInput,
     UserTypes.CreateCourierProfileInput,
     UserTypes.UpdateCourierProfileInput,
+    UserTypes.UpdateUserInput,
     CartTypes.AddToCartInput,
     CartTypes.UpdateCartItemInput,
     CartTypes.RemoveFromCartInput,
@@ -137,6 +139,7 @@ export const schema = makeSchema({
     Mutations.loginWithGoogle,
     Mutations.refreshToken,
     Mutations.logout,
+    Mutations.updateUser,
     Mutations.addToCart,
     Mutations.updateCartItem,
     Mutations.removeFromCart,
@@ -179,6 +182,7 @@ export const schema = makeSchema({
     
     // Subscription Types
     Subscriptions.CourierLocationUpdate,
+    Subscriptions.CourierLocation,
     Subscriptions.DeliveryAssignment,
     Subscriptions.DeliveryStatusUpdate,
     Subscriptions.CourierStatusUpdate,

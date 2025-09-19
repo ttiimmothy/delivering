@@ -156,8 +156,8 @@ export const VehicleType = enumType({
 export const AuthResponse = objectType({
   name: 'AuthResponse',
   definition(t) {
-    t.nonNull.string('accessToken');
-    t.nonNull.string('refreshToken');
+    // t.nonNull.string('accessToken');
+    // t.nonNull.string('refreshToken');
     t.nonNull.field('user', { type: 'User' });
   },
 });
@@ -165,8 +165,16 @@ export const AuthResponse = objectType({
 export const RefreshTokenResponse = objectType({
   name: 'RefreshTokenResponse',
   definition(t) {
-    t.nonNull.string('accessToken');
-    t.nonNull.string('refreshToken');
+    // t.nonNull.string('accessToken');
+    // t.nonNull.string('refreshToken');
+    t.nonNull.string("message")
+  },
+});
+
+export const LogoutResponse = objectType({
+  name: 'LogoutResponse',
+  definition(t) {
+    t.nonNull.string('message');
   },
 });
 
@@ -241,3 +249,12 @@ export const UpdateCourierProfileInput = inputObjectType({
     t.field('currentLocation', { type: 'LocationInput' });
   },
 });
+
+export const UpdateUserInput = inputObjectType({
+  name: "UpdateUserInput",
+  definition(t) {
+    t.string("firstName")
+    t.string("lastName")
+    t.string("phone")
+  }
+})

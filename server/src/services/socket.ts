@@ -41,15 +41,20 @@ export class SocketService {
   constructor(httpServer: HTTPServer) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: "http://localhost:3000",
+        origin: ["http://localhost:3000", 'https://delivering-one.vercel.app'],
         methods: ["GET", "POST"],
         credentials: true
       },
-      path: '/socket.io'
+      // path: '/socket.io'
     });
 
     this.setupMiddleware();
     this.setupEventHandlers();
+  }
+
+  // Getter to access the Socket.IO server instance
+  server(): SocketIOServer {
+    return this.io;
   }
 
   private setupMiddleware() {

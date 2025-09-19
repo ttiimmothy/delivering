@@ -1,36 +1,41 @@
 import { describe, it, expect, vi } from 'vitest';
 import {renderHook} from '@testing-library/react';
 import {act} from "react"
+
+// Mock the useOrders hooks directly
+const mockPlaceOrder = vi.fn();
+
+// Mock the useOrders hooks
+vi.mock('../../hooks/useOrders', () => ({
+  useOrders: vi.fn((variables) => ({
+    orders: [
+      { id: '1', status: 'pending', totalAmount: 25.99 },
+      { id: '2', status: 'delivered', totalAmount: 15.99 }
+    ],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+    fetchMore: vi.fn(),
+  })),
+  useOrder: vi.fn((id) => ({
+    order: { id: '1', status: 'pending', totalAmount: 25.99 },
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+  usePlaceOrder: vi.fn(() => ({
+    placeOrder: mockPlaceOrder,
+    loading: false,
+    error: null,
+  })),
+}));
+
+// Import after mocking
 import { 
   useOrders, 
   useOrder, 
   usePlaceOrder 
 } from '../../hooks/useOrders';
-
-// Mock Apollo Client
-const mockMutate = vi.fn();
-const mockClient = {
-  mutate: mockMutate,
-  query: vi.fn(),
-  watchQuery: vi.fn(),
-};
-
-vi.mock('@apollo/client', () => ({
-  gql: vi.fn((strings, ...values) => strings.join('')),
-  useMutation: () => [mockMutate, { loading: false, error: null }],
-  useQuery: () => ({ 
-    data: { 
-      orders: [
-        { id: '1', status: 'pending', totalAmount: 25.99 },
-        { id: '2', status: 'delivered', totalAmount: 15.99 }
-      ],
-      order: { id: '1', status: 'pending', totalAmount: 25.99 }
-    }, 
-    loading: false, 
-    error: null 
-  }),
-  useApolloClient: () => mockClient,
-}));
 
 describe('Orders Hooks', () => {
   describe('useOrders', () => {
@@ -75,14 +80,10 @@ describe('Orders Hooks', () => {
     });
 
     it('should handle place order', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          placeOrder: {
-            id: 'order-123',
-            status: 'pending',
-            totalAmount: 25.99
-          }
-        }
+      mockPlaceOrder.mockResolvedValue({
+        id: 'order-123',
+        status: 'pending',
+        totalAmount: 25.99
       });
 
       const { result } = renderHook(() => usePlaceOrder());

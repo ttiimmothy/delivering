@@ -124,3 +124,4 @@ client/Dockerfile
 docs
 nginx
 test-sandbox*
+examples

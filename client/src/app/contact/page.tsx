@@ -1,11 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle, User, Mail as MailIcon } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
-import { Input } from '../../components/ui/Input'
 import { Badge } from '../../components/ui/Badge'
+import { FormField, FormSelect, FormSubmitButton } from '../../components/forms'
+import { contactSchema, type ContactFormData } from '../../schemas/forms'
 
 const contactInfo = [
   {
@@ -70,46 +73,32 @@ const inquiryTypes = [
 ]
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    inquiryType: '',
-    subject: '',
-    message: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
+  const methods = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      inquiryType: '',
+      subject: '',
+      message: ''
+    }
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = methods
+
+  const onSubmit = async (data: ContactFormData) => {
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsSubmitting(false)
     setIsSubmitted(true)
     
     // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false)
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        inquiryType: '',
-        subject: '',
-        message: ''
-      })
+      methods.reset()
     }, 3000)
   }
 
@@ -156,100 +145,82 @@ export default function ContactPage() {
                 </p>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Name *</label>
-                      <Input
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        placeholder="Enter your name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Email *</label>
-                      <Input
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="Enter your email"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Phone</label>
-                      <Input
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="Enter your phone number"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Inquiry Type *</label>
-                      <select
-                        name="inquiryType"
-                        value={formData.inquiryType}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-input rounded-md bg-background"
-                        required
-                      >
-                        <option value="">Select inquiry type</option>
-                        {inquiryTypes.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Subject *</label>
-                    <Input
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      placeholder="Enter message subject"
+                    <FormField
+                      name="name"
+                      label="Name"
+                      placeholder="Enter your name"
+                      register={register}
+                      error={errors.name}
+                      required
+                    />
+                    <FormField
+                      name="email"
+                      label="Email"
+                      type="email"
+                      placeholder="Enter your email"
+                      register={register}
+                      error={errors.email}
                       required
                     />
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Message *</label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      placeholder="Enter your message"
-                      rows={6}
-                      className="w-full p-2 border border-input rounded-md bg-background resize-none"
-                      required
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      name="phone"
+                      label="Phone"
+                      type="tel"
+                      placeholder="Enter your phone number"
+                      register={register}
+                      error={errors.phone}
+                    />
+                    <FormField
+                      name="company"
+                      label="Company"
+                      placeholder="Enter your company (optional)"
+                      register={register}
+                      error={errors.company}
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isSubmitting}
+                  <FormSelect
+                    name="inquiryType"
+                    label="Inquiry Type"
+                    placeholder="Select inquiry type"
+                    options={inquiryTypes.map(type => ({ value: type, label: type }))}
+                    register={register}
+                    error={errors.inquiryType}
+                    required
+                  />
+
+                  <FormField
+                    name="subject"
+                    label="Subject"
+                    placeholder="Enter message subject"
+                    register={register}
+                    error={errors.subject}
+                    required
+                  />
+
+                  <FormField
+                    name="message"
+                    label="Message"
+                    type="textarea"
+                    placeholder="Enter your message"
+                    register={register}
+                    error={errors.message}
+                    required
+                    rows={6}
+                  />
+
+                  <FormSubmitButton
+                    isLoading={isSubmitting}
+                    className="w-full"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        Send Message
-                      </>
-                    )}
-                  </Button>
+                    <Send className="h-4 w-4 mr-2" />
+                    Send Message
+                  </FormSubmitButton>
                 </form>
               </CardContent>
             </Card>

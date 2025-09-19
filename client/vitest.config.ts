@@ -25,5 +25,8 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src')
     }
+  },
+  define: {
+    'import.meta.vitest': 'undefined'
   }
 });

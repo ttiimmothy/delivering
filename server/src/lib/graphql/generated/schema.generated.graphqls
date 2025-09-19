@@ -11,6 +11,8 @@ type Address {
   createdAt: String!
   id: String!
   isDefault: Boolean!
+  latitude: String
+  longitude: String
   state: String!
   street: String!
   updatedAt: String!
@@ -34,8 +36,6 @@ input AssignCourierInput {
 }
 
 type AuthResponse {
-  accessToken: String!
-  refreshToken: String!
   user: User!
 }
 
@@ -313,6 +313,7 @@ type MenuItem {
   id: String!
   image: String
   isAvailable: Boolean!
+  isPopular: Boolean!
   name: String!
   options: [MenuItemOption]
   price: String!
@@ -369,7 +370,7 @@ type Mutation {
   pickupOrder(deliveryId: String!): Delivery
   placeOrder(input: CreateOrderInput!): Order
   processPayout(input: ProcessPayoutInput!): Invoice
-  refreshToken(refreshToken: String!): RefreshTokenResponse
+  refreshToken: RefreshTokenResponse
   removeFromCart(input: RemoveFromCartInput!): Boolean
   setRestaurantOpen(id: String!, isOpen: Boolean!): Restaurant
   signup(input: SignupInput!): AuthResponse
@@ -522,8 +523,7 @@ type Query {
 }
 
 type RefreshTokenResponse {
-  accessToken: String!
-  refreshToken: String!
+  message: String!
 }
 
 type Refund {
@@ -550,6 +550,7 @@ type Restaurant {
   id: ID!
   image: String
   isActive: Boolean!
+  isFavorited: Boolean
   isOpen: Boolean!
   menuCategories: [MenuCategory]
   menuItems(categoryId: String, limit: Int = 50): [MenuItem]

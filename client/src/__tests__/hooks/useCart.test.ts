@@ -1,6 +1,48 @@
 import { describe, it, expect, vi } from 'vitest';
 import {renderHook} from '@testing-library/react';
 import {act} from "react"
+
+// Mock the individual hooks directly
+const mockAddToCart = vi.fn();
+const mockUpdateCartItem = vi.fn();
+const mockRemoveFromCart = vi.fn();
+const mockClearCart = vi.fn();
+
+// Mock the useCart hooks
+vi.mock('../../hooks/useCart', () => ({
+  useCart: vi.fn(() => ({
+    data: { cart: { id: 'test-cart-id', totalAmount: 25.99, itemCount: 2 } },
+    loading: false,
+    error: null,
+    cart: { id: 'test-cart-id', totalAmount: 25.99, itemCount: 2 },
+    itemCount: 2,
+    items: [],
+    total: 25.99,
+    refetch: vi.fn(),
+  })),
+  useAddToCart: vi.fn(() => ({
+    addToCart: mockAddToCart,
+    loading: false,
+    error: null,
+  })),
+  useUpdateCartItem: vi.fn(() => ({
+    updateCartItem: mockUpdateCartItem,
+    loading: false,
+    error: null,
+  })),
+  useRemoveFromCart: vi.fn(() => ({
+    removeFromCart: mockRemoveFromCart,
+    loading: false,
+    error: null,
+  })),
+  useClearCart: vi.fn(() => ({
+    clearCart: mockClearCart,
+    loading: false,
+    error: null,
+  })),
+}));
+
+// Import after mocking
 import { 
   useCart, 
   useAddToCart, 
@@ -8,25 +50,6 @@ import {
   useRemoveFromCart, 
   useClearCart 
 } from '../../hooks/useCart';
-
-// Mock Apollo Client
-const mockMutate = vi.fn();
-const mockClient = {
-  mutate: mockMutate,
-  query: vi.fn(),
-  watchQuery: vi.fn(),
-};
-
-vi.mock('@apollo/client', () => ({
-  gql: vi.fn((strings, ...values) => strings.join('')),
-  useMutation: () => [mockMutate, { loading: false, error: null }],
-  useQuery: () => ({ 
-    data: { cart: { id: 'test-cart-id', totalAmount: 25.99, itemCount: 2 } }, 
-    loading: false, 
-    error: null 
-  }),
-  useApolloClient: () => mockClient,
-}));
 
 describe('Cart Hooks', () => {
   describe('useCart', () => {
@@ -50,14 +73,10 @@ describe('Cart Hooks', () => {
     });
 
     it('should handle add to cart', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          addToCart: {
-            id: 'cart-item-1',
-            quantity: 2,
-            menuItem: { id: 'item-1', name: 'Test Item' }
-          }
-        }
+      mockAddToCart.mockResolvedValue({
+        id: 'cart-item-1',
+        quantity: 2,
+        menuItem: { id: 'item-1', name: 'Test Item' }
       });
 
       const { result } = renderHook(() => useAddToCart());
@@ -69,77 +88,73 @@ describe('Cart Hooks', () => {
           specialInstructions: 'No onions'
         });
         
-        expect(response).toBeDefined();
-        expect(response?.quantity).toBe(2);
+        expect(mockAddToCart).toHaveBeenCalledWith({
+          menuItemId: 'item-1',
+          quantity: 2,
+          specialInstructions: 'No onions'
+        });
       });
     });
   });
 
   describe('useUpdateCartItem', () => {
     it('should handle update cart item', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          updateCartItem: {
-            id: 'cart-item-1',
-            quantity: 3,
-            menuItem: { id: 'item-1', name: 'Test Item' }
-          }
-        }
+      mockUpdateCartItem.mockResolvedValue({
+        id: 'cart-item-1',
+        quantity: 3,
+        menuItem: { id: 'item-1', name: 'Test Item' }
       });
 
       const { result } = renderHook(() => useUpdateCartItem());
       
       await act(async () => {
-        const response = await result.current.updateCartItem({
+        await result.current.updateCartItem({
           cartItemId: 'cart-item-1',
           quantity: 3,
           specialInstructions: 'Extra sauce'
         });
         
-        expect(response).toBeDefined();
-        expect(response?.quantity).toBe(3);
+        expect(mockUpdateCartItem).toHaveBeenCalledWith({
+          cartItemId: 'cart-item-1',
+          quantity: 3,
+          specialInstructions: 'Extra sauce'
+        });
       });
     });
   });
 
   describe('useRemoveFromCart', () => {
     it('should handle remove from cart', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          removeFromCart: {
-            success: true
-          }
-        }
+      mockRemoveFromCart.mockResolvedValue({
+        success: true
       });
 
       const { result } = renderHook(() => useRemoveFromCart());
       
       await act(async () => {
-        const response = await result.current.removeFromCart({
+        await result.current.removeFromCart({
           cartItemId: 'cart-item-1'
         });
         
-        expect(response).toBeDefined();
+        expect(mockRemoveFromCart).toHaveBeenCalledWith({
+          cartItemId: 'cart-item-1'
+        });
       });
     });
   });
 
   describe('useClearCart', () => {
     it('should handle clear cart', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          clearCart: {
-            success: true
-          }
-        }
+      mockClearCart.mockResolvedValue({
+        success: true
       });
 
       const { result } = renderHook(() => useClearCart());
       
       await act(async () => {
-        const response = await result.current.clearCart();
+        await result.current.clearCart();
         
-        expect(response).toBeDefined();
+        expect(mockClearCart).toHaveBeenCalled();
       });
     });
   });

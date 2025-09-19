@@ -1,18 +1,28 @@
-import { subscriptionField, objectType, nonNull, stringArg } from 'nexus';
+import { subscriptionField, objectType, nonNull, stringArg, list } from 'nexus';
 import { withFilter } from 'graphql-subscriptions';
-import { pubsub } from '../http';
+import { pubsub } from '../index';
 import { getSocketService } from '../services/socket';
 
 // Subscription Types
 export const CourierLocationUpdate = objectType({
   name: 'CourierLocationUpdate',
   definition(t) {
+    t.nonNull.string("courierId")
     t.nonNull.string('deliveryId');
-    t.nonNull.float('latitude');
-    t.nonNull.float('longitude');
-    t.nonNull.string('timestamp');
+    t.nonNull.field('location', {type: "CourierLocation"});
+    t.nonNull.string("estimatedArrival")
+    t.nonNull.string('updatedAt');
   },
 });
+
+export const CourierLocation = objectType({
+  name: "CourierLocation",
+  definition(t) {
+    t.nonNull.string("latitude")
+    t.nonNull.string("longitude")
+    t.nonNull.string("timestamp")
+  }
+})
 
 export const DeliveryAssignment = objectType({
   name: 'DeliveryAssignment',
@@ -49,6 +59,7 @@ export const OrderUpdate = objectType({
     t.nonNull.string('orderId');
     t.nonNull.string('status');
     t.nonNull.string('updatedAt');
+    t.string("metadata")
     t.string('message');
   },
 });
@@ -58,9 +69,9 @@ export const CourierTrackingUpdate = objectType({
   definition(t) {
     t.nonNull.string('deliveryId');
     t.nonNull.string('courierId');
-    t.nonNull.float('latitude');
-    t.nonNull.float('longitude');
-    t.nonNull.string('timestamp');
+    t.nonNull.field('location', {type: "CourierLocation"});
+    t.nonNull.string("estimatedArrival")
+    t.nonNull.string('updatedAt');
     t.nonNull.string('status');
   },
 });
@@ -70,6 +81,9 @@ export const OrderQueueUpdate = objectType({
   definition(t) {
     t.nonNull.string('restaurantId');
     t.nonNull.int('queueLength');
+    t.field("pendingOrders", {type: list("Order")})
+    t.field("preparingOrders", {type: list("Order")})
+    t.field("readyOrders", {type: list("Order")})
     t.nonNull.string('updatedAt');
   },
 });
@@ -79,9 +93,23 @@ export const OrderTrackingUpdate = objectType({
   definition(t) {
     t.nonNull.string('orderId');
     t.nonNull.string('status');
-    t.nonNull.string('updatedAt');
+    t.nonNull.string("estimatedDelivery")
     t.string('message');
     t.string('courierId');
+    t.field('currentLocation', { 
+      type: 'Location',
+      resolve: (parent: any) => {
+        if (!parent.currentLocation) return null;
+        try {
+          return typeof parent.currentLocation === 'string' 
+          ? JSON.parse(parent.currentLocation)
+          : parent.currentLocation;
+        } catch {
+          return null;
+        }
+      }
+    });
+    t.nonNull.string('updatedAt');
   },
 });
 

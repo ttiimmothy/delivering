@@ -17,6 +17,17 @@ vi.mock('../../hooks/useAuth', () => ({
   })
 }));
 
+// Mock the useCart hook
+vi.mock('../../hooks/useCart', () => ({
+  useCart: () => ({
+    itemCount: 0,
+    items: [],
+    total: 0,
+    loading: false,
+    error: null
+  })
+}));
+
 describe('Header Component', () => {
   it('renders header with navigation', () => {
     const { getByText } = renderWithProviders(<Header />);

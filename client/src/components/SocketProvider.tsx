@@ -20,11 +20,13 @@ export function SocketProvider({ children }: SocketProviderProps) {
 
   useEffect(() => {
     if (isAuthenticated && user) {
+      // now token is in cookies
       // Get token from localStorage
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        socketService.connect(token);
-      }
+      // const token = localStorage.getItem('accessToken');
+      // if (token) {
+      //   socketService.connect(token);
+      // }
+      socketService.connect();
     } else {
       socketService.disconnect();
     }

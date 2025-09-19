@@ -1,26 +1,37 @@
 import { describe, it, expect, vi } from 'vitest';
 import {renderHook} from '@testing-library/react';
 import {act} from "react"
+
+// Mock the usePayment hooks directly
+const mockCreatePaymentIntent = vi.fn();
+const mockConfirmPaymentIntent = vi.fn();
+const mockCreateCheckoutSession = vi.fn();
+
+// Mock the usePayment hooks
+vi.mock('../../hooks/usePayment', () => ({
+  useCreatePaymentIntent: vi.fn(() => ({
+    createPaymentIntent: mockCreatePaymentIntent,
+    loading: false,
+    error: null,
+  })),
+  useConfirmPaymentIntent: vi.fn(() => ({
+    confirmPaymentIntent: mockConfirmPaymentIntent,
+    loading: false,
+    error: null,
+  })),
+  useCreateCheckoutSession: vi.fn(() => ({
+    createCheckoutSession: mockCreateCheckoutSession,
+    loading: false,
+    error: null,
+  })),
+}));
+
+// Import after mocking
 import { 
   useCreatePaymentIntent, 
   useConfirmPaymentIntent,
   useCreateCheckoutSession 
 } from '../../hooks/usePayment';
-
-// Mock Apollo Client
-const mockMutate = vi.fn();
-const mockClient = {
-  mutate: mockMutate,
-  query: vi.fn(),
-  watchQuery: vi.fn(),
-};
-
-vi.mock('@apollo/client', () => ({
-  gql: vi.fn((strings, ...values) => strings.join('')),
-  useMutation: () => [mockMutate, { loading: false, error: null }],
-  useQuery: () => ({ data: null, loading: false, error: null }),
-  useApolloClient: () => mockClient,
-}));
 
 describe('Payment Hooks', () => {
   describe('useCreatePaymentIntent', () => {
@@ -32,14 +43,10 @@ describe('Payment Hooks', () => {
     });
 
     it('should handle create payment intent', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          createPaymentIntent: {
-            id: 'pi_test_123',
-            clientSecret: 'pi_test_123_secret',
-            status: 'requires_payment_method'
-          }
-        }
+      mockCreatePaymentIntent.mockResolvedValue({
+        id: 'pi_test_123',
+        clientSecret: 'pi_test_123_secret',
+        status: 'requires_payment_method'
       });
 
       const { result } = renderHook(() => useCreatePaymentIntent());
@@ -60,13 +67,9 @@ describe('Payment Hooks', () => {
 
   describe('useConfirmPaymentIntent', () => {
     it('should handle confirm payment intent', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          confirmPaymentIntent: {
-            id: 'pi_test_123',
-            status: 'succeeded'
-          }
-        }
+      mockConfirmPaymentIntent.mockResolvedValue({
+        id: 'pi_test_123',
+        status: 'succeeded'
       });
 
       const { result } = renderHook(() => useConfirmPaymentIntent());
@@ -89,13 +92,9 @@ describe('Payment Hooks', () => {
 
   describe('useCreateCheckoutSession', () => {
     it('should handle create checkout session', async () => {
-      mockMutate.mockResolvedValue({
-        data: {
-          createCheckoutSession: {
-            id: 'cs_test_123',
-            url: 'https://checkout.stripe.com/test'
-          }
-        }
+      mockCreateCheckoutSession.mockResolvedValue({
+        id: 'cs_test_123',
+        url: 'https://checkout.stripe.com/test'
       });
 
       const { result } = renderHook(() => useCreateCheckoutSession());

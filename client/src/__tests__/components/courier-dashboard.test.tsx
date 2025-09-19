@@ -16,8 +16,32 @@ vi.mock('../../lib/socket', () => ({
     onOrderStatusChanged: vi.fn(),
     onCourierLocationChanged: vi.fn(),
     onDeliveryUpdate: vi.fn(),
-    onNewDelivery: vi.fn()
+    onNewDelivery: vi.fn(),
+    onDeliveryAssigned: vi.fn(),
+    onDeliveryStatusChanged: vi.fn(),
+    offDeliveryAssigned: vi.fn(),
+    offDeliveryStatusChanged: vi.fn(),
+    emitCourierStatusUpdate: vi.fn(),
+    emitDeliveryAccept: vi.fn(),
+    emitDeliveryPickup: vi.fn(),
+    emitDeliveryComplete: vi.fn(),
+    emitCourierLocationUpdate: vi.fn()
   }
+}));
+
+// Mock the useAuth hook
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    user: {
+      id: '1',
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User'
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    error: null
+  }))
 }));
 
 describe('CourierDashboard Component', () => {

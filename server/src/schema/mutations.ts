@@ -15,7 +15,7 @@ export const signup = mutationField('signup', {
   args: {
     input: nonNull(arg({ type: 'SignupInput' })),
   },
-  resolve: async (_, args, ctx) => {
+  resolve: async (_, args, { res, ...ctx }) => {
     // Check if user already exists
     const existingUser = await db.select()
       .from(users)
@@ -58,9 +58,23 @@ export const signup = mutationField('signup', {
       { expiresIn: '7d' }
     );
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 60 * 1000 // 15 minutes
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     return {
-      accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -83,7 +97,7 @@ export const login = mutationField('login', {
   args: {
     input: nonNull(arg({ type: 'LoginInput' })),
   },
-  resolve: async (_, args, ctx) => {
+  resolve: async (_, args, { res, ...ctx }) => {
     // Find user
     const result = await db.select()
       .from(users)
@@ -109,19 +123,33 @@ export const login = mutationField('login', {
     // Generate tokens
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET!,
+      process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id },
-      process.env.JWT_REFRESH_SECRET!,
+      process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 60 * 1000 // 15 minutes
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     return {
-      accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -155,12 +183,12 @@ export const loginWithGoogle = mutationField('loginWithGoogle', {
 
 export const refreshToken = mutationField('refreshToken', {
   type: 'RefreshTokenResponse',
-  args: {
-    refreshToken: nonNull(stringArg()),
-  },
-  resolve: async (_, args, ctx) => {
+  // args: {
+  //   refreshToken: nonNull(stringArg()),
+  // },
+  resolve: async (_, args, { res, ...ctx }) => {
     try {
-      const decoded = jwt.verify(args.refreshToken, process.env.JWT_REFRESH_SECRET!) as any;
+      const decoded = jwt.verify(ctx.refreshToken, process.env.JWT_REFRESH_SECRET) as any;
       
       const result = await db.select()
         .from(users)
@@ -178,19 +206,34 @@ export const refreshToken = mutationField('refreshToken', {
       // Generate new tokens
       const accessToken = jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
-        process.env.JWT_SECRET!,
+        process.env.JWT_SECRET,
         { expiresIn: '15m' }
       );
 
       const newRefreshToken = jwt.sign(
         { userId: user.id },
-        process.env.JWT_REFRESH_SECRET!,
+        process.env.JWT_REFRESH_SECRET,
         { expiresIn: '7d' }
       );
 
+      // Set cookies
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 15 * 60 * 60 * 1000 // 15 minutes
+      });
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+
+      // Return both tokens as an object
       return {
-        accessToken,
-        refreshToken: newRefreshToken,
+        message: "get refresh token success"
       };
     } catch (error) {
       const authError = new Error('Invalid refresh token');
@@ -201,10 +244,52 @@ export const refreshToken = mutationField('refreshToken', {
 });
 
 export const logout = mutationField('logout', {
-  type: 'Boolean',
-  resolve: async (_, args, ctx) => {
+  type: 'LogoutResponse',
+  resolve: async (_, args, {res, ...ctx}) => {
     // In a real implementation, you might want to blacklist the token
-    return true;
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true,        // Must match login
+      sameSite: 'none'     // Must match login
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+    return {message: "logout success"};
+  },
+});
+
+export const updateUser = mutationField('updateUser', {
+  type: 'AuthResponse',
+  args: {
+    input: nonNull(arg({type: "UpdateUserInput"}))
+  },
+  resolve: async (_, args, {res, ...ctx}) => {
+    if (!ctx.user) {
+      const error = new Error('Authentication required');
+      error.name = 'AuthenticationError';
+      throw error;
+    }
+    const user = await db.update(users).set(args.input)
+    .where(eq(users.id, ctx.user.userId))
+    .returning();
+    return {
+      user: {
+        id: user[0].id,
+        email: user[0].email,
+        firstName: user[0].firstName,
+        lastName: user[0].lastName,
+        phone: user[0].phone,
+        avatar: user[0].avatar,
+        emailVerified: user[0].emailVerified,
+        role: user[0].role === 'merchant' ? 'restaurant' : user[0].role as "customer" | "courier" | "admin" | "restaurant",
+        isActive: user[0].isActive,
+        createdAt: user[0].createdAt instanceof Date ? user[0].createdAt.toISOString() : String(user[0].createdAt),
+        updatedAt: user[0].updatedAt instanceof Date ? user[0].updatedAt.toISOString() : String(user[0].updatedAt),
+      }
+    };
   },
 });
 
@@ -800,18 +885,18 @@ export const updateCourierLocation = mutationField('updateCourierLocation', {
       throw error;
     }
 
-        return {
-        id: result[0].id,
-        userId: result[0].userId,
-        vehicleType: result[0].vehicleType as "bike" | "car" | "motorcycle",
-        licensePlate: result[0].licensePlate || null,
-        isAvailable: result[0].isAvailable,
-        rating: parseFloat(result[0].rating),
-        reviewCount: result[0].reviewCount,
-        totalDeliveries: result[0].totalDeliveries,
-        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
-        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
-      };
+    return {
+      id: result[0].id,
+      userId: result[0].userId,
+      vehicleType: result[0].vehicleType as "bike" | "car" | "motorcycle",
+      licensePlate: result[0].licensePlate || null,
+      isAvailable: result[0].isAvailable,
+      rating: parseFloat(result[0].rating),
+      reviewCount: result[0].reviewCount,
+      totalDeliveries: result[0].totalDeliveries,
+      createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+      updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+    };
   },
 });
 
@@ -986,6 +1071,7 @@ export const createCheckoutSession = mutationField('createCheckoutSession', {
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
       status: 'open',
+      paymentIntentId: "",
       customerEmail: ctx.user.email,
       customerId: ctx.user.userId,
     };
@@ -1034,6 +1120,8 @@ export const createPaymentIntent = mutationField('createPaymentIntent', {
       clientSecret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
       amount: args.input.amount,
       currency: args.input.currency,
+      description: "",
+      metadata: "",
       status: 'requires_payment_method',
       createdAt: new Date().toISOString(),
     };
@@ -1060,6 +1148,8 @@ export const confirmPaymentIntent = mutationField('confirmPaymentIntent', {
       amount: '2000',
       currency: 'usd',
       status: 'succeeded',
+      description: "",
+      metadata: "",
       createdAt: new Date().toISOString(),
     };
   },
@@ -1085,6 +1175,8 @@ export const cancelPaymentIntent = mutationField('cancelPaymentIntent', {
       amount: '2000',
       currency: 'usd',
       status: 'canceled',
+      description: "",
+      metadata: "",
       createdAt: new Date().toISOString(),
     };
   },

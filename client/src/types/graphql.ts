@@ -49,14 +49,11 @@ export interface Location {
 }
 
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
   user: User;
 }
 
 export interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
+  message: string
 }
 
 // ===== RESTAURANT TYPES =====

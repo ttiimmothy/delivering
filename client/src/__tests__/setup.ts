@@ -45,6 +45,9 @@ const mockClient = {
   },
 } as any;
 
+// Removed global Apollo Client mock - individual tests will handle their own mocking
+
+
 // Global test setup
 beforeAll(() => {
   // Make React available globally
@@ -120,56 +123,6 @@ beforeAll(() => {
     })),
   }));
 
-      // Mock Apollo Client
-      vi.mock('@apollo/client', () => ({
-        gql: vi.fn((strings, ...values) => {
-          // Mock GraphQL Document object
-          const queryString = strings.join('');
-          let operation = 'query'; // Default
-          
-          // Detect operation type from the query string
-          if (queryString.includes('mutation')) {
-            operation = 'mutation';
-          } else if (queryString.includes('subscription')) {
-            operation = 'subscription';
-          }
-          
-          return {
-            kind: 'Document',
-            definitions: [{
-              kind: 'OperationDefinition',
-              operation: operation,
-              name: { kind: 'Name', value: 'MockOperation' },
-              selectionSet: { kind: 'SelectionSet', selections: [] }
-            }]
-          };
-        }),
-    useQuery: vi.fn(() => ({
-      data: null,
-      loading: false,
-      error: null,
-      refetch: vi.fn(),
-    })),
-    useMutation: vi.fn(() => [
-      vi.fn(),
-      { loading: false, error: null, data: null }
-    ]),
-    useSubscription: vi.fn(() => ({
-      data: null,
-      loading: false,
-      error: null,
-    })),
-    useApolloClient: vi.fn(() => mockClient),
-    ApolloProvider: ({ children }: { children: ReactNode }) => children,
-    MockedProvider: ({ children }: { children: ReactNode }) => children,
-    createHttpLink: vi.fn(() => ({})),
-    createApolloClient: vi.fn(() => mockClient),
-    ApolloClient: vi.fn(() => mockClient),
-    InMemoryCache: vi.fn(() => ({})),
-    RetryLink: vi.fn(() => ({})),
-    onError: vi.fn(() => ({})),
-    from: vi.fn(() => []),
-  }));
 });
 
 afterAll(() => {
@@ -196,7 +149,7 @@ export function renderWithProviders(
     addTypename?: boolean;
   } = {}
 ) {
-  // Simple wrapper component
+  // Simple wrapper component - Apollo Client is already mocked globally
   const AllTheProviders = ({ children }: { children: ReactNode }) => {
     return createElement(
       'div',

@@ -16,7 +16,7 @@ export default function CourierPage() {
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
     } else if (!isLoading && user && user.role !== 'courier') {
-      router.push('/');
+      // router.push('/');
     }
   }, [isAuthenticated, isLoading, user, router]);
 
