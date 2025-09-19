@@ -57,12 +57,6 @@ export const useAuth = () => {
     try {
       const { data } = await signupMutationFn({ variables: { input } }) as any;
       if (data?.signup) {
-        // Store tokens in localStorage
-        localStorage.setItem('accessToken', data.signup.accessToken);
-        localStorage.setItem('refreshToken', data.signup.refreshToken);
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(data.signup.user));
-        
         // Refetch user data
         await refetchMe();
         
@@ -93,14 +87,11 @@ export const useAuth = () => {
 
   const refreshToken = useCallback(async (): Promise<RefreshTokenResponse | null> => {
     try {
-      const refreshTokenValue = localStorage.getItem('refreshToken');
-      if (!refreshTokenValue) {
-        throw new Error('No refresh token available');
-      }
-
-      const { data } = await refreshTokenMutationFn({ 
-        variables: { refreshToken: refreshTokenValue } 
-      }) as any;
+      // const refreshTokenValue = localStorage.getItem('refreshToken');
+      // if (!refreshTokenValue) {
+      //   throw new Error('No refresh token available');
+      // }
+      const { data } = await refreshTokenMutationFn() as any;
       
       if (data?.refreshToken) {        
         return data.refreshToken;
@@ -114,7 +105,8 @@ export const useAuth = () => {
 
   const logout = useCallback(async (): Promise<boolean> => {
     try {
-      await logoutMutationFn();
+      const {data} = await logoutMutationFn();
+      console.log(data)
       // Refetch user data (should return null)
       await refetchMe();
       

@@ -39,6 +39,8 @@ export type Address = {
   createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isDefault: Scalars['Boolean']['output'];
+  latitude?: Maybe<Scalars['String']['output']>;
+  longitude?: Maybe<Scalars['String']['output']>;
   state: Scalars['String']['output'];
   street: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
@@ -63,8 +65,6 @@ export type AssignCourierInput = {
 
 export type AuthResponse = {
   __typename?: 'AuthResponse';
-  accessToken: Scalars['String']['output'];
-  refreshToken: Scalars['String']['output'];
   user: User;
 };
 
@@ -343,6 +343,7 @@ export type MenuItem = {
   id: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
   isAvailable: Scalars['Boolean']['output'];
+  isPopular: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   options?: Maybe<Array<Maybe<MenuItemOption>>>;
   price: Scalars['String']['output'];
@@ -499,11 +500,6 @@ export type MutationplaceOrderArgs = {
 
 export type MutationprocessPayoutArgs = {
   input: ProcessPayoutInput;
-};
-
-
-export type MutationrefreshTokenArgs = {
-  refreshToken: Scalars['String']['input'];
 };
 
 
@@ -760,8 +756,7 @@ export type QueryreviewsArgs = {
 
 export type RefreshTokenResponse = {
   __typename?: 'RefreshTokenResponse';
-  accessToken: Scalars['String']['output'];
-  refreshToken: Scalars['String']['output'];
+  message: Scalars['String']['output'];
 };
 
 export type Refund = {
@@ -790,6 +785,7 @@ export type Restaurant = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   isActive: Scalars['Boolean']['output'];
+  isFavorited?: Maybe<Scalars['Boolean']['output']>;
   isOpen: Scalars['Boolean']['output'];
   menuCategories?: Maybe<Array<Maybe<MenuCategory>>>;
   menuItems?: Maybe<Array<Maybe<MenuItem>>>;
@@ -1238,6 +1234,8 @@ export type AddressResolvers<ContextType = GraphQLContext, ParentType extends Re
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  latitude?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  longitude?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1248,8 +1246,6 @@ export type AddressResolvers<ContextType = GraphQLContext, ParentType extends Re
 };
 
 export type AuthResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
-  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1422,6 +1418,7 @@ export type MenuItemResolvers<ContextType = GraphQLContext, ParentType extends R
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isAvailable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isPopular?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   options?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuItemOption']>>>, ParentType, ContextType>;
   price?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1478,7 +1475,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   pickupOrder?: Resolver<Maybe<ResolversTypes['Delivery']>, ParentType, ContextType, RequireFields<MutationpickupOrderArgs, 'deliveryId'>>;
   placeOrder?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<MutationplaceOrderArgs, 'input'>>;
   processPayout?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationprocessPayoutArgs, 'input'>>;
-  refreshToken?: Resolver<Maybe<ResolversTypes['RefreshTokenResponse']>, ParentType, ContextType, RequireFields<MutationrefreshTokenArgs, 'refreshToken'>>;
+  refreshToken?: Resolver<Maybe<ResolversTypes['RefreshTokenResponse']>, ParentType, ContextType>;
   removeFromCart?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationremoveFromCartArgs, 'input'>>;
   setRestaurantOpen?: Resolver<Maybe<ResolversTypes['Restaurant']>, ParentType, ContextType, RequireFields<MutationsetRestaurantOpenArgs, 'id' | 'isOpen'>>;
   signup?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationsignupArgs, 'input'>>;
@@ -1615,8 +1612,7 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
 };
 
 export type RefreshTokenResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['RefreshTokenResponse'] = ResolversParentTypes['RefreshTokenResponse']> = {
-  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1641,6 +1637,7 @@ export type RestaurantResolvers<ContextType = GraphQLContext, ParentType extends
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isFavorited?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isOpen?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   menuCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuCategory']>>>, ParentType, ContextType>;
   menuItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['MenuItem']>>>, ParentType, ContextType, RequireFields<RestaurantmenuItemsArgs, 'limit'>>;

@@ -244,10 +244,52 @@ export const refreshToken = mutationField('refreshToken', {
 });
 
 export const logout = mutationField('logout', {
-  type: 'Boolean',
-  resolve: async (_, args, ctx) => {
+  type: 'LogoutResponse',
+  resolve: async (_, args, {res, ...ctx}) => {
     // In a real implementation, you might want to blacklist the token
-    return true;
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true,        // Must match login
+      sameSite: 'none'     // Must match login
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+    return {message: "logout success"};
+  },
+});
+
+export const updateUser = mutationField('updateUser', {
+  type: 'AuthResponse',
+  args: {
+    input: nonNull(arg({type: "UpdateUserInput"}))
+  },
+  resolve: async (_, args, {res, ...ctx}) => {
+    if (!ctx.user) {
+      const error = new Error('Authentication required');
+      error.name = 'AuthenticationError';
+      throw error;
+    }
+    const user = await db.update(users).set(args.input)
+    .where(eq(users.id, ctx.user.userId))
+    .returning();
+    return {
+      user: {
+        id: user[0].id,
+        email: user[0].email,
+        firstName: user[0].firstName,
+        lastName: user[0].lastName,
+        phone: user[0].phone,
+        avatar: user[0].avatar,
+        emailVerified: user[0].emailVerified,
+        role: user[0].role === 'merchant' ? 'restaurant' : user[0].role as "customer" | "courier" | "admin" | "restaurant",
+        isActive: user[0].isActive,
+        createdAt: user[0].createdAt instanceof Date ? user[0].createdAt.toISOString() : String(user[0].createdAt),
+        updatedAt: user[0].updatedAt instanceof Date ? user[0].updatedAt.toISOString() : String(user[0].updatedAt),
+      }
+    };
   },
 });
 
@@ -843,18 +885,18 @@ export const updateCourierLocation = mutationField('updateCourierLocation', {
       throw error;
     }
 
-        return {
-        id: result[0].id,
-        userId: result[0].userId,
-        vehicleType: result[0].vehicleType as "bike" | "car" | "motorcycle",
-        licensePlate: result[0].licensePlate || null,
-        isAvailable: result[0].isAvailable,
-        rating: parseFloat(result[0].rating),
-        reviewCount: result[0].reviewCount,
-        totalDeliveries: result[0].totalDeliveries,
-        createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
-        updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
-      };
+    return {
+      id: result[0].id,
+      userId: result[0].userId,
+      vehicleType: result[0].vehicleType as "bike" | "car" | "motorcycle",
+      licensePlate: result[0].licensePlate || null,
+      isAvailable: result[0].isAvailable,
+      rating: parseFloat(result[0].rating),
+      reviewCount: result[0].reviewCount,
+      totalDeliveries: result[0].totalDeliveries,
+      createdAt: result[0].createdAt instanceof Date ? result[0].createdAt.toISOString() : String(result[0].createdAt),
+      updatedAt: result[0].updatedAt instanceof Date ? result[0].updatedAt.toISOString() : String(result[0].updatedAt),
+    };
   },
 });
 
@@ -1029,6 +1071,7 @@ export const createCheckoutSession = mutationField('createCheckoutSession', {
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
       status: 'open',
+      paymentIntentId: "",
       customerEmail: ctx.user.email,
       customerId: ctx.user.userId,
     };
@@ -1077,6 +1120,8 @@ export const createPaymentIntent = mutationField('createPaymentIntent', {
       clientSecret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
       amount: args.input.amount,
       currency: args.input.currency,
+      description: "",
+      metadata: "",
       status: 'requires_payment_method',
       createdAt: new Date().toISOString(),
     };
@@ -1103,6 +1148,8 @@ export const confirmPaymentIntent = mutationField('confirmPaymentIntent', {
       amount: '2000',
       currency: 'usd',
       status: 'succeeded',
+      description: "",
+      metadata: "",
       createdAt: new Date().toISOString(),
     };
   },
@@ -1128,6 +1175,8 @@ export const cancelPaymentIntent = mutationField('cancelPaymentIntent', {
       amount: '2000',
       currency: 'usd',
       status: 'canceled',
+      description: "",
+      metadata: "",
       createdAt: new Date().toISOString(),
     };
   },

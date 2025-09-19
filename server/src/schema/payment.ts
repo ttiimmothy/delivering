@@ -9,6 +9,7 @@ export const CheckoutSession = objectType({
     t.nonNull.string('createdAt');
     t.nonNull.string('expiresAt');
     t.nonNull.string('status');
+    t.nonNull.string("paymentIntentId")
     t.nonNull.string('customerEmail');
     t.nonNull.string('customerId');
   },
@@ -32,6 +33,8 @@ export const PaymentIntent = objectType({
     t.nonNull.string('status');
     t.nonNull.string('amount');
     t.nonNull.string('currency');
+    t.string("description")
+    t.string("metadata")
     t.nonNull.string('createdAt');
   },
 });

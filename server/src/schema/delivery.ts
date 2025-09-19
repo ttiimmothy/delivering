@@ -19,6 +19,9 @@ export const Delivery = objectType({
     t.nonNull.string('courierId');
     t.nonNull.field('status', { type: 'DeliveryStatus' });
     t.nonNull.dateTime('assignedAt');
+    t.nonNull.dateTime('acceptedAt');
+    t.nonNull.dateTime('pickedUpAt');
+    t.nonNull.dateTime('deliveredAt');
     t.field('currentLocation', { 
       type: 'Location',
       resolve: (parent: any) => {

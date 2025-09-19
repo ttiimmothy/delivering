@@ -110,6 +110,7 @@ export const MenuItemOptionValue = objectType({
     t.nonNull.string('optionId');
     t.nonNull.string('name');
     t.nonNull.string('price');
+    t.nonNull.boolean('isDefault');
     t.nonNull.int('sortOrder');
     t.nonNull.string('createdAt');
     t.nonNull.string('updatedAt');

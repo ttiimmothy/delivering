@@ -77,15 +77,23 @@ type CheckoutSession {
   customerId: String!
   expiresAt: String!
   id: String!
+  paymentIntentId: String!
   status: String!
   url: String!
 }
 
-type CourierLocationUpdate {
-  deliveryId: String!
-  latitude: Float!
-  longitude: Float!
+type CourierLocation {
+  latitude: String!
+  longitude: String!
   timestamp: String!
+}
+
+type CourierLocationUpdate {
+  courierId: String!
+  deliveryId: String!
+  estimatedArrival: String!
+  location: CourierLocation!
+  updatedAt: String!
 }
 
 type CourierProfile {
@@ -119,10 +127,10 @@ type CourierStatusUpdate {
 type CourierTrackingUpdate {
   courierId: String!
   deliveryId: String!
-  latitude: Float!
-  longitude: Float!
+  estimatedArrival: String!
+  location: CourierLocation!
   status: String!
-  timestamp: String!
+  updatedAt: String!
 }
 
 input CreateBillingPortalSessionInput {
@@ -230,15 +238,18 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Delivery {
+  acceptedAt: DateTime!
   assignedAt: DateTime!
   courier: User
   courierId: String!
   createdAt: String!
   currentLocation: Location
+  deliveredAt: DateTime!
   estimatedArrival: String
   id: String!
   order: Order
   orderId: String!
+  pickedUpAt: DateTime!
   status: DeliveryStatus!
   updatedAt: String!
 }
@@ -298,6 +309,10 @@ input LoginInput {
   password: String!
 }
 
+type LogoutResponse {
+  message: String!
+}
+
 type MenuCategory {
   createdAt: String!
   description: String
@@ -346,6 +361,7 @@ enum MenuItemOptionType {
 type MenuItemOptionValue {
   createdAt: String!
   id: String!
+  isDefault: Boolean!
   name: String!
   optionId: String!
   price: String!
@@ -369,7 +385,7 @@ type Mutation {
   deliverOrder(deliveryId: String!): Delivery
   login(input: LoginInput!): AuthResponse
   loginWithGoogle(idToken: String!): AuthResponse
-  logout: Boolean
+  logout: LogoutResponse
   markPayoutFailed(invoiceId: String!): Invoice
   pickupOrder(deliveryId: String!): Delivery
   placeOrder(input: CreateOrderInput!): Order
@@ -382,6 +398,7 @@ type Mutation {
   updateCartItem(input: UpdateCartItemInput!): CartItem
   updateCourierLocation(input: UpdateCourierLocationInput!): CourierProfile
   updateInvoiceStatus(input: UpdateInvoiceStatusInput!): Invoice
+  updateUser(input: UpdateUserInput!): AuthResponse
 }
 
 type Order {
@@ -416,6 +433,7 @@ type OrderEvent {
   description: String
   eventType: String!
   id: String!
+  metadata: Location
   order: Order
   orderId: String!
 }
@@ -426,15 +444,19 @@ type OrderItem {
   menuItem: MenuItem
   menuItemId: String!
   orderId: String!
-  price: String!
   quantity: Int!
   selectedOptions: String!
   specialInstructions: String
+  totalPrice: String!
+  unitPrice: String!
   updatedAt: String!
 }
 
 type OrderQueueUpdate {
+  pendingOrders: [Order]
+  preparingOrders: [Order]
   queueLength: Int!
+  readyOrders: [Order]
   restaurantId: String!
   updatedAt: String!
 }
@@ -451,6 +473,8 @@ enum OrderStatus {
 
 type OrderTrackingUpdate {
   courierId: String
+  currentLocation: Location
+  estimatedDelivery: String!
   message: String
   orderId: String!
   status: String!
@@ -459,6 +483,7 @@ type OrderTrackingUpdate {
 
 type OrderUpdate {
   message: String
+  metadata: String
   orderId: String!
   status: String!
   updatedAt: String!
@@ -469,7 +494,9 @@ type PaymentIntent {
   clientSecret: String!
   createdAt: String!
   currency: String!
+  description: String
   id: String!
+  metadata: String
   status: String!
 }
 
@@ -684,6 +711,12 @@ input UpdateReviewInput {
   comment: String
   rating: Int
   reviewId: String!
+}
+
+input UpdateUserInput {
+  firstName: String
+  lastName: String
+  phone: String
 }
 
 type User {

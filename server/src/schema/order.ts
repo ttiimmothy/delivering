@@ -115,7 +115,8 @@ export const Order = objectType({
           orderId: item.orderId,
           menuItemId: item.menuItemId,
           quantity: item.quantity,
-          price: item.unitPrice, // Map unitPrice to price
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
           selectedOptions: String(item.selectedOptions || '[]'),
           specialInstructions: item.specialInstructions || null,
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
@@ -135,6 +136,7 @@ export const Order = objectType({
           orderId: event.orderId,
           eventType: event.status, // Map status to eventType
           description: event.message || null,
+          metadata: event.metadata,
           createdAt: event.createdAt instanceof Date ? event.createdAt.toISOString() : String(event.createdAt),
         }));
       },
@@ -149,7 +151,8 @@ export const OrderItem = objectType({
     t.nonNull.string('orderId');
     t.nonNull.string('menuItemId');
     t.nonNull.int('quantity');
-    t.nonNull.string('price');
+    t.nonNull.string('unitPrice');
+    t.nonNull.string('totalPrice');
     t.nonNull.string('selectedOptions');
     t.string('specialInstructions');
     t.nonNull.string('createdAt');
@@ -180,6 +183,19 @@ export const OrderEvent = objectType({
     t.nonNull.string('orderId');
     t.nonNull.string('eventType');
     t.string('description');
+    t.field('metadata', { 
+      type: 'Location',
+      resolve: (parent: any) => {
+        if (!parent.metadata) return null;
+        try {
+          return typeof parent.metadata === 'string' 
+            ? JSON.parse(parent.metadata)
+            : parent.metadata;
+        } catch {
+          return null;
+        }
+      }
+    });
     t.nonNull.string('createdAt');
     t.field('order', {
       type: 'Order',

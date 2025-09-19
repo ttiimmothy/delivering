@@ -60,33 +60,37 @@ export const loginWithGoogleMutation = gql`
 
 export const refreshTokenMutation = gql`
   mutation RefreshToken($refreshToken: String!) {
-    refreshToken(refreshToken: $refreshToken) {
-      accessToken
-      refreshToken
+    refreshToken {
+      message
     }
   }
 `;
 
 export const logoutMutation = gql`
   mutation Logout {
-    logout
+    logout {
+      message
+    }
   }
 `;
 
 export const updateUserMutation = gql`
   mutation UpdateUser($input: UpdateUserInput!) {
     updateUser(input: $input) {
+      user{
       id
-      email
-      firstName
-      lastName
-      phone
-      role
-      avatar
-      isActive
-      emailVerified
-      createdAt
-      updatedAt
+        email
+        firstName
+        lastName
+        phone
+        role
+        avatar
+        isActive
+        emailVerified
+        createdAt
+        updatedAt
+      }
+     
     }
   }
 `;
@@ -406,8 +410,8 @@ export const ordersQuery = gql`
       }
       events {
         id
-        status
-        message
+        eventType
+        description
         metadata
         createdAt
       }
@@ -453,11 +457,7 @@ export const orderQuery = gql`
         courierProfile {
           vehicleType
           rating
-          currentLocation {
-            latitude
-            longitude
-            timestamp
-          }
+          currentLocation
         }
       }
       items {
@@ -477,8 +477,8 @@ export const orderQuery = gql`
       }
       events {
         id
-        status
-        message
+        eventType
+        description
         metadata
         createdAt
       }
@@ -511,11 +511,7 @@ export const courierAssignmentsQuery = gql`
       acceptedAt
       pickedUpAt
       deliveredAt
-      currentLocation {
-        latitude
-        longitude
-        timestamp
-      }
+      currentLocation
       estimatedArrival
       order {
         id
@@ -581,11 +577,15 @@ export const updateCourierLocationMutation = gql`
   mutation UpdateCourierLocation($input: UpdateCourierLocationInput!) {
     updateCourierLocation(input: $input) {
       id
-      currentLocation {
-        latitude
-        longitude
-        timestamp
-      }
+      userId
+      vehicleType
+      licensePlate
+      currentLocation
+      isAvailable
+      rating
+      reviewCount
+      totalDeliveries
+      createdAt
       updatedAt
     }
   }
@@ -710,8 +710,8 @@ export const orderStatusChangedSubscription = gql`
   subscription OrderStatusChanged($orderId: String!) {
     orderStatusChanged(orderId: $orderId) {
       id
-      status
-      message
+      eventType
+      description
       metadata
       createdAt
     }
@@ -729,7 +729,7 @@ export const courierLocationSubscription = gql`
         timestamp
       }
       estimatedArrival
-      timestamp
+      updatedAt
     }
   }
 `;
@@ -869,8 +869,8 @@ export const deliveryAssignedSubscription = gql`
     deliveryAssigned(courierId: $courierId) {
       deliveryId
       courierId
-      assignedBy
-      timestamp
+      courierId
+      assignedAt
     }
   }
 `;
@@ -881,7 +881,7 @@ export const deliveryStatusChangedSubscription = gql`
       deliveryId
       status
       message
-      timestamp
+      updatedAt
     }
   }
 `;
@@ -891,7 +891,7 @@ export const courierStatusChangedSubscription = gql`
     courierStatusChanged {
       courierId
       isAvailable
-      timestamp
+      updatedAt
     }
   }
 `;
@@ -903,7 +903,7 @@ export const realTimeOrderUpdatesSubscription = gql`
       status
       message
       metadata
-      timestamp
+      updatedAt
     }
   }
 `;
@@ -919,7 +919,8 @@ export const liveCourierTrackingSubscription = gql`
         timestamp
       }
       estimatedArrival
-      timestamp
+      updatedAt
+      status
     }
   }
 `;
@@ -928,6 +929,7 @@ export const restaurantOrderQueueSubscription = gql`
   subscription RestaurantOrderQueue($restaurantId: String!) {
     restaurantOrderQueue(restaurantId: $restaurantId) {
       restaurantId
+      queueLength
       pendingOrders {
         id
         orderNumber
@@ -964,7 +966,7 @@ export const restaurantOrderQueueSubscription = gql`
           lastName
         }
       }
-      timestamp
+      updatedAt
     }
   }
 `;
@@ -974,19 +976,11 @@ export const customerOrderTrackingSubscription = gql`
     customerOrderTracking(orderId: $orderId) {
       orderId
       status
-      courier {
-        id
-        firstName
-        lastName
-        phone
-      }
-      currentLocation {
-        latitude
-        longitude
-        timestamp
-      }
+      courierId
+      message
+      currentLocation
       estimatedDelivery
-      timestamp
+      updatedAt
     }
   }
 `;

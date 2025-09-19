@@ -171,6 +171,13 @@ export const RefreshTokenResponse = objectType({
   },
 });
 
+export const LogoutResponse = objectType({
+  name: 'LogoutResponse',
+  definition(t) {
+    t.nonNull.string('message');
+  },
+});
+
 // Input Types
 export const SignupInput = inputObjectType({
   name: 'SignupInput',
@@ -242,3 +249,12 @@ export const UpdateCourierProfileInput = inputObjectType({
     t.field('currentLocation', { type: 'LocationInput' });
   },
 });
+
+export const UpdateUserInput = inputObjectType({
+  name: "UpdateUserInput",
+  definition(t) {
+    t.string("firstName")
+    t.string("lastName")
+    t.string("phone")
+  }
+})
