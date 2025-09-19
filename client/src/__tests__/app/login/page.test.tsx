@@ -24,8 +24,8 @@ describe('Login Page', () => {
     const { getByRole, getByLabelText } = renderWithProviders(<LoginPage />);
     
     expect(getByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
-    expect(getByLabelText('Email')).toBeInTheDocument();
-    expect(getByLabelText('Password')).toBeInTheDocument();
+    expect(getByLabelText(/Email/)).toBeInTheDocument();
+    expect(getByLabelText(/Password/)).toBeInTheDocument();
   });
 
   it('shows login button', () => {

@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { meQuery, updateUserMutation } from '../../lib/graphql/operations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Label } from '../../components/ui/Label';
 import { Switch } from '../../components/ui/Switch';
+import { Label } from '../../components/ui/Label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/Tabs';
 import { Badge } from '../../components/ui/Badge';
+import { FormField, FormSubmitButton } from '../../components/forms';
+import { profileUpdateSchema, type ProfileUpdateFormData } from '../../schemas/forms';
 import { 
   User, 
   Bell, 
@@ -30,33 +33,32 @@ export default function SettingsPage() {
   const { data, loading, error } = useQuery(meQuery) as any;
   const [updateUser] = useMutation(updateUserMutation);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+
+  const methods = useForm<ProfileUpdateFormData>({
+    resolver: zodResolver(profileUpdateSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+    }
   });
 
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = methods;
+
   // Initialize form data when user data loads
-  useState(() => {
+  useEffect(() => {
     if (data?.me) {
-      setFormData({
+      reset({
         firstName: data.me.firstName || '',
         lastName: data.me.lastName || '',
         email: data.me.email || '',
         phone: data.me.phone || '',
       });
     }
-  });
+  }, [data?.me, reset]);
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSave = async () => {
+  const onSubmit = async (formData: ProfileUpdateFormData) => {
     try {
       await updateUser({
         variables: {
@@ -84,7 +86,7 @@ export default function SettingsPage() {
 
   const handleCancel = () => {
     if (data?.me) {
-      setFormData({
+      reset({
         firstName: data.me.firstName || '',
         lastName: data.me.lastName || '',
         email: data.me.email || '',
@@ -190,56 +192,74 @@ export default function SettingsPage() {
               </div>
 
               {/* Form Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </div>
+              {isEditing ? (
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      name="firstName"
+                      label="First Name"
+                      register={register}
+                      error={errors.firstName}
+                      required
+                    />
+                    <FormField
+                      name="lastName"
+                      label="Last Name"
+                      register={register}
+                      error={errors.lastName}
+                      required
+                    />
+                    <FormField
+                      name="email"
+                      label="Email"
+                      type="email"
+                      register={register}
+                      error={errors.email}
+                      required
+                      disabled
+                    />
+                    <FormField
+                      name="phone"
+                      label="Phone"
+                      type="tel"
+                      register={register}
+                      error={errors.phone}
+                      required
+                    />
+                  </div>
 
-              {/* Action Buttons */}
-              {isEditing && (
-                <div className="flex gap-2 pt-4">
-                  <Button onClick={handleSave}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </Button>
-                  <Button variant="outline" onClick={handleCancel}>
-                    Cancel
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-4">
+                    <FormSubmitButton
+                      isLoading={isSubmitting}
+                      className="flex items-center"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </FormSubmitButton>
+                    <Button type="button" variant="outline" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>First Name</Label>
+                    <div className="p-3 bg-muted rounded-md">{user?.firstName || 'Not provided'}</div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Last Name</Label>
+                    <div className="p-3 bg-muted rounded-md">{user?.lastName || 'Not provided'}</div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <div className="p-3 bg-muted rounded-md">{user?.email || 'Not provided'}</div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <div className="p-3 bg-muted rounded-md">{user?.phone || 'Not provided'}</div>
+                  </div>
                 </div>
               )}
             </CardContent>
