@@ -4,8 +4,6 @@ import { gql } from '@apollo/client';
 export const loginMutation = gql`
   mutation Login($input: LoginInput!) {
     login(input: $input) {
-      accessToken
-      refreshToken
       user {
         id
         email
@@ -25,8 +23,6 @@ export const loginMutation = gql`
 export const signupMutation = gql`
   mutation Signup($input: SignupInput!) {
     signup(input: $input) {
-      accessToken
-      refreshToken
       user {
         id
         email
@@ -46,8 +42,6 @@ export const signupMutation = gql`
 export const loginWithGoogleMutation = gql`
   mutation LoginWithGoogle($idToken: String!) {
     loginWithGoogle(idToken: $idToken) {
-      accessToken
-      refreshToken
       user {
         id
         email
@@ -76,6 +70,24 @@ export const refreshTokenMutation = gql`
 export const logoutMutation = gql`
   mutation Logout {
     logout
+  }
+`;
+
+export const updateUserMutation = gql`
+  mutation UpdateUser($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      id
+      email
+      firstName
+      lastName
+      phone
+      role
+      avatar
+      isActive
+      emailVerified
+      createdAt
+      updatedAt
+    }
   }
 `;
 

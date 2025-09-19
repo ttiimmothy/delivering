@@ -15,7 +15,7 @@ export const signup = mutationField('signup', {
   args: {
     input: nonNull(arg({ type: 'SignupInput' })),
   },
-  resolve: async (_, args, ctx) => {
+  resolve: async (_, args, { res, ...ctx }) => {
     // Check if user already exists
     const existingUser = await db.select()
       .from(users)
@@ -58,9 +58,23 @@ export const signup = mutationField('signup', {
       { expiresIn: '7d' }
     );
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 60 * 1000 // 15 minutes
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     return {
-      accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -83,7 +97,7 @@ export const login = mutationField('login', {
   args: {
     input: nonNull(arg({ type: 'LoginInput' })),
   },
-  resolve: async (_, args, ctx) => {
+  resolve: async (_, args, { res, ...ctx }) => {
     // Find user
     const result = await db.select()
       .from(users)
@@ -109,19 +123,33 @@ export const login = mutationField('login', {
     // Generate tokens
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET!,
+      process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id },
-      process.env.JWT_REFRESH_SECRET!,
+      process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 60 * 1000 // 15 minutes
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     return {
-      accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -155,12 +183,12 @@ export const loginWithGoogle = mutationField('loginWithGoogle', {
 
 export const refreshToken = mutationField('refreshToken', {
   type: 'RefreshTokenResponse',
-  args: {
-    refreshToken: nonNull(stringArg()),
-  },
-  resolve: async (_, args, ctx) => {
+  // args: {
+  //   refreshToken: nonNull(stringArg()),
+  // },
+  resolve: async (_, args, { res, ...ctx }) => {
     try {
-      const decoded = jwt.verify(args.refreshToken, process.env.JWT_REFRESH_SECRET!) as any;
+      const decoded = jwt.verify(ctx.refreshToken, process.env.JWT_REFRESH_SECRET) as any;
       
       const result = await db.select()
         .from(users)
@@ -178,19 +206,34 @@ export const refreshToken = mutationField('refreshToken', {
       // Generate new tokens
       const accessToken = jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
-        process.env.JWT_SECRET!,
+        process.env.JWT_SECRET,
         { expiresIn: '15m' }
       );
 
       const newRefreshToken = jwt.sign(
         { userId: user.id },
-        process.env.JWT_REFRESH_SECRET!,
+        process.env.JWT_REFRESH_SECRET,
         { expiresIn: '7d' }
       );
 
+      // Set cookies
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 15 * 60 * 60 * 1000 // 15 minutes
+      });
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+
+      // Return both tokens as an object
       return {
-        accessToken,
-        refreshToken: newRefreshToken,
+        message: "get refresh token success"
       };
     } catch (error) {
       const authError = new Error('Invalid refresh token');

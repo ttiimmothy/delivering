@@ -1,6 +1,6 @@
 'use client'
 
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import { apolloClient } from '../lib/apollo'
 import { ThemeProvider } from '../components/ThemeProvider'
 import { StripeProvider } from '../components/StripeProvider'

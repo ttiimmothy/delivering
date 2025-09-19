@@ -117,16 +117,6 @@ export const webhookLimiter = rateLimit({
   },
 });
 
-// Speed limiter (gradual slowdown)
-// export const speedLimiter = slowDown({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   delayAfter: 50, // Allow 50 requests per 15 minutes, then...
-//   delayMs: 500, // Add 500ms delay per request above 50
-//   maxDelayMs: 20000, // Maximum delay of 20 seconds
-//   skipSuccessfulRequests: true, // Don't count successful requests
-//   skipFailedRequests: false, // Count failed requests
-// });
-
 // Create custom rate limiter
 export function createCustomLimiter(options: {
   windowMs: number;

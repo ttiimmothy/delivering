@@ -1,6 +1,6 @@
 import { subscriptionField, objectType, nonNull, stringArg } from 'nexus';
 import { withFilter } from 'graphql-subscriptions';
-import { pubsub } from '../http';
+import { pubsub } from '../index';
 import { getSocketService } from '../services/socket';
 
 // Subscription Types

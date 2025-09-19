@@ -40,8 +40,6 @@ input AssignCourierInput {
 }
 
 type AuthResponse {
-  accessToken: String!
-  refreshToken: String!
   user: User!
 }
 
@@ -319,6 +317,7 @@ type MenuItem {
   id: String!
   image: String
   isAvailable: Boolean!
+  isPopular: Boolean!
   name: String!
   options: [MenuItemOption]
   price: String!
@@ -375,7 +374,7 @@ type Mutation {
   pickupOrder(deliveryId: String!): Delivery
   placeOrder(input: CreateOrderInput!): Order
   processPayout(input: ProcessPayoutInput!): Invoice
-  refreshToken(refreshToken: String!): RefreshTokenResponse
+  refreshToken: RefreshTokenResponse
   removeFromCart(input: RemoveFromCartInput!): Boolean
   setRestaurantOpen(id: String!, isOpen: Boolean!): Restaurant
   signup(input: SignupInput!): AuthResponse
@@ -528,8 +527,7 @@ type Query {
 }
 
 type RefreshTokenResponse {
-  accessToken: String!
-  refreshToken: String!
+  message: String!
 }
 
 type Refund {

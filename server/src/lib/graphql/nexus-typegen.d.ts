@@ -265,8 +265,6 @@ export interface NexusGenObjects {
     zipCode: string; // String!
   }
   AuthResponse: { // root type
-    accessToken: string; // String!
-    refreshToken: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
   BillingPortalSession: { // root type
@@ -383,6 +381,7 @@ export interface NexusGenObjects {
     id: string; // String!
     image?: string | null; // String
     isAvailable: boolean; // Boolean!
+    isPopular: boolean; // Boolean!
     name: string; // String!
     price: string; // String!
     restaurantId: string; // String!
@@ -489,8 +488,7 @@ export interface NexusGenObjects {
   }
   Query: {};
   RefreshTokenResponse: { // root type
-    accessToken: string; // String!
-    refreshToken: string; // String!
+    message: string; // String!
   }
   Refund: { // root type
     amount: string; // String!
@@ -573,8 +571,6 @@ export interface NexusGenFieldTypes {
     zipCode: string; // String!
   }
   AuthResponse: { // field return type
-    accessToken: string; // String!
-    refreshToken: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
   BillingPortalSession: { // field return type
@@ -703,6 +699,7 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     image: string | null; // String
     isAvailable: boolean; // Boolean!
+    isPopular: boolean; // Boolean!
     name: string; // String!
     options: Array<NexusGenRootTypes['MenuItemOption'] | null> | null; // [MenuItemOption]
     price: string; // String!
@@ -864,8 +861,7 @@ export interface NexusGenFieldTypes {
     reviews: Array<NexusGenRootTypes['Review'] | null>; // [Review]!
   }
   RefreshTokenResponse: { // field return type
-    accessToken: string; // String!
-    refreshToken: string; // String!
+    message: string; // String!
   }
   Refund: { // field return type
     amount: string; // String!
@@ -958,8 +954,6 @@ export interface NexusGenFieldTypeNames {
     zipCode: 'String'
   }
   AuthResponse: { // field return type name
-    accessToken: 'String'
-    refreshToken: 'String'
     user: 'User'
   }
   BillingPortalSession: { // field return type name
@@ -1088,6 +1082,7 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     image: 'String'
     isAvailable: 'Boolean'
+    isPopular: 'Boolean'
     name: 'String'
     options: 'MenuItemOption'
     price: 'String'
@@ -1249,8 +1244,7 @@ export interface NexusGenFieldTypeNames {
     reviews: 'Review'
   }
   RefreshTokenResponse: { // field return type name
-    accessToken: 'String'
-    refreshToken: 'String'
+    message: 'String'
   }
   Refund: { // field return type name
     amount: 'String'
@@ -1381,9 +1375,6 @@ export interface NexusGenArgTypes {
     }
     processPayout: { // args
       input: NexusGenInputs['ProcessPayoutInput']; // ProcessPayoutInput!
-    }
-    refreshToken: { // args
-      refreshToken: string; // String!
     }
     removeFromCart: { // args
       input: NexusGenInputs['RemoveFromCartInput']; // RemoveFromCartInput!

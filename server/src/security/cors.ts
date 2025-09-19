@@ -4,17 +4,20 @@ import { Request } from 'express';
 // CORS configuration
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // In development, allow all origins for easier testing and sandbox access
-    if (process.env.NODE_ENV !== 'production') {
+    // Allow requests with no origin (like mobile apps, Postman, GraphQL introspection)
+    if (!origin) {
       return callback(null, true);
     }
+    // In development, allow all origins for easier testing and sandbox access
+    // if (process.env.NODE_ENV !== 'production') {
+    //   return callback(null, true);
+    // }
 
     // In production, use strict origin checking
-    if (!origin) return callback(null, true);
-
     const allowedOrigins = [
       'http://localhost:3000', // Next.js dev server
-      'https://delivering.vercel.app', // Production frontend
+      "http://localhost:4000", // apollo sandbox
+      'https://delivering-one.vercel.app', // Production frontend
       // process.env.CORS_ORIGIN, // Custom origin from env
     ].filter(Boolean);
 

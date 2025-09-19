@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { 
   createCheckoutSessionMutation,
   createBillingPortalSessionMutation,
@@ -21,7 +21,7 @@ export const useCreateCheckoutSession = () => {
 
   const createCheckoutSession = async (input: CreateCheckoutSessionInput) => {
     try {
-      const { data } = await createCheckoutSessionMutationFn({ variables: { input } });
+      const { data } = await createCheckoutSessionMutationFn({ variables: { input } }) as any;
       return data?.createCheckoutSession || null;
     } catch (error) {
       console.error('Create checkout session error:', error);
@@ -43,7 +43,7 @@ export const useCreateBillingPortalSession = () => {
 
   const createBillingPortalSession = async (input: CreateBillingPortalSessionInput) => {
     try {
-      const { data } = await createBillingPortalSessionMutationFn({ variables: { input } });
+      const { data } = await createBillingPortalSessionMutationFn({ variables: { input } }) as any;
       return data?.createBillingPortalSession || null;
     } catch (error) {
       console.error('Create billing portal session error:', error);
@@ -65,7 +65,7 @@ export const useCreatePaymentIntent = () => {
 
   const createPaymentIntent = async (input: CreatePaymentIntentInput) => {
     try {
-      const { data } = await createPaymentIntentMutationFn({ variables: { input } });
+      const { data } = await createPaymentIntentMutationFn({ variables: { input } }) as any;
       return data?.createPaymentIntent || null;
     } catch (error) {
       console.error('Create payment intent error:', error);
@@ -89,7 +89,7 @@ export const useConfirmPaymentIntent = () => {
     try {
       const { data } = await confirmPaymentIntentMutationFn({ 
         variables: { paymentIntentId } 
-      });
+      }) as any;
       return data?.confirmPaymentIntent || null;
     } catch (error) {
       console.error('Confirm payment intent error:', error);
@@ -113,7 +113,7 @@ export const useCancelPaymentIntent = () => {
     try {
       const { data } = await cancelPaymentIntentMutationFn({ 
         variables: { paymentIntentId } 
-      });
+      }) as any;
       return data?.cancelPaymentIntent || null;
     } catch (error) {
       console.error('Cancel payment intent error:', error);
@@ -135,7 +135,7 @@ export const useCreateRefund = () => {
 
   const createRefund = async (input: CreateRefundInput) => {
     try {
-      const { data } = await createRefundMutationFn({ variables: { input } });
+      const { data } = await createRefundMutationFn({ variables: { input } }) as any;
       return data?.createRefund || null;
     } catch (error) {
       console.error('Create refund error:', error);

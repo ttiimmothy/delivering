@@ -53,6 +53,7 @@ export const MenuItem = objectType({
     t.nonNull.string('price');
     t.string('image');
     t.nonNull.boolean('isAvailable');
+    t.nonNull.boolean("isPopular")
     t.nonNull.int('sortOrder');
     t.nonNull.string('createdAt');
     t.nonNull.string('updatedAt');

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import { useQuery, useMutation, useSubscription } from '@apollo/client/react';
 import { 
   ordersQuery, 
   orderQuery, 
@@ -17,7 +17,7 @@ export const useOrders = (variables?: OrdersQueryVariables) => {
     variables,
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network',
-  });
+  }) as any;
 
   return {
     orders: data?.orders || [],
@@ -34,7 +34,7 @@ export const useOrder = (id: string) => {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network',
     skip: !id,
-  });
+  }) as any;
 
   return {
     order: data?.order || null,
@@ -52,7 +52,7 @@ export const usePlaceOrder = () => {
 
   const placeOrder = async (input: CreateOrderInput): Promise<Order | null> => {
     try {
-      const { data } = await placeOrderMutationFn({ variables: { input } });
+      const { data } = await placeOrderMutationFn({ variables: { input } }) as any;
       return data?.placeOrder || null;
     } catch (error) {
       console.error('Place order error:', error);
@@ -72,7 +72,7 @@ export const useOrderStatusSubscription = (orderId: string) => {
     variables: { orderId },
     skip: !orderId,
     errorPolicy: 'all',
-  });
+  }) as any;
 
   return {
     orderEvent: data?.orderStatusChanged || null,

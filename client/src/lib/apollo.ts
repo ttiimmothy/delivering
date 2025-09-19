@@ -1,42 +1,40 @@
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
-import { onError } from '@apollo/client/link/error'
+import { ApolloClient, ApolloLink, CombinedGraphQLErrors, HttpLink, InMemoryCache, ServerError, createHttpLink, from } from '@apollo/client'
+import { SetContextLink } from '@apollo/client/link/context'
+import { ErrorLink, onError } from '@apollo/client/link/error'
 import { RetryLink } from '@apollo/client/link/retry'
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+  credentials: 'include',
 })
 
-const authLink = setContext((_, { headers }) => {
-  // Get the authentication token from local storage if it exists
-  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+// use cookies now, not using localStorage to store the token
+// const authLink = setContext((_, { headers }) => {
+//   // Get the authentication token from local storage if it exists
+//   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
   
-  // Return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    }
-  }
-})
+//   // Return the headers to the context so httpLink can read them
+//   return {
+//     headers: {
+//       ...headers,
+//       authorization: token ? `Bearer ${token}` : '',
+//     }
+//   }
+// })
 
-const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) => {
+const errorLink = new ErrorLink (({ error, result }) => {
+  if (CombinedGraphQLErrors.is(error)) {
+    error.errors.forEach(({ message, locations, path }) => {
       console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`
       )
     })
   }
 
-  if (networkError) {
-    console.error(`[Network error]: ${networkError}`)
-    
-    // Handle 401 errors by redirecting to login
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
+  if (ServerError.is(error)) {
+    console.error(`[Network error]: ${error}`)
+    if ('statusCode' in error && error.statusCode === 401) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
         window.location.href = '/login'
       }
     }
@@ -56,7 +54,7 @@ const retryLink = new RetryLink({
 })
 
 export const apolloClient = new ApolloClient({
-  link: from([errorLink, retryLink, authLink, httpLink]),
+  link: ApolloLink.from([errorLink, retryLink, httpLink]),
   cache: new InMemoryCache({
     typePolicies: {
       Query: {

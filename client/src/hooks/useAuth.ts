@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { useCallback } from 'react';
 import { 
   loginMutation, 
@@ -21,7 +21,7 @@ export const useAuth = () => {
   const { data: meData, loading: meLoading, error: meError, refetch: refetchMe } = useQuery(meQuery, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network',
-  });
+  }) as any;
 
   // Mutations
   const [loginMutationFn, { loading: loginLoading, error: loginError }] = useMutation(loginMutation);
@@ -38,16 +38,11 @@ export const useAuth = () => {
   // Auth functions
   const login = useCallback(async (input: LoginInput): Promise<AuthResponse | null> => {
     try {
-      const { data } = await loginMutationFn({ variables: { input } });
-      if (data?.login) {
-        // Store tokens in localStorage
-        localStorage.setItem('accessToken', data.login.accessToken);
-        localStorage.setItem('refreshToken', data.login.refreshToken);
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(data.login.user));
-        
+      const { data } = await loginMutationFn({ variables: { input } }) as any;
+      // console.log(data)
+      if (data?.login) {     
         // Refetch user data
-        await refetchMe();
+        const {data: meData} = await refetchMe();
         
         return data.login;
       }
@@ -60,7 +55,7 @@ export const useAuth = () => {
 
   const signup = useCallback(async (input: SignupInput): Promise<AuthResponse | null> => {
     try {
-      const { data } = await signupMutationFn({ variables: { input } });
+      const { data } = await signupMutationFn({ variables: { input } }) as any;
       if (data?.signup) {
         // Store tokens in localStorage
         localStorage.setItem('accessToken', data.signup.accessToken);
@@ -82,14 +77,8 @@ export const useAuth = () => {
 
   const loginWithGoogle = useCallback(async (idToken: string): Promise<AuthResponse | null> => {
     try {
-      const { data } = await loginWithGoogleMutationFn({ variables: { idToken } });
+      const { data } = await loginWithGoogleMutationFn({ variables: { idToken } }) as any;
       if (data?.loginWithGoogle) {
-        // Store tokens in localStorage
-        localStorage.setItem('accessToken', data.loginWithGoogle.accessToken);
-        localStorage.setItem('refreshToken', data.loginWithGoogle.refreshToken);
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(data.loginWithGoogle.user));
-        
         // Refetch user data
         await refetchMe();
         
@@ -111,23 +100,14 @@ export const useAuth = () => {
 
       const { data } = await refreshTokenMutationFn({ 
         variables: { refreshToken: refreshTokenValue } 
-      });
+      }) as any;
       
-      if (data?.refreshToken) {
-        // Update tokens in localStorage
-        localStorage.setItem('accessToken', data.refreshToken.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken.refreshToken);
-        
+      if (data?.refreshToken) {        
         return data.refreshToken;
       }
       return null;
     } catch (error) {
       console.error('Token refresh error:', error);
-      // Clear invalid tokens
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('user');
       throw error;
     }
   }, [refreshTokenMutationFn]);
@@ -135,24 +115,12 @@ export const useAuth = () => {
   const logout = useCallback(async (): Promise<boolean> => {
     try {
       await logoutMutationFn();
-      
-      // Clear all auth data
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('user');
-      
       // Refetch user data (should return null)
       await refetchMe();
       
       return true;
     } catch (error) {
       console.error('Logout error:', error);
-      // Clear auth data even if logout fails
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('user');
       await refetchMe();
       return false;
     }

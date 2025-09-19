@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
 import { 
   restaurantsQuery, 
   restaurantQuery, 
@@ -16,7 +16,7 @@ export const useRestaurants = (variables?: RestaurantsQueryVariables) => {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: true,
-  });
+  }) as any;
 
   return {
     restaurants: data?.restaurants || [],
@@ -33,7 +33,7 @@ export const useRestaurant = (slug: string) => {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first',
     skip: !slug,
-  });
+  }) as any;
 
   return {
     restaurant: data?.restaurant || null,
@@ -47,7 +47,7 @@ export const useFavoriteRestaurants = () => {
   const { data, loading, error, refetch } = useQuery(favoriteRestaurantsQuery, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first',
-  });
+  }) as any;
 
   return {
     favoriteRestaurants: data?.favoriteRestaurants || [],
@@ -61,7 +61,7 @@ export const useToggleFavorite = () => {
   const [toggleFavoriteMutationFn, { loading, error }] = useMutation(toggleFavoriteMutation, {
     refetchQueries: [restaurantsQuery, favoriteRestaurantsQuery],
     errorPolicy: 'all',
-  });
+  }) as any;
 
   const toggleFavorite = async (restaurantId: string): Promise<boolean> => {
     try {

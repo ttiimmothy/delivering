@@ -5,8 +5,12 @@ import { Button } from './ui/Button'
 import { ThemeToggle } from './ThemeToggle'
 import { UserMenu } from './UserMenu'
 import { ShoppingCart } from 'lucide-react'
+import { useCart } from '../hooks/useCart'
+import { Badge } from './ui/Badge'
 
 export function Header() {
+  const { itemCount } = useCart();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -27,6 +31,10 @@ export function Header() {
             </Button>
             
             <Button variant="ghost" size="sm" asChild>
+              <Link href="/favorites">Favorites</Link>
+            </Button>
+            
+            <Button variant="ghost" size="sm" asChild>
               <Link href="/orders">Orders</Link>
             </Button>
             
@@ -38,8 +46,18 @@ export function Header() {
               <Link href="/merchant">Merchant</Link>
             </Button>
             
-            <Button variant="ghost" size="sm">
-              <ShoppingCart className="h-4 w-4" />
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/checkout" className="relative">
+                <ShoppingCart className="h-4 w-4" />
+                {itemCount > 0 && (
+                  <Badge 
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                    variant="destructive"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Link>
             </Button>
             
             <ThemeToggle />

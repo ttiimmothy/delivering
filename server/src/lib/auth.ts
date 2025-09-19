@@ -52,7 +52,7 @@ export function generateRefreshToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): 
   });
 }
 
-export function verifyAccessToken(token: string): JWTPayload {
+export const verifyAccessToken = (token: string): JWTPayload => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
   } catch (error) {
@@ -60,7 +60,7 @@ export function verifyAccessToken(token: string): JWTPayload {
   }
 }
 
-export function verifyRefreshToken(token: string): JWTPayload {
+export const verifyRefreshToken = (token: string): JWTPayload => {
   try {
     return jwt.verify(token, process.env.JWT_REFRESH_SECRET) as JWTPayload;
   } catch (error) {
@@ -69,7 +69,7 @@ export function verifyRefreshToken(token: string): JWTPayload {
 }
 
 // Token pair generation
-export function generateTokenPair(payload: Omit<JWTPayload, 'iat' | 'exp'>) {
+export const generateTokenPair = (payload: Omit<JWTPayload, 'iat' | 'exp'>) => {
   return {
     accessToken: generateAccessToken(payload),
     refreshToken: generateRefreshToken(payload),
@@ -77,9 +77,15 @@ export function generateTokenPair(payload: Omit<JWTPayload, 'iat' | 'exp'>) {
 }
 
 // Extract token from Authorization header
-export function extractTokenFromHeader(authHeader: string | undefined): string | null {
-  if (!authHeader) return null;
+export const extractTokenFromHeader = (authorizationCookies: string | undefined, authHeader: string | undefined): string | null => {
+  if (!authorizationCookies && !authHeader) {
+    return null;
+  }
   
+  if (authorizationCookies) {
+    return authorizationCookies
+  }
+
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     return null;
@@ -89,9 +95,11 @@ export function extractTokenFromHeader(authHeader: string | undefined): string |
 }
 
 // Auth middleware helper
-export function getCurrentUser(authHeader: string | undefined): JWTPayload | null {
-  const token = extractTokenFromHeader(authHeader);
-  if (!token) return null;
+export const getCurrentUser = (authorizationCookies: string, authHeader: string | undefined): JWTPayload | null => {
+  const token = extractTokenFromHeader(authorizationCookies, authHeader);
+  if (!token) {
+    return null;
+  }
   
   try {
     return verifyAccessToken(token);
