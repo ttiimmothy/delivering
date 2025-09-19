@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { meQuery, updateUserMutation } from '../../lib/graphql/operations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -27,7 +27,7 @@ import { useToast } from '../../hooks/useToast';
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { data, loading, error } = useQuery(meQuery);
+  const { data, loading, error } = useQuery(meQuery) as any;
   const [updateUser] = useMutation(updateUserMutation);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({

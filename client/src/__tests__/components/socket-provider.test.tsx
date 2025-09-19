@@ -20,6 +20,21 @@ vi.mock('../../lib/socket', () => ({
   }
 }));
 
+// Mock the useAuth hook
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    user: {
+      id: '1',
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User'
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    error: null
+  }))
+}));
+
 describe('SocketProvider', () => {
   it('renders children with Socket context', () => {
     const { getByText } = renderWithProviders(

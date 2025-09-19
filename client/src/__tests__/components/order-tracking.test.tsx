@@ -24,6 +24,21 @@ vi.mock('../../lib/socket', () => ({
   }
 }));
 
+// Mock the useAuth hook
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    user: {
+      id: '1',
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User'
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    error: null
+  }))
+}));
+
 describe('OrderTracking Component', () => {
   it('renders order tracking interface', () => {
     const mockOrder = {

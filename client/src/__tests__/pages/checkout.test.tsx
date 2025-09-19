@@ -33,6 +33,18 @@ vi.mock('../../hooks/useOrders', () => ({
   })
 }));
 
+// Mock the usePayment hooks for Checkout component
+vi.mock('../../hooks/usePayment', () => ({
+  useCreateCheckoutSession: vi.fn(() => ({
+    createCheckoutSession: vi.fn().mockResolvedValue({
+      id: 'cs_test_123',
+      url: 'https://checkout.stripe.com/test'
+    }),
+    loading: false,
+    error: null
+  }))
+}));
+
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
   useRouter: () => ({

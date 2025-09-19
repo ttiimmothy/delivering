@@ -4,10 +4,17 @@ import LoginPage from '../../../app/login/page';
 
 // Mock the useAuth hook
 const mockLogin = vi.fn();
-vi.mock('../../hooks/useAuth', () => ({
+vi.mock('../../../hooks/useAuth', () => ({
   useAuth: () => ({
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
     login: mockLogin,
-    loading: false,
+    signup: vi.fn(),
+    loginWithGoogle: vi.fn(),
+    refreshToken: vi.fn(),
+    logout: vi.fn(),
+    refetchMe: vi.fn(),
     error: null
   })
 }));

@@ -7,20 +7,22 @@ vi.mock('../../../hooks/useOrders', () => ({
   useOrder: () => ({
     order: {
       id: 'test-order-id',
-      total: 25.99,
-      subtotal: 22.99,
-      tax: 1.50,
-      deliveryFee: 1.50,
-      tip: 0,
+      orderNumber: 'ORD-123',
+      total: '25.99',
+      subtotal: '22.99',
+      tax: '1.50',
+      deliveryFee: '1.50',
+      tip: '0',
       status: 'pending',
       restaurant: {
+        id: 'rest-1',
         name: 'Test Restaurant'
       },
       items: [
         {
           id: '1',
           quantity: 1,
-          totalPrice: 12.99,
+          totalPrice: '12.99',
           menuItem: {
             name: 'Test Item',
             price: 12.99
@@ -31,6 +33,18 @@ vi.mock('../../../hooks/useOrders', () => ({
     loading: false,
     error: null
   })
+}));
+
+// Mock the usePayment hooks for Checkout component
+vi.mock('../../../hooks/usePayment', () => ({
+  useCreateCheckoutSession: vi.fn(() => ({
+    createCheckoutSession: vi.fn().mockResolvedValue({
+      id: 'cs_test_123',
+      url: 'https://checkout.stripe.com/test'
+    }),
+    loading: false,
+    error: null
+  }))
 }));
 
 // Mock useSearchParams to return a valid orderId

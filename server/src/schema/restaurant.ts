@@ -133,6 +133,7 @@ export const Restaurant = objectType({
           image: item.image || null,
           price: String(item.price),
           isAvailable: item.isAvailable,
+          isPopular: item.isPopular,
           sortOrder: item.sortOrder,
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
           updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { favoriteRestaurantsQuery, toggleFavoriteMutation } from '../../lib/graphql/operations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -11,7 +11,7 @@ import { useToast } from '../../hooks/useToast';
 
 export default function FavoritesPage() {
   const { toast } = useToast();
-  const { data, loading, error, refetch } = useQuery(favoriteRestaurantsQuery);
+  const { data, loading, error, refetch } = useQuery(favoriteRestaurantsQuery) as any;
   const [toggleFavorite] = useMutation(toggleFavoriteMutation);
 
   const handleToggleFavorite = async (restaurantId: string) => {

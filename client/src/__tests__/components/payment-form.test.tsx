@@ -19,6 +19,27 @@ vi.mock('@stripe/react-stripe-js', () => ({
   })
 }));
 
+// Mock the usePayment hooks
+vi.mock('../../hooks/usePayment', () => ({
+  useCreatePaymentIntent: vi.fn(() => ({
+    createPaymentIntent: vi.fn().mockResolvedValue({
+      id: 'pi_test_123',
+      clientSecret: 'pi_test_123_secret',
+      status: 'requires_payment_method'
+    }),
+    loading: false,
+    error: null
+  })),
+  useConfirmPaymentIntent: vi.fn(() => ({
+    confirmPaymentIntent: vi.fn().mockResolvedValue({
+      id: 'pi_test_123',
+      status: 'succeeded'
+    }),
+    loading: false,
+    error: null
+  }))
+}));
+
 describe('PaymentForm Component', () => {
   it('renders payment form', () => {
     const { getByText, getByTestId } = renderWithProviders(
