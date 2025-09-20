@@ -57,7 +57,7 @@ A full-stack food delivery platform (UberEats-lite) built with Next.js, Express,
 ### 1. Clone & Setup
 
 ```bash
-git clone https://github.com:ttiimmothy/delivering.git
+git clone https://github.com/ttiimmothy/delivering
 cd delivering
 ```
 
