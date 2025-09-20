@@ -7,8 +7,10 @@ import { MapPin, Phone, Mail, Clock, Send, MessageCircle, User, Mail as MailIcon
 import { Button } from '../../components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
-import { FormField, FormSelect, FormSubmitButton } from '../../components/forms'
 import { contactSchema, type ContactFormData } from '../../schemas/forms'
+import {FormField} from "../../components/forms/FormField";
+import {FormSubmitButton} from "../../components/forms/FormSubmitButton";
+import {FormSelect} from "../../components/forms/FormSelect";
 
 const contactInfo = [
   {

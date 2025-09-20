@@ -5,13 +5,20 @@ import { Button } from './ui/Button'
 import { User, LogIn, UserPlus, LogOut, Settings, Package, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '../hooks/useAuth'
+import {useRouter} from "next/navigation";
 
 export function UserMenu() {
   const { user, isAuthenticated, logout } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
+  const router = useRouter();
 
   const handleLogout = async () => {
-    await logout()
+    try {
+      await logout()
+      router.push("/")
+    } catch (e) {
+      console.error(e)
+    }
     setShowDropdown(false)
   }
 

@@ -8,10 +8,10 @@ import { useCreatePaymentIntent, useConfirmPaymentIntent } from '../hooks/usePay
 import { Button } from './ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
 import { Alert, AlertDescription } from './ui/Alert';
-import { FormSubmitButton } from './forms';
 import { paymentSchema, type PaymentFormData } from '../schemas/forms';
 import { Loader2, CreditCard, CheckCircle } from 'lucide-react';
 import { CreatePaymentIntentInput } from '../types/graphql';
+import {FormSubmitButton} from "./forms/FormSubmitButton";
 
 interface PaymentFormProps {
   amount: number;

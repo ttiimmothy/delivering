@@ -26,21 +26,21 @@ describe('GraphQL Operations', () => {
       expect(loginMutation).toBeDefined();
       expect(loginMutation.kind).toBe('Document');
       expect(loginMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(loginMutation.definitions[0].operation).toBe('mutation');
+      expect((loginMutation.definitions[0] as any).operation).toBe('mutation');
     });
 
     it('should define signupMutation correctly', () => {
       expect(signupMutation).toBeDefined();
       expect(signupMutation.kind).toBe('Document');
       expect(signupMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(signupMutation.definitions[0].operation).toBe('mutation');
+      expect((signupMutation.definitions[0] as any).operation).toBe('mutation');
     });
 
     it('should define refreshTokenMutation correctly', () => {
       expect(refreshTokenMutation).toBeDefined();
       expect(refreshTokenMutation.kind).toBe('Document');
       expect(refreshTokenMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(refreshTokenMutation.definitions[0].operation).toBe('mutation');
+      expect((refreshTokenMutation.definitions[0] as any).operation).toBe('mutation');
     });
   });
 
@@ -49,14 +49,14 @@ describe('GraphQL Operations', () => {
       expect(restaurantsQuery).toBeDefined();
       expect(restaurantsQuery.kind).toBe('Document');
       expect(restaurantsQuery.definitions[0].kind).toBe('OperationDefinition');
-      expect(restaurantsQuery.definitions[0].operation).toBe('query');
+      expect((restaurantsQuery.definitions[0] as any).operation).toBe('query');
     });
 
     it('should define restaurantQuery correctly', () => {
       expect(restaurantQuery).toBeDefined();
       expect(restaurantQuery.kind).toBe('Document');
       expect(restaurantQuery.definitions[0].kind).toBe('OperationDefinition');
-      expect(restaurantQuery.definitions[0].operation).toBe('query');
+      expect((restaurantQuery.definitions[0] as any).operation).toBe('query');
     });
   });
 
@@ -65,14 +65,14 @@ describe('GraphQL Operations', () => {
       expect(cartQuery).toBeDefined();
       expect(cartQuery.kind).toBe('Document');
       expect(cartQuery.definitions[0].kind).toBe('OperationDefinition');
-      expect(cartQuery.definitions[0].operation).toBe('query');
+      expect((cartQuery.definitions[0] as any).operation).toBe('query');
     });
 
     it('should define addToCartMutation correctly', () => {
       expect(addToCartMutation).toBeDefined();
       expect(addToCartMutation.kind).toBe('Document');
       expect(addToCartMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(addToCartMutation.definitions[0].operation).toBe('mutation');
+      expect((addToCartMutation.definitions[0] as any).operation).toBe('mutation');
     });
   });
 
@@ -81,14 +81,14 @@ describe('GraphQL Operations', () => {
       expect(ordersQuery).toBeDefined();
       expect(ordersQuery.kind).toBe('Document');
       expect(ordersQuery.definitions[0].kind).toBe('OperationDefinition');
-      expect(ordersQuery.definitions[0].operation).toBe('query');
+      expect((ordersQuery.definitions[0] as any).operation).toBe('query');
     });
 
     it('should define placeOrderMutation correctly', () => {
       expect(placeOrderMutation).toBeDefined();
       expect(placeOrderMutation.kind).toBe('Document');
       expect(placeOrderMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(placeOrderMutation.definitions[0].operation).toBe('mutation');
+      expect((placeOrderMutation.definitions[0] as any).operation).toBe('mutation');
     });
   });
 
@@ -97,14 +97,14 @@ describe('GraphQL Operations', () => {
       expect(createCheckoutSessionMutation).toBeDefined();
       expect(createCheckoutSessionMutation.kind).toBe('Document');
       expect(createCheckoutSessionMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(createCheckoutSessionMutation.definitions[0].operation).toBe('mutation');
+      expect((createCheckoutSessionMutation.definitions[0] as any).operation).toBe('mutation');
     });
 
     it('should define createPaymentIntentMutation correctly', () => {
       expect(createPaymentIntentMutation).toBeDefined();
       expect(createPaymentIntentMutation.kind).toBe('Document');
       expect(createPaymentIntentMutation.definitions[0].kind).toBe('OperationDefinition');
-      expect(createPaymentIntentMutation.definitions[0].operation).toBe('mutation');
+      expect((createPaymentIntentMutation.definitions[0] as any).operation).toBe('mutation');
     });
   });
 
@@ -113,14 +113,14 @@ describe('GraphQL Operations', () => {
       expect(orderStatusChangedSubscription).toBeDefined();
       expect(orderStatusChangedSubscription.kind).toBe('Document');
       expect(orderStatusChangedSubscription.definitions[0].kind).toBe('OperationDefinition');
-      expect(orderStatusChangedSubscription.definitions[0].operation).toBe('subscription');
+      expect((orderStatusChangedSubscription.definitions[0] as any).operation).toBe('subscription');
     });
 
     it('should define courierLocationSubscription correctly', () => {
       expect(courierLocationSubscription).toBeDefined();
       expect(courierLocationSubscription.kind).toBe('Document');
       expect(courierLocationSubscription.definitions[0].kind).toBe('OperationDefinition');
-      expect(courierLocationSubscription.definitions[0].operation).toBe('subscription');
+      expect((courierLocationSubscription.definitions[0] as any).operation).toBe('subscription');
     });
   });
 });

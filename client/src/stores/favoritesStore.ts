@@ -6,8 +6,8 @@ interface FavoritesState {
   favoriteMenuItemIds: string[];
   
   // Actions
-  toggleRestaurantFavorite: (restaurantId: string) => void;
-  toggleMenuItemFavorite: (menuItemId: string) => void;
+  toggleRestaurantFavorite: (restaurantId: string, userId: string) => void;
+  toggleMenuItemFavorite: (menuItemId: string, userId: string) => void;
   isRestaurantFavorite: (restaurantId: string) => boolean;
   isMenuItemFavorite: (menuItemId: string) => boolean;
   clearFavorites: () => void;
@@ -20,7 +20,10 @@ export const useFavoritesStore = create<FavoritesState>()(
         favoriteRestaurantIds: [],
         favoriteMenuItemIds: [],
 
-        toggleRestaurantFavorite: (restaurantId) => {
+        toggleRestaurantFavorite: (restaurantId, userId) => {
+          if (!userId) {
+            return
+          }
           const { favoriteRestaurantIds } = get();
           set({
             favoriteRestaurantIds: favoriteRestaurantIds.includes(restaurantId)
@@ -29,7 +32,10 @@ export const useFavoritesStore = create<FavoritesState>()(
           });
         },
 
-        toggleMenuItemFavorite: (menuItemId) => {
+        toggleMenuItemFavorite: (menuItemId, userId) => {
+          if (!userId) {
+            return
+          }
           const { favoriteMenuItemIds } = get();
           set({
             favoriteMenuItemIds: favoriteMenuItemIds.includes(menuItemId)

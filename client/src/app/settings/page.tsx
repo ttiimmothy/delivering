@@ -11,7 +11,6 @@ import { Switch } from '../../components/ui/Switch';
 import { Label } from '../../components/ui/Label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/Tabs';
 import { Badge } from '../../components/ui/Badge';
-import { FormField, FormSubmitButton } from '../../components/forms';
 import { profileUpdateSchema, type ProfileUpdateFormData } from '../../schemas/forms';
 import { 
   User, 
@@ -27,6 +26,8 @@ import {
   Camera
 } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
+import {FormField} from "../../components/forms/FormField";
+import {FormSubmitButton} from "../../components/forms/FormSubmitButton";
 
 export default function SettingsPage() {
   const { toast } = useToast();

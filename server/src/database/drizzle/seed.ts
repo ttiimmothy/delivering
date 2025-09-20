@@ -340,7 +340,7 @@ async function seed() {
         name: 'Taco Fiesta',
         slug: 'taco-fiesta',
         description: 'Authentic Mexican tacos and burritos',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&h=300&fit=crop&crop=center',
+        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&h=300&fit=crop&crop=center',
         cuisine: 'Mexican',
         rating: '4.7',
         reviewCount: 80,
