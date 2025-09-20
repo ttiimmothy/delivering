@@ -482,10 +482,6 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
 - [Stripe](https://stripe.com/) - Payment processing
 
-## 📞 Support
-
-For support, email support@delivering.com or join our Slack channel.
-
 ---
 
 **Happy coding! 🚀**
