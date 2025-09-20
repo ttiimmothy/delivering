@@ -87,10 +87,6 @@ export const useAuth = () => {
 
   const refreshToken = useCallback(async (): Promise<RefreshTokenResponse | null> => {
     try {
-      // const refreshTokenValue = localStorage.getItem('refreshToken');
-      // if (!refreshTokenValue) {
-      //   throw new Error('No refresh token available');
-      // }
       const { data } = await refreshTokenMutationFn() as any;
       
       if (data?.refreshToken) {        
@@ -138,5 +134,6 @@ export const useAuth = () => {
     
     // Error handling
     error: getAuthError(),
+    loginError
   };
 };

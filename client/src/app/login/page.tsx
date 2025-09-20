@@ -6,13 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Alert, AlertDescription } from '../../components/ui/Alert';
-import { FormField, FormSubmitButton } from '../../components/forms';
 import { loginSchema, type LoginFormData } from '../../schemas/forms';
 import Link from 'next/link';
+import {FormField} from "../../components/forms/FormField";
+import {FormSubmitButton} from "../../components/forms/FormSubmitButton";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, loginError } = useAuth();
   
   const {
     register,
@@ -66,10 +67,10 @@ export default function LoginPage() {
               required
             />
             
-            {error && (
+            {loginError && (
               <Alert variant="destructive">
                 <AlertDescription>
-                  {error.message || 'Login failed. Please try again.'}
+                  {loginError.message || 'Login failed. Please try again.'}
                 </AlertDescription>
               </Alert>
             )}

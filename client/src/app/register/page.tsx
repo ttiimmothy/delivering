@@ -7,8 +7,10 @@ import Link from 'next/link'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
-import { FormField, PasswordField, MultiStepForm } from '../../components/forms'
 import { registerSchema, type RegisterFormData } from '../../schemas/forms'
+import {FormField} from "../../components/forms/FormField";
+import {PasswordField} from "../../components/forms/PasswordField";
+import {MultiStepForm} from "../../components/forms/MultiStepForm";
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
