@@ -7,7 +7,7 @@ import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { PubSub } from 'graphql-subscriptions';
 import { createContext } from './context';
-import { schema } from './schema';
+import { schema } from './schema/nexusIndex';
 import { corsMiddleware } from './cors';
 import { helmetConfig } from './helmet';
 import {db} from "./database/drizzle/client";

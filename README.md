@@ -57,7 +57,7 @@ A full-stack food delivery platform (UberEats-lite) built with Next.js, Express,
 ### 1. Clone & Setup
 
 ```bash
-git clone https://github.com:ttiimmothy/delivering.git
+git clone https://github.com/ttiimmothy/delivering
 cd delivering
 ```
 
@@ -481,10 +481,6 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
 - [Stripe](https://stripe.com/) - Payment processing
-
-## 📞 Support
-
-For support, email support@delivering.com or join our Slack channel.
 
 ---
 

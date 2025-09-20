@@ -307,12 +307,16 @@ export const addToCart = mutationField('addToCart', {
     }
 
     // Get or create cart
-    let cartResult = await db.select()
-      .from(carts)
-      .where(eq(carts.userId, ctx.user.userId))
-      .limit(1);
+    // let cartResult = await db.select()
+    //   .from(carts)
+    //   .where(eq(carts.userId, ctx.user.userId))
+    //   .limit(1);
 
-    if (cartResult.length === 0) {
+    let cartResult = await db.query.carts.findFirst({
+      where: eq(carts.userId, ctx.user.userId)
+    })
+
+    if (cartResult) {
       // We need to get the restaurant ID from the menu item
       const menuItemResult = await db.select()
         .from(menuItems)
@@ -327,14 +331,14 @@ export const addToCart = mutationField('addToCart', {
         userId: ctx.user.userId,
         restaurantId: menuItemResult[0].restaurantId,
       }).returning();
-      cartResult = newCart;
+      cartResult = newCart[0];
     }
 
     // Check if item already exists in cart
     const existingItem = await db.select()
       .from(cartItems)
       .where(and(
-        eq(cartItems.cartId, cartResult[0].id),
+        eq(cartItems.cartId, cartResult.id),
         eq(cartItems.menuItemId, args.input.menuItemId),
         eq(cartItems.selectedOptions, args.input.selectedOptions || '[]')
       ))
@@ -362,7 +366,7 @@ export const addToCart = mutationField('addToCart', {
     } else {
       // Add new item
       const result = await db.insert(cartItems).values({
-        cartId: cartResult[0].id,
+        cartId: cartResult.id,
         menuItemId: args.input.menuItemId,
         quantity: args.input.quantity,
         selectedOptions: args.input.selectedOptions || '[]',
