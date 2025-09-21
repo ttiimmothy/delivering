@@ -69,10 +69,10 @@ export function RestaurantGrid({
             <span className="ml-2">Loading restaurants...</span>
           </div>
         ) : error ? (
-          <div className="border-2 border-red-500 rounded-lg p-8 text-center bg-red-50 dark:bg-red-900/20">
+          <div className="border border-red-500 rounded-lg p-8 text-center bg-red-50 dark:bg-red-900/20 max-w-md mx-auto">
             <div className="text-red-600 dark:text-red-400 mb-4">
-              <h3 className="text-lg font-semibold mb-2">Failed to fetch restaurants</h3>
-              <p className="text-sm">{error.message}</p>
+              <h3 className="mb-2">Failed to load restaurants</h3>
+              {/* <p className="text-sm">{error.message}</p> */}
             </div>
             <Button 
               variant="outline" 
