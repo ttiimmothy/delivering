@@ -298,7 +298,7 @@ export default function ContactPage() {
             </div>
 
             {/* Quick Response */}
-            <Card className="bg-blue-50 border-blue-200">
+            <Card className="bg-blue-50 dark:bg-gray-900 border-blue-200">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-lg mb-2">Need immediate help?</h3>
                 <p className="text-muted-foreground mb-4">
