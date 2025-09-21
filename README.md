@@ -481,7 +481,3 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
 - [Stripe](https://stripe.com/) - Payment processing
-
----
-
-**Happy coding! 🚀**

@@ -237,7 +237,7 @@ export default function HelpPage() {
                         return (
                           <div key={index} className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0">
                             <button
-                              className="w-full text-left flex justify-between items-center py-2 hover:bg-gray-50 rounded-lg px-2 -mx-2"
+                              className="w-full text-left flex justify-between items-center py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-2 -mx-2"
                               onClick={() => toggleFaq(category.id, index)}
                             >
                               <span className="font-medium">{faq.question}</span>
@@ -285,7 +285,7 @@ export default function HelpPage() {
         </div>
 
         {/* Additional Help */}
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-blue-50 dark:bg-gray-900 border-blue-200">
           <CardContent className="p-6 text-center">
             <h3 className="text-xl font-semibold mb-2">Still need help?</h3>
             <p className="text-muted-foreground mb-4">
