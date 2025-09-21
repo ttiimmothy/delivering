@@ -69,9 +69,18 @@ export function RestaurantGrid({
             <span className="ml-2">Loading restaurants...</span>
           </div>
         ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-red-500 mb-4">Failed to load restaurants</p>
-            <p className="text-gray-600 dark:text-gray-400">{error.message}</p>
+          <div className="border-2 border-red-500 rounded-lg p-8 text-center bg-red-50 dark:bg-red-900/20">
+            <div className="text-red-600 dark:text-red-400 mb-4">
+              <h3 className="text-lg font-semibold mb-2">Failed to fetch restaurants</h3>
+              <p className="text-sm">{error.message}</p>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+              className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+            >
+              Reload
+            </Button>
           </div>
         ) : restaurants.length === 0 ? (
           <div className="text-center py-12">
