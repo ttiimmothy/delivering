@@ -87,7 +87,7 @@ npm run dev
 # Setup client (in a new terminal)
 cd client
 npm install
-npm run dev
+npm run start
 ```
 
 ### 4. Access the Application
@@ -424,34 +424,8 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your-stripe-publishable-key
 
 3. **Deploy with Docker**:
    ```bash
-   docker compose -f docker-compose.prod.yml up -d
+   docker compose up -d
    ```
-
-### Deployment Options
-- **Docker Compose**: Local and small-scale deployments
-- **AWS ECS**: Containerized deployments on AWS
-- **Google Cloud Run**: Serverless container deployments
-- **DigitalOcean App Platform**: Managed application hosting
-- **Kubernetes**: Large-scale container orchestration
-
-## 📚 Documentation
-
-### Comprehensive Guides
-- **[API Documentation](docs/API.md)**: Complete GraphQL API reference
-- **[GraphQL Code Generator](docs/GRAPHQL_CODEGEN.md)**: Type-safe GraphQL development
-- **[Deployment Guide](docs/DEPLOYMENT.md)**: Production deployment instructions
-- **[Performance Guide](docs/PERFORMANCE.md)**: Optimization strategies
-- **[Security Guide](docs/SECURITY.md)**: Security best practices
-- **[Maintenance Guide](docs/MAINTENANCE.md)**: Operational procedures
-- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)**: Common issues and solutions
-
-**Note**: Some advanced monitoring and logging features mentioned in the documentation have been removed to keep the server implementation simple and focused on core functionality.
-
-### Quick References
-- **Environment Variables**: See `env.production.example`
-- **Docker Configuration**: See `docker-compose.prod.yml`
-- **Nginx Configuration**: See `nginx/nginx.conf`
-- **Test Coverage**: See test reports in `coverage/`
 
 ## 🤝 Contributing
 

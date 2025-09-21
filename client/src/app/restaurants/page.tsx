@@ -182,7 +182,8 @@ export default function RestaurantsPage() {
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertDescription>
-              Failed to load restaurants: {error.message}
+              {/* Failed to load restaurants: {error.message} */}
+              Failed to load restaurants
               <Button 
                 variant="outline" 
                 size="sm" 
