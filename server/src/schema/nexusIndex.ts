@@ -205,7 +205,7 @@ export const schema = makeSchema({
   sourceTypes: {
     modules: [
       {
-        module: join(process.cwd(), 'src', 'db', 'client.ts'),
+        module: join(process.cwd(), 'src', 'database', "drizzle", 'client.ts'),
         alias: 'db',
       },
     ],
